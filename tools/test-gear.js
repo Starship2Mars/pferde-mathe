@@ -4,7 +4,7 @@ const BASE = process.env.URL || 'http://127.0.0.1:9518/index.html';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let fails = 0;
 const ok = (c, m) => { console.log((c ? '  ✔ ' : '  ✘ ') + m); if (!c) fails++; };
-const OLD = { v: 1, sound: false, setupSeen: true, shoes: 30, totalShoes: 90, carrots: 4, owned: ['heu', 'decke', 'sattel', 'schleife', 'pony', 'wolke'], blanket: '#d6c2f2',
+const OLD = { v: 1, sound: false, setupSeen: true, riderAsked: true, shoes: 30, totalShoes: 90, carrots: 4, owned: ['heu', 'decke', 'sattel', 'schleife', 'pony', 'wolke'], blanket: '#d6c2f2',
   horseNames: { luna: 'Sternchen' }, pos: { pony: { x: 30, y: 86 }, wolke: { x: 70, y: 80 } }, adv: { done: { '0-0': true }, last: null },
   skills: { rechnen: { level: 3, rounds: 3, recent: [] } } };
 const get = (p) => p.evaluate(() => JSON.parse(localStorage.getItem('pferde-mathe-v1')));
@@ -24,7 +24,7 @@ const svgHas = (p, id, c) => p.$eval(`.item[data-id="${id}"] svg`, (e, c) => e.i
     ok(m.blanket === '#d6c2f2' && m.shoes === 30 && m.owned.length === 6 && m.horseNames.luna === 'Sternchen' && m.adv.done['0-0'], 'Alte Felder unverändert (blanket, Hufeisen, Sachen, Namen, Sterne)');
     await p.evaluate(() => window.__pm.showStable()); await p.waitForSelector('.item[data-id="pony"]'); await sleep(1500);
     ok(await svgHas(p, 'luna', '#d6c2f2') && !(await svgHas(p, 'pony', '#d6c2f2')), 'Hauptpferd trägt die alte Decke, Pony nicht');
-    await p.click('.item[data-id="pony"]'); await p.waitForSelector('.dress-btn'); await p.click('.dress-btn'); await p.waitForSelector('#wardrobe'); await sleep(400);
+    await p.click('.item[data-id="pony"]'); await p.waitForSelector('.dress-btn'); await p.click('.dress-btn [data-dress]'); await p.waitForSelector('#wardrobe'); await sleep(400);
     ok(await p.$('#wardrobe [data-wcolor]') === null && await p.$('#wardBuyBlanket') !== null, 'Pony hat noch keine eigene Decke → „Eigene Decke holen“');
     await p.click('#wardBuyBlanket'); await p.waitForSelector('#wardrobe [data-wcolor="#b9e2a0"]'); await sleep(400);
     ok((await get(p)).shoes === 24, 'Decke fürs Pony gekauft (−6 Hufeisen)');
@@ -55,7 +55,7 @@ const svgHas = (p, id, c) => p.$eval(`.item[data-id="${id}"] svg`, (e, c) => e.i
     g = (await get(p)).gear;
     ok(g.wolke.bow === true && !g.luna.bow, 'Schleife geht an den Schimmel, nicht automatisch ans Hauptpferd');
     ok(errs.length === 0, 'Keine JS-Fehler ' + errs.join('|'));
-    if (W === 1024) { await p.click('.item[data-id="wolke"]'); await p.click('.dress-btn'); await sleep(700); await p.screenshot({ path: '/tmp/shots/wardrobe.png' }); }
+    if (W === 1024) { await p.click('.item[data-id="wolke"]'); await p.click('.dress-btn [data-dress]'); await sleep(700); await p.screenshot({ path: '/tmp/shots/wardrobe.png' }); }
     await ctx.close();
   }
   await b.close(); console.log(fails ? `\n${fails} FEHLER` : '\nAlle Ausrüstungs-Tests bestanden ✔'); process.exit(fails ? 1 : 0);

@@ -5,7 +5,7 @@ const BASE = process.env.URL || 'http://127.0.0.1:9518/index.html';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let fails = 0;
 const ok = (c, m) => { console.log((c ? '  ✔ ' : '  ✘ ') + m); if (!c) fails++; };
-const BUG = { v: 1, sound: false, volume: 0.5, setupSeen: true, childName: 'Testkind', bday: { d: 5, m: 3 }, shoes: 37, totalShoes: 212, carrots: 11, fed: 8, brushed: 4,
+const BUG = { v: 1, sound: false, volume: 0.5, setupSeen: true, riderAsked: true, childName: 'Testkind', bday: { d: 5, m: 3 }, shoes: 37, totalShoes: 212, carrots: 11, fed: 8, brushed: 4,
   owned: ['heu', 'blumen', 'sattel', 'schleife', 'decke', 'pony', 'fohlen', 'wolke', 'nacht', 'ziege', 'kaetzchen'], blanket: '#d6c2f2', barnOpen: false,
   horseNames: { luna: 'Sternchen', pony: 'Keksi' },
   pos: { luna: { x: 20, y: 56 }, pony: { x: 14, y: 60 }, wolke: { x: 'NaN', y: null }, fohlen: { x: 150, y: -20 }, nacht: { x: 30, y: 62 }, heu: { x: 22, y: 58 }, kaetzchen: { x: 60, y: 80 } },

@@ -6,7 +6,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let fails = 0;
 const ok = (c, m) => { console.log((c ? '  ✔ ' : '  ✘ ') + m); if (!c) fails++; };
 const css = fs.readFileSync(path.join(__dirname, '..', 'style.css'), 'utf8');
-const STATE = { v: 1, sound: false, setupSeen: true, shoes: 20, totalShoes: 60, carrots: 3, owned: ['heu', 'pony'], pos: {}, skills: {}, adv: { done: { '0-0': true, '0-1': true, '0-2': true }, last: null } };
+const STATE = { v: 1, sound: false, setupSeen: true, riderAsked: true, shoes: 20, totalShoes: 60, carrots: 3, owned: ['heu', 'pony'], pos: {}, skills: {}, adv: { done: { '0-0': true, '0-1': true, '0-2': true }, last: null } };
 async function visible(p, label) {
   const r = await p.evaluate(() => {
     const b = document.querySelector('#bagBtn'); if (!b) return { err: 'fehlt' };

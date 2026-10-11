@@ -668,6 +668,86 @@ svg.horse .head{transform-box:view-box;transform-origin:128px 96px;animation:hea
 .farm-say,.map-ui .farm-say{top:calc(76px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-30%);max-width:min(620px,84vw)}
 .farm-say.show,.map-ui .farm-say.show{transform:translate(-50%,0)}
 .farm-say:not(.show){visibility:hidden;transition:transform .5s ease,opacity .5s ease,visibility 0s .5s}
+/* Reiterin & Kleiderschrank */
+.dress-btn.multi{display:flex;gap:8px;padding:8px;align-items:center;background:rgba(255,246,251,.97)}
+.dress-btn.multi button{border:0;background:#fff;border-radius:16px;padding:10px 14px;font:inherit;font-weight:800;font-size:1.05rem;color:#5a4033;box-shadow:0 2px 0 rgba(0,0,0,.08);min-height:48px;white-space:nowrap}
+.dress-btn .foalnote{font-weight:700;color:#8a6a6a;padding:0 6px;white-space:nowrap}
+.farm .item[data-id="reiterin"] svg{width:100%;height:auto;display:block}
+.closet-card{max-width:min(860px,94vw)}
+.closet-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.closet-head h2{margin:.2em 0}
+.closet-row{display:flex;gap:16px;align-items:flex-start}
+.closet-left{display:flex;flex-direction:column;align-items:center;gap:8px;flex:none}
+.closet-pv{width:min(170px,30vw);background:radial-gradient(circle at 50% 60%,#fff 0,#fdeef5 70%);border-radius:24px;padding:6px 10px}
+.closet-pv svg{width:100%;height:auto;display:block}
+.closet-opts{flex:1;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.chip{border:2px solid #f0dfe6;background:#fff;border-radius:16px;padding:8px 12px;font:inherit;font-weight:700;font-size:.95rem;color:#5a4033;min-height:44px}
+.chip.on{background:#ffe08a;border-color:#f2c14e}
+.chip.sm{min-height:38px;padding:4px 10px;font-size:.85rem}
+.clist{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;max-height:min(46vh,420px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:2px}
+.citem{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff;border-radius:18px;padding:10px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.citem b{font-size:.95rem}
+.cdot{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:inset 0 -4px 0 rgba(0,0,0,.08),0 0 0 3px #fff,0 0 0 4px #eadfd5}
+.cbuy,.cwear{border:0;border-radius:14px;padding:8px 12px;font:inherit;font-weight:800;min-height:44px;background:#ffe08a;color:#5a4033;display:inline-flex;align-items:center;gap:4px}
+.cbuy svg{width:20px;height:20px}
+.cbuy.later{background:#f1ece6;color:#9a8a7a}
+.cwear{background:#eef7f2}.cwear.on{background:#9be0c6}
+.cfor{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.cnote{display:block;color:#7a6a5a;margin:0 0 6px}
+@media (orientation:portrait){.closet-row{flex-direction:column;align-items:stretch}.closet-left{flex-direction:row;justify-content:center}.closet-pv{width:120px}}
+/* Rosetten */
+.ros-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px;background:repeating-linear-gradient(90deg,#c98b57 0 38px,#bd7f4d 38px 40px);padding:14px;border-radius:18px;max-height:40vh;overflow-y:auto}
+.ros-wall.shelf{background:linear-gradient(180deg,#fff8ec 0 82%,#c98b57 82%)}
+.ros{display:flex;flex-direction:column;align-items:center}.ros>div{width:64px}.ros svg{width:100%;height:auto}
+.ros small{background:rgba(255,255,255,.9);border-radius:8px;padding:0 6px;font-weight:700;font-size:.75rem}
+.ros-badge{position:absolute;width:calc(var(--u,1vmin)*7);min-width:44px;transform:translate(-50%,-50%);border:0;background:none;padding:0;cursor:pointer;filter:drop-shadow(0 2px 3px rgba(0,0,0,.18))}
+.ros-badge svg{width:100%;height:auto}
+.prize-card{text-align:center}.prize-art{width:120px;margin:0 auto;animation:popIn .6s ease}.prize-art svg{width:100%;height:auto}
+/* Reitplatz */
+.ride-screen{position:fixed;inset:0;overflow:hidden;background:#a9d98a;touch-action:none;user-select:none;-webkit-user-select:none}
+.r-sky{position:absolute;inset:0 0 50% 0;background:linear-gradient(180deg,#bfe4ff,#eef9ff)}
+.ride-screen .r-hills{position:absolute;left:0;right:0;top:22%;height:36%}
+.ride-screen .r-hills svg{width:100%;height:100%;display:block}
+.r-arena,.r-front{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.r-front{z-index:2000}
+.r-front svg{width:100%;height:100%}
+.r-jump{position:absolute;width:calc(13vmin*var(--k));transform:translate(-50%,-92%);transition:opacity .4s}
+.r-jump.off{opacity:.25}
+.r-jump svg{width:100%;height:auto;display:block}
+.r-horse{position:absolute;width:calc(30vmin*var(--k,1));transform:translate(-50%,-92%);will-change:left,top}
+.r-flip{transition:transform .5s ease}.r-horse.left .r-flip{transform:scaleX(-1)}
+.r-bob svg{width:100%;height:auto;display:block;overflow:visible}
+.r-horse.moving .r-bob{animation:trotbob .64s ease-in-out infinite}
+.r-horse.moving.trot .r-bob{animation-duration:.4s}
+.r-horse.moving .lg{transform-box:fill-box;transform-origin:50% 0;animation:legswing .64s ease-in-out infinite}
+.r-horse.moving .lg.b{animation-delay:-.32s}
+.r-horse.moving.trot .lg{animation-duration:.4s}.r-horse.moving.trot .lg.b{animation-delay:-.2s}
+@keyframes legswing{0%,100%{transform:rotate(-13deg)}50%{transform:rotate(13deg)}}
+.r-horse.greet .seated{animation:greet 1.6s ease}
+@keyframes greet{0%,100%{transform:translate(93px,70px) scale(.92)}40%,60%{transform:translate(95px,72px) scale(.92) rotate(6deg)}}
+.r-judges{position:absolute;left:4%;top:34%;width:min(26vmin,220px);z-index:300}
+.r-judges svg{width:100%;height:auto}
+.r-judges.cheer .judge{animation:yay .8s ease 2}
+.r-ui .farm-btn.back{position:absolute;left:calc(12px + env(safe-area-inset-left));top:calc(12px + env(safe-area-inset-top));z-index:3000}
+.r-ui .farm-hud{z-index:3000}
+.r-ui .farm-say{z-index:3000}
+.r-pt{position:absolute;z-index:2600;width:1px;height:1px}
+.r-ctrls{position:absolute;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-wrap:wrap;justify-content:center;gap:10px;z-index:3000;padding:0 12px}
+.gbtn{border:0;border-radius:22px;padding:12px 18px;min-height:60px;font:inherit;font-weight:800;font-size:1.15rem;background:rgba(255,255,255,.95);color:#5a4033;box-shadow:0 3px 0 rgba(0,0,0,.1),0 4px 12px rgba(0,0,0,.08)}
+.gbtn.on{background:#ffe08a}
+.gbtn.tourbtn{background:#fde8f0}
+.judge-card{text-align:center}
+.jq-who{font-weight:800;color:#8a6a50}
+.jq{font-size:clamp(2.2rem,7vmin,3.4rem);font-weight:900;margin:.3em 0;color:#5a4033}
+.jq-opts{display:flex;gap:12px;justify-content:center}
+.jopt{min-width:96px;min-height:84px;border:0;border-radius:24px;background:#fff8e1;font:inherit;font-size:2rem;font-weight:900;color:#5a4033;box-shadow:0 4px 0 rgba(150,110,40,.2)}
+.jopt.right{background:#9be0c6}.jopt.soft{opacity:.45}
+.jq-hint{min-height:1.4em;color:#7a6a5a;font-weight:700}
+@media (prefers-reduced-motion:reduce){.r-horse.moving .lg,.r-horse.moving .r-bob{animation:none}}
+.closet-card{max-height:calc(100vh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch}
+.closet-card .chip{min-height:40px;padding:6px 10px;font-size:.88rem}
+.closet-card .clist{max-height:none}
 
 </style>
 </head>
@@ -707,7 +787,7 @@ const MINUS = '−';
 
 // ---------- Speicher ----------
 const KEY = 'pferde-mathe-v1'; // Schlüssel bleibt gleich → gespeicherter Fortschritt bleibt bei Updates erhalten
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.3.0';
 const GAME_IDS = ['paare', 'haeuser', 'rechnen', 'familie', 'strahl', 'zehner'];
 function defaultState() {
   return {
@@ -840,6 +920,8 @@ const Sound = (() => {
     cluck() { [0, 0.12, 0.24].forEach((t) => tone(520, t, 0.07, 'triangle', 0.07, 420)); },
     door() { tone(196, 0, 0.28, 'triangle', 0.14, 150); nz(0, 0.22, 0.04, 'lowpass', 600); },
     baa() { tone(560, 0, 0.55, 'triangle', 0.07, 470); tone(565, 0.03, 0.5, 'sine', 0.05, 480); },
+    hoof(trot) { nz(0, 0.04, trot ? 0.16 : 0.13, 'bandpass', 700 + Math.random() * 500, null, 4); tone(170 + Math.random() * 60, 0, 0.05, 'sine', 0.1); },
+    clap() { nz(0, 0.05, 0.12, 'bandpass', 1500 + Math.random() * 900, null, 1.4); },
     treasure() { [784, 988, 1175, 1568, 1976].forEach((f, i) => bell(f, i * 0.09, 0.9, 0.16)); bell(2637, 0.5, 1.2, 0.06); }
   };
   return API;
@@ -867,20 +949,20 @@ function horseSVG(o) {
   o = Object.assign({}, HORSES.luna, o || {});
   const body = o.body, mane = o.mane, far = shade(body, 0.85), hoof = '#6a4a38';
   const ly = o.foal ? 104 : 110, lh = o.foal ? 52 : o.pony ? 36 : 44;
-  const leg = (x, c) => `<rect x="${x}" y="${ly}" width="12" height="${lh}" rx="6" fill="${c}"/><rect x="${x - 1}" y="${ly + lh - 8}" width="14" height="10" rx="4" fill="${hoof}"/>`;
+  const leg = (x, c, k) => `<g class="lg ${k || ''}"><rect x="${x}" y="${ly}" width="12" height="${lh}" rx="6" fill="${c}"/><rect x="${x - 1}" y="${ly + lh - 8}" width="14" height="10" rx="4" fill="${hoof}"/></g>`;
   const spots = o.spots ? `<ellipse cx="80" cy="92" rx="16" ry="12" fill="${o.spots}"/><ellipse cx="114" cy="106" rx="11" ry="8" fill="${o.spots}"/><ellipse cx="58" cy="100" rx="8" ry="10" fill="${o.spots}"/>` : '';
   const blanket = o.blanket ? `<path d="M62 74 Q95 60 128 74 L132 110 Q95 124 58 110 Z" fill="${o.blanket}"/><path d="M58 110 Q95 124 132 110" stroke="#fff" stroke-width="4" fill="none" stroke-dasharray="1 7" stroke-linecap="round"/><path d="M95 95 c-3 -6 -12 -3 -8 4 l8 7 l8 -7 c4 -7 -5 -10 -8 -4z" fill="#fff" opacity=".85"/>` : '';
-  const saddle = o.saddle ? `${o.blanket ? '' : '<path d="M72 74 Q95 64 118 74 L120 92 Q95 100 70 92 Z" fill="#9ad0ec"/>'}<path d="M80 72 Q95 62 110 72 L111 84 Q95 90 79 84 Z" fill="#8b5a2b"/><path d="M94 86 L94 104" stroke="#6a4a38" stroke-width="3"/><circle cx="94" cy="106" r="4" fill="none" stroke="#c9962a" stroke-width="3"/>` : '';
-  const bridle = o.bridle ? `<path d="M148 38 Q160 56 178 60 M150 58 Q166 64 184 56" stroke="#e5b84a" stroke-width="3.4" fill="none" stroke-linecap="round"/><circle cx="171" cy="58" r="3.4" fill="#f2c14e" stroke="#c9962a"/>` : '';
+  const saddle = o.saddle ? `${o.blanket && !o.pad ? '' : `<path d="M72 74 Q95 64 118 74 L120 92 Q95 100 70 92 Z" fill="${o.pad || '#9ad0ec'}"/>`}<path d="M80 72 Q95 62 110 72 L111 84 Q95 90 79 84 Z" fill="#8b5a2b"/><path d="M94 86 L94 104" stroke="#6a4a38" stroke-width="3"/><circle cx="94" cy="106" r="4" fill="none" stroke="#c9962a" stroke-width="3"/>` : '';
+  const bridle = !o.bridle && o.rein ? `<path d="M148 38 Q160 56 178 60 M150 58 Q166 64 184 56" stroke="${o.rein}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="171" cy="58" r="3" fill="#e3e8ee" stroke="${o.rein}"/>` : o.bridle ? `<path d="M148 38 Q160 56 178 60 M150 58 Q166 64 184 56" stroke="#e5b84a" stroke-width="3.4" fill="none" stroke-linecap="round"/><circle cx="171" cy="58" r="3.4" fill="#f2c14e" stroke="#c9962a"/>` : '';
   const crown = o.crown ? `<g transform="translate(153 16) rotate(-12)"><path d="M-13 9 L-13 -4 L-6 2 L0 -9 L6 2 L13 -4 L13 9 Z" fill="#f6cf5a" stroke="#c9962a" stroke-width="1.6" stroke-linejoin="round"/><circle cx="0" cy="-9" r="2.6" fill="#f7a8c4"/><circle cx="-13" cy="-4" r="2" fill="#b5dcff"/><circle cx="13" cy="-4" r="2" fill="#b5dcff"/></g>` : '';
   const bow = o.bow ? `<g transform="translate(136 30)"><path d="M0 0 L-14 -9 L-14 9 Z" fill="#f48fb1"/><path d="M0 0 L14 -9 L14 9 Z" fill="#f48fb1"/><circle r="5" fill="#ec6f9c"/></g>` : '';
   const blaze = o.blaze ? `<path d="M152 34 Q160 40 172 56 Q166 58 160 50 Q154 42 150 37 Z" fill="#fff" opacity=".85"/>` : '';
   const dl = o.delay != null ? o.delay : -Math.random() * 5;
   return `<svg class="horse" viewBox="0 0 210 170" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <g class="tail" style="animation-delay:${dl}s"><path d="M50 88 C22 90 14 122 26 148 C34 130 40 112 54 100 Z" fill="${mane}"/></g>
-  ${leg(60, far)}${leg(124, far)}
+  ${leg(60, far, 'a')}${leg(124, far, 'b')}
   <ellipse cx="95" cy="98" rx="54" ry="31" fill="${body}"/>${spots}
-  ${leg(72, body)}${leg(136, body)}
+  ${leg(72, body, 'b')}${leg(136, body, 'a')}
   ${blanket}${saddle}
   <g class="head" style="animation-delay:${dl * 1.3}s">
   <path d="M116 84 C122 62 130 46 140 32 L166 46 C156 64 150 84 146 104 Z" fill="${body}"/>
@@ -895,7 +977,7 @@ function horseSVG(o) {
   <ellipse cx="189" cy="63" rx="2.2" ry="1.6" fill="#7a5a48"/>
   <path d="M175 73 Q182 78 190 72" stroke="#7a5a48" stroke-width="2.4" fill="none" stroke-linecap="round"/>
   ${bridle}${bow}${crown}
-  </g>
+  </g>${o.rider || ''}
 </svg>`;
 }
 function has(id) { return S.owned.includes(id); }
@@ -920,7 +1002,8 @@ function gearOf(id) { const g = ensureGear(); if (!g[id] || typeof g[id] !== 'ob
 function horseOpts(id) {
   const g = (ensureGear()[id]) || {};
   return { saddle: !!g.saddle && has('sattel'), bow: !!g.bow && has('schleife'), bridle: !!g.bridle && has('goldzaum'), crown: !!g.crown && has('krone'),
-    blanket: g.blanket && g.ownB ? g.blanket : null };
+    blanket: g.blanket && g.ownB ? g.blanket : null, pad: g.pad && (S.clothes || []).some((c) => CLOTHES.find((x) => x.id === c && x.c === g.pad && x.cat === 'pad')) ? g.pad : null,
+    rein: g.rein && (S.clothes || []).some((c) => CLOTHES.find((x) => x.id === c && x.c === g.rein && x.cat === 'zaum')) ? g.rein : null };
 }
 function giveGear(itemId, horseId) { const k = GEAR[itemId]; if (!k) return; const g = gearOf(horseId || 'luna'); if (k === 'blanket') g.ownB = true; g[k] = k === 'blanket' ? (g.blanket || BLANKET_COLORS[ownedHorses().indexOf(horseId || 'luna') % BLANKET_COLORS.length] || BLANKET_COLORS[0]) : true; save(); }
 // Decken kann man für jedes Pferd einzeln kaufen
@@ -1952,7 +2035,8 @@ const DECKE = ITEMS.find((i) => i.id === 'decke');
 // Gilt nur für S.pos (Positionen). Gekaufte Sachen, Hufeisen, Fortschritt usw. werden nie verändert.
 const FARM_HORSES = ['luna', 'pony', 'wolke', 'fohlen', 'nacht'];
 const FARM_FREE = [[51, 81], [62, 88], [40, 92], [72, 80], [56, 96], [46, 72], [30, 86], [66, 72], [80, 78], [24, 96]];
-function farmDef(id) { return id === 'luna' ? { id: 'luna', horse: 'luna', x: 51, y: 81 } : ITEMS.find((i) => i.id === id); }
+const RIDER_ITEM = { id: 'reiterin', rider: true, s: 8, x: 76, y: 84, art: () => riderSVG(riderLook(false)) };
+function farmDef(id) { if (id === 'reiterin') return RIDER_ITEM; return id === 'luna' ? { id: 'luna', horse: 'luna', x: 51, y: 81 } : ITEMS.find((i) => i.id === id); }
 function farmHiddenZone(it, x, y) {
   if (!it || it.sky || it.flat) return false;
   if (x < 40 && y < 65) return true;            // hinter/in der Scheune (Scheune steht bei x 20 %, Fuß bei 64 %)
@@ -2007,6 +2091,385 @@ function farmMood() {
   const hr = new Date().getHours() + new Date().getMinutes() / 60;
   return hr >= 17.5 || hr < 6.5 ? 'evening' : 'day';
 }
+// ---------- Reiterin (Spielfigur), Kleiderschrank, Reiten, Turnier ----------
+const SKINS = ['#fde3cf', '#f6d0b1', '#e8b48e', '#c98d64', '#8d5a3b'];
+const HAIRS = ['#5a3a22', '#8b5a2b', '#d9a35b', '#f2d48a', '#2c2220', '#c0603a'];
+const HAIRSTYLES = [['zopf', 'Zopf'], ['offen', 'Offen'], ['kurz', 'Kurz']];
+const CLOTHES = [
+  { id: 'helm_basis', cat: 'helm', name: 'Reithelm Dunkelblau', c: '#4f5f86', price: 0 },
+  { id: 'helm_rosa', cat: 'helm', name: 'Reithelm Rosa', c: '#f48fb1', price: 4 },
+  { id: 'helm_lila', cat: 'helm', name: 'Reithelm Lila', c: '#b39ddb', price: 4 },
+  { id: 'helm_mint', cat: 'helm', name: 'Reithelm Mint', c: '#6fcbb0', price: 4 },
+  { id: 'helm_weiss', cat: 'helm', name: 'Reithelm Weiß', c: '#f4f1ec', price: 4 },
+  { id: 'pulli_rosa', cat: 'top', name: 'Pulli Rosa', c: '#f7b6cf', price: 3 },
+  { id: 'pulli_gelb', cat: 'top', name: 'Pulli Sonnengelb', c: '#ffd97a', price: 3 },
+  { id: 'jacke_blau', cat: 'top', name: 'Reitjacke Himmelblau', c: '#8cc4ef', price: 5, jacket: true },
+  { id: 'jacke_lila', cat: 'top', name: 'Reitjacke Flieder', c: '#c7b2ea', price: 5, jacket: true },
+  { id: 'weste_mint', cat: 'weste', name: 'Weste Mint', c: '#9be0c6', price: 4 },
+  { id: 'weste_rosa', cat: 'weste', name: 'Weste Rosa', c: '#f7a8c4', price: 4 },
+  { id: 'hose_beige', cat: 'hose', name: 'Reithose Beige', c: '#e7d8bf', price: 3 },
+  { id: 'hose_grau', cat: 'hose', name: 'Reithose Grau', c: '#b9bfc9', price: 3 },
+  { id: 'hose_navy', cat: 'hose', name: 'Reithose Dunkelblau', c: '#56618a', price: 4 },
+  { id: 'stiefel_braun', cat: 'stiefel', name: 'Reitstiefel Braun', c: '#8a5a36', price: 4 },
+  { id: 'stiefel_schwarz', cat: 'stiefel', name: 'Reitstiefel Schwarz', c: '#3b3332', price: 4 },
+  { id: 'hand_rosa', cat: 'hand', name: 'Handschuhe Rosa', c: '#f48fb1', price: 3 },
+  { id: 'hand_schwarz', cat: 'hand', name: 'Handschuhe Schwarz', c: '#3b3332', price: 3 },
+  { id: 'glitzer', cat: 'glitzer', name: 'Glitzer-Helmbezug', c: '#fff3a8', price: 6 },
+  { id: 'haarschleife', cat: 'schleife', name: 'Haarschleife', c: '#f48fb1', price: 2 },
+  { id: 'gerte', cat: 'gerte', name: 'Gerte mit Bändchen', c: '#8a5a36', price: 4 },
+  { id: 'buegel', cat: 'buegel', name: 'Glänzende Steigbügel', c: '#cfd6df', price: 3 },
+  { id: 'pad_rosa', cat: 'pad', name: 'Sattelpad Rosa', c: '#f7b6cf', price: 3 },
+  { id: 'pad_blau', cat: 'pad', name: 'Sattelpad Blau', c: '#9fd0f2', price: 3 },
+  { id: 'pad_mint', cat: 'pad', name: 'Sattelpad Mint', c: '#a6e3c8', price: 3 },
+  { id: 'pad_lila', cat: 'pad', name: 'Sattelpad Lila', c: '#cdb8ef', price: 3 },
+  { id: 'zaum_braun', cat: 'zaum', name: 'Zaumzeug Braun', c: '#7a4e2e', price: 3 },
+  { id: 'zaum_rosa', cat: 'zaum', name: 'Zaumzeug Rosa', c: '#ec6f9c', price: 3 },
+  { id: 'zaum_blau', cat: 'zaum', name: 'Zaumzeug Blau', c: '#5b8fd6', price: 3 }
+];
+const WCATS = [['helm', '⛑️ Helm'], ['top', '👕 Oberteil'], ['weste', '🦺 Weste'], ['hose', '👖 Hose'], ['stiefel', '👢 Stiefel'], ['hand', '🧤 Handschuhe'], ['glitzer', '✨ Glitzer'], ['schleife', '🎀 Schleife'], ['gerte', '🪄 Gerte'], ['buegel', '🔘 Steigbügel'], ['pad', '🟪 Sattelpad (je Pferd)'], ['zaum', '🐴 Zaumzeug (je Pferd)']];
+const PERHORSE = { pad: 'pad', zaum: 'rein' };
+const FLAGCATS = ['glitzer', 'schleife', 'gerte', 'buegel'];
+const cloth = (id) => CLOTHES.find((c) => c.id === id);
+function riderState() {
+  if (!S.rider || typeof S.rider !== 'object') S.rider = { set: false, skin: SKINS[1], hair: HAIRS[1], style: 'zopf', wear: {} };
+  if (!S.rider.wear) S.rider.wear = {};
+  if (!Array.isArray(S.clothes)) S.clothes = [];
+  if (!Array.isArray(S.rosettes)) S.rosettes = [];
+  return S.rider;
+}
+const hasCloth = (id) => riderState() && S.clothes.includes(id);
+function riderName() { return kidName() || 'Reiterin'; }
+// Aussehen: Farben aus der angezogenen Kleidung; beim Reiten immer mit Helm
+function riderLook(riding) {
+  const r = riderState(), w = r.wear, c = (k, d) => (w[k] && hasCloth(w[k]) ? cloth(w[k]).c : d);
+  const helm = w.helm && hasCloth(w.helm) ? cloth(w.helm).c : (riding ? cloth('helm_basis').c : null);
+  return { skin: r.skin, hair: r.hair, style: r.style, helm, glitter: helm && !!w.glitzer && hasCloth('glitzer'), bow: !!w.schleife && hasCloth('haarschleife'),
+    top: c('top', '#ffffff'), jacket: !!(w.top && cloth(w.top) && cloth(w.top).jacket && hasCloth(w.top)), vest: c('weste', null), pants: c('hose', '#e9e4da'),
+    boots: c('stiefel', null), gloves: c('hand', null), crop: !!w.gerte && hasCloth('gerte'), stirrup: hasCloth('buegel') && w.buegel ? '#eef2f6' : '#a9b0ba' };
+}
+function riderSVG(L, big) { // stehende Reiterin (viewBox 100×190)
+  L = L || riderLook(false);
+  const sh = (c, f) => shade(c, f || 0.85);
+  const hairBack = L.style === 'offen' ? `<path d="M30 44 C24 72 28 94 36 102 L64 102 C72 94 76 72 70 44 Z" fill="${L.hair}"/>`
+    : L.style === 'zopf' ? `<g fill="${L.hair}"><ellipse cx="68" cy="62" rx="6" ry="7"/><ellipse cx="70" cy="74" rx="5.5" ry="6.5"/><ellipse cx="71" cy="85" rx="5" ry="6"/></g><circle cx="71" cy="92" r="3.4" fill="#f48fb1"/>` : '';
+  const legs = `<rect x="38" y="112" width="11" height="54" rx="5" fill="${L.pants}"/><rect x="51" y="112" width="11" height="54" rx="5" fill="${L.pants}"/>`;
+  const feet = L.boots ? `<rect x="36.5" y="138" width="13.5" height="31" rx="5" fill="${L.boots}"/><rect x="50" y="138" width="13.5" height="31" rx="5" fill="${L.boots}"/><ellipse cx="41" cy="169" rx="9" ry="4.5" fill="${L.boots}"/><ellipse cx="59" cy="169" rx="9" ry="4.5" fill="${L.boots}"/><path d="M38 142 h11 M51 142 h11" stroke="${sh(L.boots, 1.25)}" stroke-width="2"/>`
+    : `<ellipse cx="42" cy="168" rx="9" ry="5" fill="#fff"/><ellipse cx="58" cy="168" rx="9" ry="5" fill="#fff"/><path d="M35 169 h14 M51 169 h14" stroke="#f48fb1" stroke-width="2"/>`;
+  const hand = L.gloves || L.skin;
+  const torso = `<rect x="22" y="78" width="11" height="34" rx="5.5" fill="${L.top}" transform="rotate(10 27 80)"/><rect x="67" y="78" width="11" height="34" rx="5.5" fill="${L.top}" transform="rotate(-10 73 80)"/>
+    <circle cx="23" cy="113" r="5.6" fill="${hand}"/><circle cx="77" cy="113" r="5.6" fill="${hand}"/>
+    <path d="M33 78 Q50 70 67 78 L68 116 Q50 121 32 116 Z" fill="${L.top}"/>${L.top === '#ffffff' ? '<path d="M33 78 Q50 70 67 78 L68 116 Q50 121 32 116 Z" fill="none" stroke="#e5ddd3" stroke-width="1.5"/>' : ''}
+    ${L.jacket ? `<path d="M50 76 L50 117" stroke="${sh(L.top, 0.8)}" stroke-width="2"/><path d="M42 74 L50 84 L58 74" fill="#fff" stroke="${sh(L.top, 0.8)}" stroke-width="1.5"/>` : `<path d="M34 112 Q50 117 66 112" stroke="${sh(L.top, 0.88)}" stroke-width="3" fill="none"/>`}
+    ${L.vest ? `<path d="M34 79 L45 75 L46 116 L33 115 Z M66 79 L55 75 L54 116 L67 115 Z" fill="${L.vest}"/><path d="M36 96 h8 M56 96 h8" stroke="${sh(L.vest, 0.8)}" stroke-width="1.6"/>` : ''}`;
+  const head = `<rect x="45" y="60" width="10" height="14" rx="4" fill="${sh(L.skin, 0.95)}"/>
+    <circle cx="33.5" cy="50" r="4" fill="${L.skin}"/><circle cx="66.5" cy="50" r="4" fill="${L.skin}"/>
+    <circle cx="50" cy="48" r="17" fill="${L.skin}"/>
+    <g class="eye"><circle cx="44" cy="50" r="2.7" fill="#3a2a20"/><circle cx="56" cy="50" r="2.7" fill="#3a2a20"/><circle cx="45" cy="49" r=".9" fill="#fff"/><circle cx="57" cy="49" r=".9" fill="#fff"/></g>
+    <circle cx="39.5" cy="56" r="3.3" fill="#f3a0b5" opacity=".5"/><circle cx="60.5" cy="56" r="3.3" fill="#f3a0b5" opacity=".5"/>
+    <path d="M45.5 57.5 Q50 61.5 54.5 57.5" stroke="#8a4f3a" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  const hairTop = L.helm ? '' : `<path d="M32 47 C29 27 71 27 68 47 C62 39 55 37 50 39 C44 37 38 40 32 47 Z" fill="${L.hair}"/>`;
+  const bangs = L.helm ? `<path d="M34 44 C38 38 44 37 48 40 C44 41 40 43 37 47 Z" fill="${L.hair}"/>` : '';
+  const helmet = L.helm ? `<path d="M30.5 45 C29 21 71 21 69.5 45 Z" fill="${L.helm}"/><path d="M33 40 C38 30 50 28 58 30" stroke="#fff" stroke-width="2.4" fill="none" opacity=".45" stroke-linecap="round"/>
+    <path d="M47 43 Q61 38 74 45 Q62 48 49 47 Z" fill="${sh(L.helm, 0.75)}"/><path d="M33 46 Q35 60 45 63 M67 46 Q65 60 55 63" stroke="#4a3f3a" stroke-width="1.4" fill="none"/>
+    ${L.glitter ? [[38, 32], [46, 27], [56, 28], [63, 35], [42, 38], [53, 34]].map(([x, y], i) => `<path d="M${x} ${y - 2.4} L${x + 0.8} ${y - 0.8} L${x + 2.4} ${y} L${x + 0.8} ${y + 0.8} L${x} ${y + 2.4} L${x - 0.8} ${y + 0.8} L${x - 2.4} ${y} L${x - 0.8} ${y - 0.8} Z" fill="${i % 2 ? '#fff' : '#ffe08a'}"/>`).join('') : ''}` : '';
+  const bow = L.bow ? `<g transform="translate(${L.style === 'zopf' ? '70 57' : '34 34'})"><path d="M0 0 L-8 -6 L-8 6 Z M0 0 L8 -6 L8 6 Z" fill="#f48fb1"/><circle r="2.8" fill="#ec6f9c"/></g>` : '';
+  return `<svg class="rider${big ? ' big' : ''}" viewBox="0 0 100 190" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="50" cy="172" rx="26" ry="5" fill="#000" opacity=".08"/>${hairBack}${legs}${feet}${torso}${head}${hairTop}${bangs}${helmet}${bow}</svg>`;
+}
+function riderSeated(L) { // sitzende Reiterin, in Pferde-Koordinaten (Sattel bei ~95/72)
+  L = L || riderLook(true);
+  const sh = (c, f) => shade(c, f || 0.85), hand = L.gloves || L.skin, boot = L.boots || '#6a4a38';
+  const hairBack = L.style === 'offen' ? `<path d="M-12 -52 C-18 -36 -14 -26 -8 -22 L4 -30 Z" fill="${L.hair}"/>`
+    : L.style === 'zopf' ? `<g fill="${L.hair}"><ellipse cx="-10" cy="-46" rx="4.5" ry="5.5"/><ellipse cx="-12" cy="-37" rx="4" ry="5"/><ellipse cx="-13" cy="-29" rx="3.6" ry="4.6"/></g><circle cx="-13" cy="-24" r="2.6" fill="#f48fb1"/>` : '';
+  return `<g class="seated" transform="translate(93 70) scale(.92)">
+    ${hairBack}
+    <path d="M-6 -6 L12 -6 L16 16 L5 18 Z" fill="${L.pants}"/>
+    <rect x="4" y="12" width="10" height="28" rx="5" fill="${L.pants}" transform="rotate(-6 9 12)"/>
+    <rect x="3" y="24" width="12" height="20" rx="5" fill="${boot}" transform="rotate(-6 9 24)"/><ellipse cx="14" cy="43" rx="8" ry="4" fill="${boot}"/>
+    <path d="M7 26 L7 46 M2 47 h14" stroke="${L.stirrup}" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M-10 -2 L10 -2 L8 -38 L-8 -38 Z" fill="${L.top}"/>${L.top === '#ffffff' ? '<path d="M-10 -2 L10 -2 L8 -38 L-8 -38 Z" fill="none" stroke="#e5ddd3" stroke-width="1.4"/>' : ''}
+    ${L.vest ? `<path d="M-9 -3 L1 -3 L1 -37 L-7 -37 Z" fill="${L.vest}"/>` : ''}${L.jacket ? `<path d="M4 -37 L5 -3" stroke="${sh(L.top, 0.8)}" stroke-width="1.6"/>` : ''}
+    <path d="M2 -33 L24 -18" stroke="${L.top}" stroke-width="8" stroke-linecap="round"/><circle cx="26" cy="-16" r="4.6" fill="${hand}"/>
+    ${L.crop ? `<path d="M26 -16 L12 8" stroke="#8a5a36" stroke-width="2" stroke-linecap="round"/><path d="M12 8 l-3 4 m3 -4 l3 4" stroke="#f48fb1" stroke-width="2" stroke-linecap="round"/>` : ''}
+    <rect x="-4" y="-46" width="8" height="10" rx="3" fill="${sh(L.skin, 0.95)}"/>
+    <circle cx="1" cy="-52" r="12.5" fill="${L.skin}"/><circle cx="-8" cy="-50" r="3" fill="${L.skin}"/>
+    <circle cx="7" cy="-53" r="2.2" fill="#3a2a20"/><circle cx="7.7" cy="-53.7" r=".7" fill="#fff"/><circle cx="7" cy="-47.5" r="2.6" fill="#f3a0b5" opacity=".5"/>
+    <path d="M7 -46 Q10 -44 12 -47" stroke="#8a4f3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M-12 -53 C-12 -70 15 -70 14.5 -53 Z" fill="${L.helm}"/><path d="M8 -56 Q16 -58 21 -53 Q15 -51 9 -52 Z" fill="${sh(L.helm, 0.75)}"/>
+    <path d="M-9 -60 C-5 -66 3 -67 8 -65" stroke="#fff" stroke-width="2" fill="none" opacity=".45" stroke-linecap="round"/><path d="M-8 -52 Q-6 -42 2 -40" stroke="#4a3f3a" stroke-width="1.2" fill="none"/>
+    ${L.glitter ? [[-6, -62], [0, -66], [6, -63], [-2, -58]].map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="1.4" fill="${i % 2 ? '#fff' : '#ffe08a'}"/>`).join('') : ''}
+    ${L.bow ? `<g transform="translate(-11 -48)"><path d="M0 0 L-6 -4 L-6 4 Z M0 0 L6 -4 L6 4 Z" fill="#f48fb1"/><circle r="2" fill="#ec6f9c"/></g>` : ''}
+    <path d="M26 -16 Q58 -6 88 -8" stroke="#7a4e2e" stroke-width="1.8" fill="none"/>
+  </g>`;
+}
+const ADULT = ['luna', 'pony', 'wolke', 'nacht'];
+function adultHorses() { return ownedHorses().filter((id) => ADULT.includes(id)); }
+function rideHorseSVG(id, extra) {
+  return horseSVG(Object.assign({}, HORSES[id], horseOpts(id), { saddle: true, rider: riderSeated(riderLook(true)), delay: 0 }, extra || {}));
+}
+const ROSETTE_COLORS = ['#5b8fd6', '#f48fb1', '#ffd166', '#7fd1b9', '#b39ddb', '#f6a46b'];
+function rosetteSVG(c, label) {
+  return svgw('0 0 80 110', `<path d="M30 56 L20 104 L31 96 L37 108 L40 60 Z M50 56 L60 104 L49 96 L43 108 L40 60 Z" fill="${shade(c, 0.85)}"/>
+    ${range(0, 15).map((i) => { const a = (i / 16) * Math.PI * 2; return `<circle cx="${(40 + Math.cos(a) * 25).toFixed(1)}" cy="${(40 + Math.sin(a) * 25).toFixed(1)}" r="7.5" fill="${c}"/>`; }).join('')}
+    <circle cx="40" cy="40" r="22" fill="${shade(c, 1.12)}"/><circle cx="40" cy="40" r="16" fill="#fffaf0"/>
+    <text x="40" y="46" text-anchor="middle" font-size="${label && label.length > 2 ? 11 : 17}" font-weight="800" fill="${shade(c, 0.7)}" font-family="system-ui">${label || '★'}</text>`);
+}
+const TROPHY = svgw('0 0 80 100', `<path d="M18 14 h44 v20 c0 16 -10 26 -22 26 c-12 0 -22 -10 -22 -26 Z" fill="#f6cf5a"/><path d="M18 20 c-12 0 -12 18 2 20 M62 20 c12 0 12 18 -2 20" stroke="#e5b84a" stroke-width="5" fill="none"/>
+  <rect x="34" y="58" width="12" height="14" fill="#e5b84a"/><rect x="24" y="72" width="32" height="10" rx="3" fill="#c9962a"/><rect x="20" y="82" width="40" height="10" rx="3" fill="#a8792a"/>
+  <path d="M28 20 c0 10 2 18 8 24" stroke="#fff" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"/><path d="M40 24 l3 6 l7 1 l-5 5 l1 7 l-6 -3 l-6 3 l1 -7 l-5 -5 l7 -1 Z" fill="#fff6c4"/>`);
+function addRosette(kind, horse) {
+  riderState();
+  const c = ROSETTE_COLORS[S.rosettes.length % ROSETTE_COLORS.length];
+  const r = { kind, horse, c, at: Date.now() };
+  S.rosettes.push(r); save();
+  return r;
+}
+
+// Erstes Aussehen wählen (Hautton, Haarfarbe, Frisur) – nur lokal gespeichert
+function openRiderSetup(onDone, first) {
+  const r = riderState();
+  const tmp = { skin: r.skin, hair: r.hair, style: r.style };
+  const card = h('div', { class: 'bag-card closet-card', id: 'riderSetup' });
+  const draw = () => {
+    card.innerHTML = '';
+    const L = Object.assign(riderLook(false), tmp);
+    card.append(h('h2', null, first ? '👧 Wie sieht deine Reiterin aus?' : '👧 Aussehen ändern'),
+      h('div', { class: 'closet-row' }, h('div', { class: 'closet-pv', html: riderSVG(L, true) }),
+        h('div', { class: 'closet-opts' },
+          h('div', { class: 'wlabel' }, 'Haut'), h('div', { class: 'swatches' }, SKINS.map((c) => h('button', { class: 'swatch' + (tmp.skin === c ? ' on' : ''), 'data-skin': c, style: { background: c }, 'aria-label': 'Hautton', onclick: () => { tmp.skin = c; Sound.tap(); draw(); } }))),
+          h('div', { class: 'wlabel' }, 'Haare'), h('div', { class: 'swatches' }, HAIRS.map((c) => h('button', { class: 'swatch' + (tmp.hair === c ? ' on' : ''), 'data-hair': c, style: { background: c }, 'aria-label': 'Haarfarbe', onclick: () => { tmp.hair = c; Sound.tap(); draw(); } }))),
+          h('div', { class: 'wlabel' }, 'Frisur'), h('div', { class: 'chips' }, HAIRSTYLES.map(([v, n]) => h('button', { class: 'chip' + (tmp.style === v ? ' on' : ''), 'data-style': v, onclick: () => { tmp.style = v; Sound.tap(); draw(); } }, n))))),
+      h('div', { class: 'btnrow' },
+        h('button', { class: 'bigbtn primary', id: 'setupDone', onclick: () => {
+          Object.assign(r, tmp); const firstTime = !r.set; r.set = true;
+          if (!hasCloth('helm_basis')) S.clothes.push('helm_basis');
+          if (firstTime && !r.wear.helm) r.wear.helm = 'helm_basis';
+          save(); Sound.sparkle(); close(); if (onDone) onDone(firstTime);
+        } }, 'Fertig 💖'),
+        first ? h('button', { class: 'bigbtn', id: 'setupLater', onclick: () => { Sound.tap(); close(); } }, 'Später') : null));
+  };
+  draw();
+  const close = sheet(card);
+}
+// Kleiderschrank: Reitkleidung und Zubehör mit Hufeisen kaufen und anziehen
+function openCloset(onChange, startCat) {
+  riderState();
+  let cat = startCat || 'helm';
+  const card = h('div', { class: 'bag-card closet-card', id: 'closet' });
+  const changed = () => { save(); if (onChange) onChange(); draw(); };
+  const draw = () => {
+    card.innerHTML = '';
+    const w = S.rider.wear, items = CLOTHES.filter((c) => c.cat === cat), per = PERHORSE[cat];
+    const tile = (c) => {
+      const flag = FLAGCATS.includes(cat), own = hasCloth(c.id), on = per ? false : flag ? !!w[cat] : w[cat] === c.id;
+      let btn;
+      if (!own) btn = S.shoes >= c.price ? h('button', { class: 'cbuy', 'data-cbuy': c.id, html: `Holen ${SHOE} ${c.price}`, onclick: () => { S.shoes -= c.price; S.clothes.push(c.id); if (!per) w[cat] = flag ? true : c.id; else ownedHorses().slice(0, 1).forEach((id) => { if (!gearOf(id)[per]) gearOf(id)[per] = c.c; }); Sound.fanfare(); changed(); updateCounters(); } })
+        : h('button', { class: 'cbuy later', disabled: true, html: `Noch ${c.price - S.shoes} ${SHOE}` });
+      else if (per) btn = h('div', { class: 'cfor' }, ownedHorses().map((id) => { const g = gearOf(id), onH = g[per] === c.c; return h('button', { class: 'chip sm' + (onH ? ' on' : ''), 'data-for': id, onclick: () => { g[per] = onH ? null : c.c; Sound.sparkle(); changed(); } }, (onH ? '✔ ' : '') + horseName(id)); }));
+      else btn = h('button', { class: 'cwear' + (on ? ' on' : ''), 'data-cwear': c.id, onclick: () => { if (flag) w[cat] = !w[cat]; else w[cat] = on ? null : c.id; on ? Sound.plop() : Sound.sparkle(); changed(); } }, on ? '✔ An' : 'Anziehen');
+      return h('div', { class: 'citem' + (own ? ' own' : ''), 'data-cloth': c.id }, h('span', { class: 'cdot', style: { background: c.c } }, c.cat === 'glitzer' ? '✨' : c.cat === 'schleife' ? '🎀' : c.cat === 'gerte' ? '🪄' : c.cat === 'buegel' ? '🔘' : ''), h('b', null, c.name), btn);
+    };
+    card.append(
+      h('div', { class: 'closet-head' }, h('h2', null, `👚 Kleiderschrank von ${riderName()}`), h('span', { class: 'counter', html: SHOE + `<span>${S.shoes}</span>` })),
+      h('div', { class: 'closet-row' },
+        h('div', { class: 'closet-left' }, h('div', { class: 'closet-pv', html: riderSVG(riderLook(false), true) }),
+          h('button', { class: 'smallbtn', id: 'changeLook', onclick: () => { Sound.tap(); close(); openRiderSetup(() => openCloset(onChange, cat)); } }, '👧 Aussehen')),
+        h('div', { class: 'closet-opts' },
+          h('div', { class: 'chips cats' }, WCATS.map(([k, n]) => h('button', { class: 'chip' + (k === cat ? ' on' : ''), 'data-ccat': k, onclick: () => { cat = k; Sound.tap(); draw(); } }, n))),
+          per ? h('small', { class: 'cnote' }, 'Gehört zum Pferd: Tippe auf den Namen, welches Pferd es tragen soll.') : cat === 'helm' ? h('small', { class: 'cnote' }, 'Beim Reiten trägst du immer einen Helm – sicher ist sicher! ⛑️') : null,
+          h('div', { class: 'clist' }, items.map(tile)))),
+      h('button', { class: 'bigbtn primary', id: 'closetClose', onclick: () => { Sound.tap(); close(); } }, 'Fertig 💖'));
+  };
+  draw();
+  const close = sheet(card);
+  Sound.swish();
+}
+// Rosettenwand und Pokal-Regal
+function openRosettes() {
+  riderState();
+  const tro = S.rosettes.filter((r) => r.kind === 'pokal');
+  const ros = S.rosettes.filter((r) => r.kind !== 'pokal');
+  const card = h('div', { class: 'bag-card', id: 'rosettes' },
+    h('h2', null, '🏅 Rosettenwand im Stall'),
+    ros.length ? h('div', { class: 'ros-wall' }, ros.map((r) => h('div', { class: 'ros', title: horseName(r.horse) }, h('div', { html: rosetteSVG(r.c, r.kind === 'turnier' ? '1' : '★') }), h('small', null, horseName(r.horse))))) : h('p', null, 'Noch leer – reite ein paar Runden, dann bekommst du eine Rosette!'),
+    h('h3', null, '🏆 Pokal-Regal'),
+    tro.length ? h('div', { class: 'ros-wall shelf' }, tro.map((r) => h('div', { class: 'ros' }, h('div', { html: TROPHY }), h('small', null, horseName(r.horse))))) : h('p', null, 'Beim Pferdeturnier gibt es auch Pokale!'),
+    h('button', { class: 'bigbtn', id: 'rosClose', onclick: () => { Sound.tap(); close(); } }, 'Schließen'));
+  const close = sheet(card);
+}
+function pickRideHorse(then) {
+  const hs = adultHorses();
+  if (hs.length === 1) { then(hs[0]); return; }
+  const card = h('div', { class: 'bag-card pick-card', id: 'pickRide' }, h('h2', null, 'Auf welchem Pferd möchtest du reiten?'),
+    h('div', { class: 'pick-grid' }, hs.map((id) => h('button', { class: 'pick', 'data-ride': id, onclick: () => { Sound.tap(); close(); then(id); } },
+      h('span', { class: 'pvh', html: horseSVG(Object.assign({}, HORSES[id], horseOpts(id), { delay: 0 })) }), h('b', null, horseName(id))))),
+    has('fohlen') ? h('small', { class: 'cnote' }, `${horseName('fohlen')} ist noch ein Fohlen und darf noch nicht geritten werden – aber mitlaufen ist toll! 🐴`) : null);
+  const close = sheet(card);
+}
+function startRide(mode) {
+  const go = () => pickRideHorse((id) => showRide(id, mode || 'frei'));
+  if (!riderState().set) openRiderSetup(go, true); else go();
+}
+
+// Reitplatz: ruhige Runden im Schritt oder Trab, kleine Sprünge klappen immer
+function judgeTask() {
+  const L = (S.skills.rechnen && S.skills.rechnen.level) || 1;
+  let a, b, op = '+';
+  for (let k = 0; k < 50; k++) {
+    if (L <= 1) { a = rand(1, 6); b = rand(1, 10 - a); op = '+'; }
+    else if (L === 2) { op = pick(['+', '−']); if (op === '+') { a = rand(2, 8); b = rand(1, 10 - a); } else { a = rand(4, 10); b = rand(1, a - 1); } }
+    else if (L === 3) { op = pick(['+', '−']); if (op === '+') { a = rand(11, 16); b = rand(1, 19 - a); } else { a = rand(13, 19); b = rand(1, a - 11); } }
+    else { op = pick(['+', '+', '−']); if (op === '+') { a = rand(5, 9); b = rand(11 - a, 9); } else { a = rand(11, 16); b = rand(a - 9, 9); } }
+    if (a > 0 && b > 0) break;
+  }
+  const res = op === '+' ? a + b : a - b;
+  const opts = shuffle([res].concat(shuffle([res - 1, res + 1, res + 2, res - 2].filter((x) => x >= 0 && x !== res)).slice(0, 2)));
+  return { q: `${a} ${op} ${b} = ?`, res, opts };
+}
+let rideRaf = 0;
+function showRide(horseId, mode) {
+  currentScreen = 'ride'; clearInterval(ambientTimer); cancelAnimationFrame(rideRaf); app.innerHTML = '';
+  const tour = mode === 'turnier';
+  const scr = h('div', { class: 'ride-screen' + (tour ? ' tour' : ''), id: 'ride' });
+  const RX = 37, RY = 15, CX = 50, CY = 67;
+  const pt = (t) => ({ x: CX + RX * Math.cos(t), y: CY + RY * Math.sin(t) });
+  scr.insertAdjacentHTML('beforeend', `<div class="r-sky"></div>${typeof sceneryBack === 'function' ? sceneryBack('ride') : ''}
+    <svg class="r-arena" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
+      <ellipse cx="500" cy="${CY * 10}" rx="${(RX + 9) * 10}" ry="${(RY + 7) * 10}" fill="#d9bf8c"/>
+      <ellipse cx="500" cy="${CY * 10}" rx="${(RX + 7) * 10}" ry="${(RY + 5.4) * 10}" fill="#f2deb3"/>
+      <ellipse cx="500" cy="${CY * 10}" rx="${RX * 10}" ry="${RY * 10}" fill="none" stroke="#e6cd9b" stroke-width="26"/>
+      ${range(0, 23).map((i) => { const a = (i / 24) * Math.PI * 2; if (Math.sin(a) > 0.05) return ''; const x = 500 + (RX + 8) * 10 * Math.cos(a), y = CY * 10 + (RY + 6.2) * 10 * Math.sin(a); return `<rect x="${x - 4}" y="${y - 34}" width="8" height="36" rx="3" fill="#fff"/>`; }).join('')}
+      <ellipse cx="500" cy="${CY * 10 - 22}" rx="${(RX + 8) * 10}" ry="${(RY + 6.2) * 10}" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="0" clip-path="inset(0 0 50% 0)" opacity=".95"/>
+    </svg>`);
+  const front = h('div', { class: 'r-front', html: `<svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">${range(0, 23).map((i) => { const a = (i / 24) * Math.PI * 2; if (Math.sin(a) <= 0.05) return ''; const x = 500 + (RX + 8) * 10 * Math.cos(a), y = CY * 10 + (RY + 6.2) * 10 * Math.sin(a); return `<rect x="${x - 5}" y="${y - 40}" width="10" height="42" rx="3" fill="#fff"/>`; }).join('')}<path d="${range(0, 40).map((i) => { const a = (i / 40) * Math.PI; const x = 500 + (RX + 8) * 10 * Math.cos(a), y = CY * 10 + (RY + 6.2) * 10 * Math.sin(a) - 30; return (i ? 'L' : 'M') + x.toFixed(0) + ' ' + y.toFixed(0); }).join(' ')}" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` });
+  // Sprünge (kleine Stangen, immer leicht) – vorne und hinten
+  const JUMPS = [Math.PI / 2, Math.PI * 1.5];
+  const jumpEls = JUMPS.map((a, k) => { const p = pt(a); const el = h('div', { class: 'r-jump', html: svgw('0 0 120 60', `<rect x="8" y="10" width="10" height="48" rx="3" fill="#fff"/><rect x="102" y="10" width="10" height="48" rx="3" fill="#fff"/><rect x="10" y="${k ? 26 : 30}" width="100" height="8" rx="4" fill="${k ? '#7fc8a9' : '#f48fb1'}"/><rect x="10" y="${k ? 26 : 30}" width="100" height="8" rx="4" fill="url(#none)" stroke="#fff" stroke-width="1.5" stroke-dasharray="12 12"/><path d="M4 58 h20 M96 58 h20" stroke="#cfa877" stroke-width="5" stroke-linecap="round"/>`) }); el.style.left = p.x + '%'; el.style.top = p.y + '%'; el.style.setProperty('--k', 0.75 + 0.3 * (Math.sin(a) + 1) / 2); el.style.zIndex = Math.round(p.y * 10) - 2; return el; });
+  const horse = h('div', { class: 'r-horse', id: 'rideHorse' }, h('div', { class: 'r-flip' }, h('div', { class: 'r-bob', html: rideHorseSVG(horseId) })));
+  const judges = tour ? h('div', { class: 'r-judges', html: svgw('0 0 220 130', `<rect x="10" y="60" width="200" height="62" rx="10" fill="#fff8ec"/><rect x="10" y="60" width="200" height="14" rx="7" fill="#7fc8a9"/><path d="M30 60 L40 30 L180 30 L190 60 Z" fill="#f7b6cf"/><path d="M40 30 L110 6 L180 30 Z" fill="#f48fb1"/>` + [[60, '#f6d0b1', '#8b5a2b'], [110, '#e8b48e', '#2c2220'], [160, '#fde3cf', '#d9a35b']].map(([x, sk, hr]) => `<g class="judge"><circle cx="${x}" cy="66" r="13" fill="${sk}"/><path d="M${x - 13} 64 C${x - 13} 50 ${x + 13} 50 ${x + 13} 64 C${x + 6} 58 ${x - 6} 58 ${x - 13} 64Z" fill="${hr}"/><circle cx="${x - 4.5}" cy="67" r="1.8" fill="#3a2a20"/><circle cx="${x + 4.5}" cy="67" r="1.8" fill="#3a2a20"/><path d="M${x - 4} 72 Q${x} 75 ${x + 4} 72" stroke="#8a4f3a" stroke-width="1.6" fill="none"/></g>`).join('') + `<text x="110" y="108" text-anchor="middle" font-size="16" font-weight="800" fill="#8a6a50" font-family="system-ui">Richterinnen</text>`) }) : null;
+  const say = h('div', { class: 'bubble farm-say', id: 'rideSay' });
+  let sayT = 0;
+  const rsay = (t) => { say.textContent = t; say.classList.add('show'); clearTimeout(sayT); sayT = setTimeout(() => say.classList.remove('show'), readMs(t, 4200)); };
+  const lapsEl = h('div', { class: 'counter r-laps', id: 'rideLaps' }, '⭐ 0');
+  const ui = h('div', { class: 'r-ui' },
+    h('button', { class: 'farm-btn back', id: 'rideBack', 'aria-label': 'Absteigen', onclick: () => { Sound.tap(); stop(); cancelAnimationFrame(rideRaf); stableBack = null; showStable(); } }, '⬅'),
+    h('div', { class: 'farm-hud' }, lapsEl, h('button', { class: 'farm-btn', id: 'rosBtn', 'aria-label': 'Rosetten', onclick: () => { Sound.tap(); openRosettes(); } }, '🏅'), bagButton()),
+    say);
+  const ctrls = h('div', { class: 'r-ctrls' });
+  scr.append(...jumpEls, horse, front);
+  if (judges) scr.append(judges);
+  scr.append(ui, ctrls);
+  app.append(scr);
+  // Bewegung
+  let t = Math.PI * 0.12, speed = 0, target = 0, last = performance.now(), lap = 0, gait = 'halt', jumpsOn = !tour, inJump = -1, hoofT = 0, lapCb = null, gotRosette = false;
+  const SP = { halt: 0, schritt: 0.34, trab: 0.62 };
+  const setGait = (g) => { gait = g; target = SP[g]; horse.classList.toggle('moving', g !== 'halt'); horse.classList.toggle('trot', g === 'trab'); $$('[data-gait]', ctrls).forEach((b) => b.classList.toggle('on', b.dataset.gait === g)); };
+  const stop = () => setGait('halt');
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const frame = (now) => {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    speed += (target - speed) * Math.min(1, dt * 2.2);
+    if (Math.abs(speed) < 0.002 && target === 0) speed = 0;
+    const t0 = t; t += speed * dt;
+    if (Math.floor(t / (Math.PI * 2)) > Math.floor(t0 / (Math.PI * 2))) { lap++; lapsEl.textContent = '⭐ ' + lap; Sound.sparkle(); onLap(); }
+    const p = pt(t), k = 0.74 + 0.32 * (Math.sin(t) + 1) / 2;
+    let lift = 0;
+    if (jumpsOn) JUMPS.forEach((a, j) => {
+      let d = ((t - a) % (Math.PI * 2) + Math.PI * 3) % (Math.PI * 2) - Math.PI;
+      if (Math.abs(d) < 0.2 && speed > 0.05) { lift = Math.sin(((d + 0.2) / 0.4) * Math.PI) * 8; if (inJump !== j) { inJump = j; Sound.hop(); } }
+      else if (inJump === j && d > 0.2) { inJump = -1; Sound.sparkle(); burstAt(p, ['✨', '⭐', '💖']); onJump(); }
+    });
+    horse.style.left = p.x + '%'; horse.style.top = (p.y - lift * (reduce ? 0.4 : 1)) + '%';
+    horse.style.setProperty('--k', k.toFixed(3)); horse.style.zIndex = Math.round(p.y * 10);
+    horse.classList.toggle('left', Math.sin(t) > 0);
+    if (speed > 0.05) { hoofT -= dt; if (hoofT <= 0) { Sound.hoof(gait === 'trab'); hoofT = gait === 'trab' ? 0.2 : 0.32; } }
+    if (currentScreen === 'ride') rideRaf = requestAnimationFrame(frame);
+  };
+  const burstAt = (p, chars) => { const s = h('span', { class: 'r-pt' }); s.style.left = p.x + '%'; s.style.top = (p.y - 12) + '%'; scr.append(s); burst(s, chars); setTimeout(() => s.remove(), 1500); };
+  let jumpCount = 0;
+  const onJump = () => { jumpCount++; if (!tour) rsay(pick(['Hopp! Super gesprungen! 🌟', `${horseName(horseId)} springt ganz leicht drüber! ✨`, 'Wie eine Feder! Hopp! 💖'])); };
+  const onLap = () => {
+    if (lapCb) { const f = lapCb; lapCb = null; f(); return; }
+    if (!tour && lap === 3 && !gotRosette) { gotRosette = true; const r = addRosette('ritt', horseId); stop(); setTimeout(() => showPrize(r, false), 900); }
+    else if (!tour) rsay(pick([`Schöne Runde! ${horseName(horseId)} ist ganz zufrieden. 🐴`, 'Du sitzt ganz toll im Sattel! 🌟', 'Klipp, klapp, klipp, klapp … 💕']));
+  };
+  function showPrize(r, isTour) {
+    const pokal = r.kind === 'pokal';
+    const card = h('div', { class: 'bag-card prize-card', id: 'prize' },
+      h('div', { class: 'prize-art', html: pokal ? TROPHY : rosetteSVG(r.c, isTour ? '1' : '★') }),
+      h('h2', null, pokal ? `Ein Pokal für ${horseName(horseId)} und ${riderName()}! 🏆` : isTour ? `Ehren-Schleife für ${horseName(horseId)}! 🎉` : 'Du hast eine Rosette gewonnen! 🎉'),
+      h('p', null, isTour ? 'Alle Pferde haben heute toll mitgemacht – und jedes bekommt eine Schleife. Sie hängt jetzt an der Rosettenwand im Stall.' : `Drei schöne Runden mit ${horseName(horseId)}! Die Rosette hängt jetzt an der Rosettenwand im Stall. 🏅`),
+      h('div', { class: 'btnrow' },
+        h('button', { class: 'bigbtn primary', id: 'prizeOk', onclick: () => { Sound.tap(); close(); } }, isTour ? 'Ehrenrunde! 🐎' : 'Weiterreiten'),
+        isTour ? null : h('button', { class: 'bigbtn', id: 'prizeStable', onclick: () => { Sound.tap(); close(); cancelAnimationFrame(rideRaf); showStable(); } }, '🏡 Zum Pferdehof')));
+    const close = sheet(card, () => { if (isTour && currentScreen === 'ride') { jumpsOn = true; setGait('trab'); rsay('Ehrenrunde! Alle klatschen für euch! 👏'); lapCb = () => { stop(); endButtons(); }; } });
+    Sound.fanfare(); setTimeout(() => Sound.neigh(), 1200);
+    if (isTour) { const c = confetti(36); scr.append(c); setTimeout(() => c.remove(), 6000); }
+  }
+  function endButtons() {
+    ctrls.innerHTML = '';
+    ctrls.append(h('button', { class: 'bigbtn primary', id: 'tourAgain', onclick: () => { Sound.tap(); showRide(horseId, 'turnier'); } }, '🏆 Noch ein Turnier'),
+      h('button', { class: 'bigbtn', id: 'tourFree', onclick: () => { Sound.tap(); showRide(horseId, 'frei'); } }, '🐴 Frei reiten'),
+      h('button', { class: 'bigbtn', id: 'tourHome', onclick: () => { Sound.tap(); cancelAnimationFrame(rideRaf); showStable(); } }, '🏡 Pferdehof'));
+    rsay('Was für ein schönes Turnier! 💖');
+  }
+  if (!tour) {
+    ctrls.append(
+      h('button', { class: 'gbtn', 'data-gait': 'schritt', onclick: () => { Sound.tap(); setGait('schritt'); rsay('Im Schritt – ganz gemütlich. 🐴'); } }, '🐢 Schritt'),
+      h('button', { class: 'gbtn', 'data-gait': 'trab', onclick: () => { Sound.tap(); setGait('trab'); rsay('Im Trab – hopp, hopp! 🐎'); } }, '🐎 Trab'),
+      h('button', { class: 'gbtn', 'data-gait': 'halt', onclick: () => { Sound.tap(); stop(); rsay(`Brrr … ${horseName(horseId)} bleibt stehen. Fein gemacht!`); } }, '✋ Halt'),
+      h('button', { class: 'gbtn jt on', id: 'jumpToggle', onclick: (e) => { jumpsOn = !jumpsOn; e.currentTarget.classList.toggle('on', jumpsOn); e.currentTarget.textContent = jumpsOn ? '🚧 Sprünge: an' : '🚧 Sprünge: aus'; jumpEls.forEach((j) => j.classList.toggle('off', !jumpsOn)); Sound.tap(); } }, '🚧 Sprünge: an'),
+      h('button', { class: 'gbtn tourbtn', id: 'tourStart', onclick: () => { Sound.tap(); showRide(horseId, 'turnier'); } }, '🏆 Turnier'));
+    setGait('halt');
+    rsay(`${riderName()} sitzt auf ${horseName(horseId)}. Tippe auf „Schritt“ zum Losreiten! 🐴`);
+  } else {
+    // Turnier: Begrüßung → Schritt-Runde → Frage → Trab mit Sprüngen → Frage → Schlussrunde → Frage → Siegerehrung
+    const steps = [
+      { btn: '👋 Grüßen', say: `Willkommen beim Pferdeturnier, ${riderName()} und ${horseName(horseId)}! Zuerst grüßen wir die Richterinnen.`, run: (next) => { horse.classList.add('greet'); Sound.sparkle(); clap(); rsay('Die Richterinnen winken freundlich zurück! 👋'); setTimeout(() => { horse.classList.remove('greet'); next(); }, 1800); } },
+      { btn: '🐢 Dressur im Schritt', say: 'Dressur: eine schöne, ruhige Runde im Schritt.', run: (next) => { jumpsOn = false; setGait('schritt'); lapCb = () => { stop(); next(); }; } },
+      { q: true },
+      { btn: '🐎 Trab mit Sprüngen', say: 'Jetzt im Trab – und über die kleinen Sprünge! Hopp!', run: (next) => { jumpsOn = true; jumpEls.forEach((j) => j.classList.remove('off')); setGait('trab'); lapCb = () => { stop(); next(); }; } },
+      { q: true },
+      { btn: '🌟 Schlussrunde', say: 'Die Schlussrunde! Zeig, wie schön ihr zusammen reitet.', run: (next) => { setGait('trab'); lapCb = () => { stop(); next(); }; } },
+      { q: true }
+    ];
+    jumpEls.forEach((j) => j.classList.add('off'));
+    let si = 0;
+    const nextStep = () => {
+      ctrls.innerHTML = '';
+      if (si >= steps.length) { finale(); return; }
+      const st = steps[si++];
+      if (st.q) { setTimeout(() => askJudge(nextStep), 500); return; }
+      rsay(st.say);
+      ctrls.append(h('button', { class: 'bigbtn primary', id: 'tourGo', onclick: () => { Sound.tap(); ctrls.innerHTML = ''; st.run(nextStep); } }, st.btn));
+    };
+    const finale = () => {
+      clap(); rsay('Siegerehrung! 🎉');
+      riderState(); const n = S.rosettes.filter((r) => r.kind === 'turnier' || r.kind === 'pokal').length;
+      const r = addRosette((n + 1) % 3 === 0 ? 'pokal' : 'turnier', horseId);
+      setTimeout(() => showPrize(r, true), 1200);
+    };
+    setTimeout(nextStep, 400);
+  }
+  function clap() { [0, 0.12, 0.24, 0.4, 0.52, 0.66].forEach((d) => setTimeout(() => Sound.clap(), d * 1000)); if (judges) { judges.classList.remove('cheer'); void judges.offsetWidth; judges.classList.add('cheer'); } }
+  function askJudge(done) {
+    const tk = judgeTask();
+    const card = h('div', { class: 'bag-card judge-card', id: 'judgeQ' },
+      h('div', { class: 'jq-who' }, '👩‍⚖️ Die Richterin fragt:'),
+      h('div', { class: 'jq' }, tk.q),
+      h('div', { class: 'jq-opts' }, tk.opts.map((o) => h('button', { class: 'jopt', 'data-jopt': o, onclick: (e) => {
+        if (o === tk.res) { Sound.correct(); e.currentTarget.classList.add('right'); setTimeout(() => { close(); clap(); rsay(pick(['Richtig! Die Richterinnen nicken fröhlich. 😊', 'Super gerechnet! 🌟', 'Ganz genau! 👏'])); setTimeout(done, 900); }, 700); }
+        else { Sound.hint(); e.currentTarget.classList.add('soft'); e.currentTarget.disabled = true; hint.textContent = pick(['Fast! Probier noch einmal – du schaffst das. 💕', 'Hmm, schau noch einmal genau. Du kannst auch an den Fingern zählen. 🖐️']); }
+      } }, String(o)))),
+      null);
+    const hint = h('p', { class: 'jq-hint' }, '');
+    card.append(hint);
+    let answered = false;
+    const close0 = sheet(card, () => { if (!answered) setTimeout(() => askJudge(done), 300); });
+    const close = () => { answered = true; close0(); };
+  }
+  rideRaf = requestAnimationFrame(frame);
+}
+
 function showStable() {
   currentScreen = 'stable';
   repairFarm();
@@ -2067,6 +2530,7 @@ function showStable() {
       h('div', { class: 'counter', id: 'shoeCount', html: SHOE + `<span>${S.shoes}</span>` }),
       h('div', { class: 'counter', id: 'carrotCount' }, h('span', { class: 'emo', html: ART.carrot }), h('span', null, String(S.carrots))),
       bagButton(),
+      h('button', { class: 'farm-btn', id: 'closetBtn', 'aria-label': 'Kleiderschrank', onclick: () => { Sound.tap(); if (riderState().set) openCloset(renderScene); else openRiderSetup((f) => { renderScene(); if (f) riderHello(); }, true); } }, '👚'),
       h('button', { class: 'farm-btn', id: 'shopBtn', 'aria-label': 'Stall-Laden', onclick: () => { Sound.tap(); openDrawer(); } }, '🛒')),
     h('div', { class: 'bubble farm-say', id: 'farmSay' }, ''));
   const carrotTool = h('button', { class: 'tool', id: 'toolCarrot', 'aria-label': 'Karotte' }, h('span', { html: ART.carrot }), h('b', { class: 'badge' }, String(S.carrots)));
@@ -2143,6 +2607,8 @@ function showStable() {
     $$('.item', farm).forEach((x) => x.remove());
     ITEMS.forEach((it) => { if (!it.onLuna && !it.onBarn && !it.fly && has(it.id)) placeItem(it, it.id === newId); });
     placeItem(itemOf('luna'), false);
+    if (riderState().set) placeItem(RIDER_ITEM, false);
+    renderRosBadge();
     flies.slice(1).forEach((f) => f.remove()); flies.length = 1;
     if (has('schmetterlinge')) ['#f7a8c4', '#b5dcff', '#d6c2f2'].forEach((c, i) => addFly(c, i + 1));
     if (newId === 'wetterfahne') { barn.innerHTML = barnSVG(mood === 'evening', true); }
@@ -2189,7 +2655,35 @@ function showStable() {
     el.addEventListener('pointercancel', () => { if (st && st.moved) end(); st = null; el.classList.remove('dragging'); });
   }
   function react(el, cls) { el.classList.remove('yay', 'munch', 'bounce'); void el.offsetWidth; el.classList.add(cls); }
+  function renderRosBadge() {
+    $$('.ros-badge', farm).forEach((x) => x.remove());
+    const n = (S.rosettes || []).length; if (!n) return;
+    const b = at(add(h('button', { class: 'ros-badge', id: 'rosWall', 'aria-label': 'Rosettenwand', html: rosetteSVG(S.rosettes[n - 1].c, String(n)) })), 31, 52, null, 1200);
+    b.addEventListener('pointerdown', (e) => e.stopPropagation());
+    b.addEventListener('click', (e) => { e.stopPropagation(); Sound.sparkle(); openRosettes(); });
+  }
+  function riderHello() {
+    const el = $('.item[data-id="reiterin"]', farm); if (el) { react(el, 'yay'); burst(el, ['💖', '✨']); }
+    fsay(`Hallo, ich bin ${riderName()}! Tipp mich an, dann können wir reiten gehen. 🏇`);
+  }
+  function riderBtns(el) {
+    $$('.dress-btn', farm).forEach((b) => b.remove());
+    const r = el.getBoundingClientRect(), fr = farm.getBoundingClientRect();
+    const wrap = h('div', { class: 'dress-btn multi' },
+      h('button', { id: 'rideBtn', onclick: (e) => { e.stopPropagation(); Sound.tap(); wrap.remove(); startRide('frei'); } }, '🏇 Reiten'),
+      h('button', { id: 'tourBtn', onclick: (e) => { e.stopPropagation(); Sound.tap(); wrap.remove(); startRide('turnier'); } }, '🏆 Turnier'),
+      h('button', { id: 'closetBtn2', onclick: (e) => { e.stopPropagation(); Sound.tap(); wrap.remove(); openCloset(renderScene); } }, '👚 Anziehen'));
+    wrap.style.left = Math.min(fr.width - 150, Math.max(150, r.left - fr.left + r.width / 2)) + 'px'; wrap.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
+    wrap.addEventListener('pointerdown', (e) => e.stopPropagation());
+    farm.append(wrap); setTimeout(() => wrap.remove(), readMs('', 6000));
+  }
   function tapItem(el, it) {
+    if (it.rider) {
+      react(el, 'yay'); Sound.sparkle();
+      fsay(pick([`${riderName()} winkt dir zu! 👋`, `${riderName()} möchte gern reiten. 🏇`, `${riderName()} freut sich auf die Pferde! 💖`]));
+      riderBtns(el);
+      return;
+    }
     if (it.horse) {
       react(el, 'yay'); burst(el, ['💖', '💕', '✨']);
       if (Math.random() < 0.5) Sound.neigh(); else Sound.clipclop();
@@ -2252,10 +2746,12 @@ function showStable() {
     const close = sheet(card);
   }
   function dressBtn(el, id) {
-    if (!Object.keys(GEAR).some((g) => has(g))) return;
-    $$('.dress-btn', farm).forEach((b) => b.remove());
+    $$('.dress-btn', farm).forEach((x) => x.remove());
     const r = el.getBoundingClientRect(), fr = farm.getBoundingClientRect();
-    const b = h('button', { class: 'dress-btn', 'data-dress': id, 'aria-label': 'Anziehen', onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); openWardrobe(id); } }, '🎀 Anziehen');
+    const b = h('div', { class: 'dress-btn multi' },
+      h('button', { 'data-dress': id, 'aria-label': 'Anziehen', onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); openWardrobe(id); } }, '🎀 Anziehen'),
+      ADULT.includes(id) ? h('button', { 'data-ridehorse': id, onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); const go = () => showRide(id, 'frei'); if (!riderState().set) openRiderSetup(go, true); else go(); } }, '🏇 Reiten')
+        : h('small', { class: 'foalnote' }, 'Noch zu klein zum Reiten 💕'));
     b.style.left = Math.min(fr.width - 90, Math.max(70, r.left - fr.left + r.width / 2)) + 'px'; b.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
     b.addEventListener('pointerdown', (e) => e.stopPropagation());
     farm.append(b); setTimeout(() => b.remove(), readMs('', 5000));
@@ -2453,6 +2949,7 @@ function showStable() {
   renderScene();
   // Sicherheitsnetz: falls ein Pferd trotzdem verdeckt ist, kommt es von selbst heraus
   setTimeout(() => { if (currentScreen === 'stable' && callHorsesOut(false)) fsay(`${LN()} ist wieder da! 🐴💕`); }, 700);
+  if (!riderState().set && !S.riderAsked && !window.__noRiderPrompt) { S.riderAsked = true; save(); setTimeout(() => { if (currentScreen === 'stable') openRiderSetup((f) => { renderScene(); if (f) riderHello(); }, true); }, 1600); }
   fsay(S.carrots > 0 ? 'Willkommen auf dem Pferdehof! Zieh eine Karotte zu einem Pferd. 🥕' : 'Willkommen auf dem Pferdehof! Mit der Bürste kannst du die Pferde putzen. ✨');
   // ganz leise Naturgeräusche ab und zu
   ambientTimer = setInterval(() => {

@@ -26,6 +26,7 @@ async function playGame(p, id, fn, ...args) {
     console.log(`\n== ${engine} ${vp.width}x${vp.height} (${vp.tag}) ==`);
     const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, deviceScaleFactor: 2, hasTouch: true, locale: 'de-DE',
       userAgent: 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1' });
+    await ctx.addInitScript(() => { try { const k = 'pferde-mathe-v1', s = JSON.parse(localStorage.getItem(k) || 'null'); if (s && !s.riderAsked) { s.riderAsked = true; localStorage.setItem(k, JSON.stringify(s)); } window.__noRiderPrompt = true; } catch (e) {} });
     const p = await ctx.newPage();
     const errors = [], external = [];
     p.on('pageerror', (e) => errors.push(e.message));

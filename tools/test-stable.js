@@ -4,7 +4,7 @@ const BASE = process.env.URL || 'http://127.0.0.1:9518/index.html';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let fails = 0;
 const ok = (c, m) => { console.log((c ? '  ✔ ' : '  ✘ ') + m); if (!c) fails++; };
-const START = { v: 1, setupSeen: true, shoes: 60, carrots: 4, owned: [] };
+const START = { v: 1, setupSeen: true, riderAsked: true, shoes: 60, carrots: 4, owned: [] };
 (async () => {
   const b = await pw.webkit.launch();
   for (const [w, hh] of [[1024, 768], [768, 1024], [820, 1180], [1180, 820]]) {

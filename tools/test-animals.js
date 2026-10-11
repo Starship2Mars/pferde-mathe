@@ -5,7 +5,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let fails = 0;
 const ok = (c, m) => { console.log((c ? '  ✔ ' : '  ✘ ') + m); if (!c) fails++; };
 const { solveAny } = require('./solvers.js')(ok);
-const OLD = { v: 1, sound: false, setupSeen: true, shoes: 12, totalShoes: 50, carrots: 3, owned: ['heu', 'hund', 'huehner', 'kaetzchen'], horseNames: {}, pos: { hund: { x: 27, y: 99 } }, skills: {} };
+const OLD = { v: 1, sound: false, setupSeen: true, riderAsked: true, shoes: 12, totalShoes: 50, carrots: 3, owned: ['heu', 'hund', 'huehner', 'kaetzchen'], horseNames: {}, pos: { hund: { x: 27, y: 99 } }, skills: {} };
 const get = (p) => p.evaluate(() => JSON.parse(localStorage.getItem('pferde-mathe-v1')));
 async function center(p, sel) { const b = await (await p.$(sel)).boundingBox(); return [b.x + b.width / 2, b.y + b.height / 2]; }
 async function drag(p, from, to) { const [x0, y0] = await center(p, from), [x1, y1] = await center(p, to); await p.mouse.move(x0, y0); await p.mouse.down(); await p.mouse.move(x1, y1, { steps: 12 }); await p.mouse.up(); await sleep(500); }

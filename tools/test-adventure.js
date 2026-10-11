@@ -17,6 +17,7 @@ async function openMap(p) { await p.click('#advTile'); await p.waitForSelector('
     const [W, H] = vps[v];
     console.log(`\n== webkit ${W}x${H} ==`);
     const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, hasTouch: true, locale: 'de-DE', userAgent: UA });
+    await ctx.addInitScript(() => { try { const k = 'pferde-mathe-v1', s = JSON.parse(localStorage.getItem(k) || 'null'); if (s && !s.riderAsked) { s.riderAsked = true; localStorage.setItem(k, JSON.stringify(s)); } window.__noRiderPrompt = true; } catch (e) {} });
     const p = await ctx.newPage();
     const errs = [];
     p.on('pageerror', (e) => errs.push(e.message));
@@ -118,6 +119,7 @@ async function openMap(p) { await p.click('#advTile'); await p.waitForSelector('
   // Migration: alter Spielstand (vor dem Abenteuer-Update)
   console.log('\n== Migration alter Spielstand ==');
   const ctx = await browser.newContext({ viewport: { width: 1024, height: 768 }, userAgent: UA });
+  await ctx.addInitScript(() => { try { const k = 'pferde-mathe-v1', s = JSON.parse(localStorage.getItem(k) || 'null'); if (s && !s.riderAsked) { s.riderAsked = true; localStorage.setItem(k, JSON.stringify(s)); } window.__noRiderPrompt = true; } catch (e) {} });
   const p = await ctx.newPage();
   await p.goto(BASE); await p.waitForSelector('#advTile');
   await p.evaluate(() => {
