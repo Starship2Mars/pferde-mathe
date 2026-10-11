@@ -12,8 +12,32 @@ Reines HTML/CSS/JS ohne Build-Schritt, ohne Tracking, ohne Netzwerkaufrufe. Alle
 4. **Aufgabenfamilie** – Tausch- und Umkehraufgaben (7 + 5, 5 + 7, 12 − 5, 12 − 7) + „Tauschaufgabe erkennen“
 5. **Zahlenstrahl-Hüpfen** – Pferd Luna hüpft auf dem Zahlenstrahl 0–20
 
+Dazu im Abenteuer: **Zehnerzahlen** – mit ganzen Zehnern bis 100 rechnen (Perlenstäbe).
+
 Je Runde 5 Aufgaben, Schwierigkeit passt sich automatisch an. Kein Zeitdruck, keine roten Kreuze –
 Fehler führen zu einem sanften Tipp. Belohnung: Hufeisen und Karotten.
+
+## Abenteuer-Reise 🗺️ (neu in Version 2)
+Eine große, gezeichnete Weltkarte im Vollbild (Inline-SVG, mehrere Ebenen, sanft animiert). Das Pferd reist
+auf einem Weg von Station zu Station durch fünf Welten – zum Wischen oder mit den Pfeilen:
+
+| Welt | Schwerpunkt | Schätze | Tor-Aufgabe |
+|---|---|---|---|
+| 1 Blumenwiese | verliebte Zahlen, Zahlenhäuser bis 10, Zahlenstrahl | 4 Blumen, Kartenstück | Rosentor → goldener Schlüssel |
+| 2 Apfelgarten | Plus/Minus bis 20 ohne Übergang, Tauschaufgaben | 3 Äpfel, Ei, Kartenstück | Ziege Zenzi macht Platz → Glöckchen, Zenzi zieht auf den Pferdehof |
+| 3 Sonnenstrand am See | Plus mit Zehnerübergang, Zahlenhäuser bis 15 | 3 Bretter, Muschel, Kartenstück | Brücke reparieren → Glitzer-Perle |
+| 4 Bergwiese am Bach | Minus mit Zehnerübergang, Zahlenhäuser bis 20, Umkehraufgaben | 3 Kristalle, Laterne, Kartenstück | Regenbogen-Brücke → Edelweiß |
+| 5 Märchenschloss | Mischung + Ausblick: Zehnerzahlen bis 100 (30 + 40) | 3 Zaubersterne, goldenes Zaumzeug, Kartenstück | Schlosstor → Krone für das Pferd, großes Schlossfest |
+
+- Jede Station ist eine kurze Runde (5 Aufgaben) aus den bekannten Spielen; Hufeisen und Karotten gibt es wie gewohnt.
+- Normale Stationen: eigenes Niveau (manche bewusst eine Stufe leichter); eine sanfte Lehrplan-Untergrenze hebt
+  spätere Welten an – aber nie mehr als eine Stufe über dem eigenen Niveau.
+- Tor-Aufgabe am Ende jeder Welt: eine Stufe über dem eigenen Niveau (zählt nicht für die automatische Anpassung,
+  damit sie das Niveau nie absenkt). Danach: Konfetti, Fanfare, kurze Reise-Szene, und die Wolken über der nächsten Welt lösen sich.
+- Geschaffte Stationen bekommen einen Stern, das Pferd wippt an der aktuellen Station, spätere Welten liegen hinter hellen Wolken.
+- Rucksack 🎒 mit allen gefundenen Schätzen und der Schatzkarte (1 Stück pro Welt).
+- Pferdehof 🏡 ist die Basis und direkt von der Karte erreichbar; Geschenke aus dem Abenteuer erscheinen dort.
+- Geschaffte Stationen können jederzeit zum Üben noch einmal besucht werden. Es gibt keine Fehlschläge – jede Runde wird geschafft.
 
 ## Pferdehof (Vollbild)
 Liebevoll gezeichneter Hof (alles Inline-SVG/CSS): Scheune mit Tor zum Öffnen, Koppel, Teich mit Enten,
@@ -30,16 +54,19 @@ falsche Antwort: nur ein sehr leiser neutraler Ton.
 
 ## Elternbereich
 „Für Eltern“ → Knopf 3 Sekunden halten. Fortschritt je Spiel und Aufgabentyp, knifflige Aufgaben, Stufen anpassen,
-Ton, Zurücksetzen. Optional: **Name des Kindes** und **Geburtstag (Tag/Monat)** – nur lokal gespeichert;
+Ton, Zurücksetzen, **Abenteuer-Fortschritt je Welt** mit „Hierhin springen“ / „Von vorn“. Optional: **Name des Kindes** und **Geburtstag (Tag/Monat)** – nur lokal gespeichert;
 ohne Angaben spricht die App neutral („du“) und zeigt keinen Geburtstags-Countdown.
 
 ## Aufs iPad
 In Safari öffnen → Teilen → „Zum Home-Bildschirm“. Danach auch offline nutzbar.
+Updates: Der Service Worker hat eine neue Cache-Version; die installierte App lädt die neue Version beim nächsten Öffnen
+(nie mitten in einer Aufgabe). Der Spielstand bleibt erhalten (gleicher Speicher-Schlüssel, neue Felder werden ergänzt).
 
 ## Entwicklung
 ```
 python3 -m http.server 8000             # http://127.0.0.1:8000/
 URL=http://127.0.0.1:8000/index.html node tools/test.js webkit        # E2E-Test (playwright)
 URL=http://127.0.0.1:8000/index.html node tools/test-stable.js        # Pferdehof in 4 iPad-Größen
+URL=http://127.0.0.1:8000/index.html node tools/test-adventure.js     # Abenteuer in 4 iPad-Größen, offline, Migration
 python3 tools/build-single.py           # erzeugt pferde-mathe.html (alles in einer Datei)
 ```

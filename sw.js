@@ -1,11 +1,11 @@
 /* Pferde-Mathe – Service Worker (nur lokaler Cache, keine Netzwerkaufrufe nach außen) */
-const CACHE = 'pferde-mathe-v1';
+const CACHE = 'pferde-mathe-v2-abenteuer';
 const ASSETS = [
   './', './index.html', './style.css', './app.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
 ];
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', (e) => {
   e.waitUntil(
