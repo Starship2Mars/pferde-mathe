@@ -50,6 +50,21 @@ Pferde und Sachen lassen sich nicht hinter die Scheune (oder anders unsichtbar) 
 trabt fröhlich wieder heraus. Beim Öffnen der Scheune kommen alle Pferde heraus. Ungültige oder verdeckte gespeicherte
 Positionen werden beim Start automatisch auf einen freien Platz auf der Koppel verschoben (nur die Position; sonst bleibt alles).
 
+## Reiterin, Kleiderschrank & Turnier 🏇
+- Eigene Reiterin-Figur (Hautton, Haarfarbe, Frisur beim ersten Mal wählbar; Name kommt aus dem Elternbereich, sonst „Reiterin").
+- Kleiderschrank 👚: Reithelme, Oberteile, Westen, Reithosen, Stiefel, Handschuhe, Glitzer-Helmbezug, Schleife, Gerte, Steigbügel – gekauft mit Hufeisen. Sattelpad und Zaumzeug gehören je einem Pferd.
+- Reiten nur auf erwachsenen Pferden (kein Fohlen). Ein einfacher Helm ist gratis, beim Reiten wird immer ein Helm getragen.
+- Reitplatz: Schritt/Trab/Halt, kleine Sprünge (gelingen immer), sanftes Hufgeklapper; nach ein paar Runden gibt es eine Rosette.
+- Pferdeturnier 🏆: kurze, ruhige Prüfung mit drei leichten Richterinnen-Fragen (Rechnen); jedes Pferd gewinnt eine Schleife oder einen Pokal – alles hängt an der Rosettenwand 🏅.
+
+## Bayerischer Pferdehof, Jahreszeiten & Feste 🏔️
+- Voralpenland: Berge mit Schneekappen, Bauernhaus mit Holzbalkon und roten Geranien, Stall mit Blumenkästen, Kapelle, weiß-blauer Maibaum, Holzstapel, Bach, Kühe mit Glocken, ab und zu fährt ein Traktor.
+- Antippen: Fenster, Blumenkästen, Kühe, Kapelle, Maibaum, Traktor, Bienen reagieren freundlich. Leise Hofgeräusche (Kuhglocken, Muhen, Hahn am Morgen, Vögel, Bienen, Wind).
+- Jahreszeit nach echtem Datum: Frühling (Blüten), Sommer, Herbst (bunte Blätter), Winter (Schnee, Eis auf dem Teich).
+- Feste: Advent/Weihnachten (Lichterkette, Christbaum), Ostern (Eier suchen), Herbstfest Ende Oktober (nur lächelnde Kürbisse), Geburtstag (wenn im Elternbereich eingetragen: Luftballons und Glückwunsch).
+- „Bewegung reduzieren" wird beachtet (keine fallenden Blätter/Flocken, ruhigere Tiere).
+- Zum Ausprobieren: `?season=winter&fest=xmas` (auch spring/summer/autumn, advent/easter/halloween/birthday/none).
+
 ## Klänge
 Alle Klänge werden im Browser erzeugt (WebAudio), leise und sanft; abschaltbar. Richtige Antwort: kleines
 Glockenspiel (variiert, manchmal mit Wiehern oder Hufgeklapper); Rundenende/Freischalten: sanfte Fanfare;

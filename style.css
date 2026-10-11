@@ -731,3 +731,60 @@ svg.horse .head{transform-box:view-box;transform-origin:128px 96px;animation:hea
 .closet-card{max-height:calc(100vh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch}
 .closet-card .chip{min-height:40px;padding:6px 10px;font-size:.88rem}
 .closet-card .clist{max-height:none}
+/* Bayerisches Voralpenland: Berge, Kapelle, Maibaum, Bauernhaus, Kühe, Traktor */
+.farm .mtn{bottom:46%;height:36%;z-index:3}
+.farm.evening .mtn{opacity:.95}
+.farm .chapel,.farm .maibaum,.farm .woodpile,.farm .fest{cursor:pointer}
+.farm .house{cursor:pointer;filter:drop-shadow(0 6px 6px rgba(60,80,40,.12))}
+.farm .hwin.lit .pane,.farm .hwin.lit rect:first-child{fill:#fff3b0}
+.farm .hwin.lit{animation:winpop .9s ease}
+@keyframes winpop{0%,100%{opacity:1}30%{opacity:.7}}
+.farm .house .smoke{animation:smoke 6s ease-in-out infinite}
+@keyframes smoke{0%,100%{transform:translateY(0);opacity:.9}50%{transform:translateY(-6px);opacity:.5}}
+.farm .cow{cursor:pointer}
+.farm .cow.flip svg{transform:scaleX(-1)}
+.farm .cow .cow-head{transform-box:fill-box;transform-origin:20% 30%;animation:graze 6s ease-in-out infinite}
+.farm .cow[data-cow="1"] .cow-head{animation-delay:-3s}
+@keyframes graze{0%,55%,100%{transform:rotate(0)}65%,90%{transform:rotate(22deg) translateY(6%)}}
+.farm .cow .cow-tail{transform-box:fill-box;transform-origin:90% 0;animation:cowtail 3s ease-in-out infinite}
+@keyframes cowtail{0%,100%{transform:rotate(0)}50%{transform:rotate(14deg)}}
+.farm .tractor{cursor:pointer}
+.farm .tractor.drive{animation:tractor 24s linear forwards}
+.farm .tractor .wheel{transform-box:fill-box;transform-origin:50% 50%}
+.farm .tractor.drive .wheel{animation:wheelspin 1.4s linear infinite}
+@keyframes wheelspin{to{transform:rotate(360deg)}}
+@keyframes tractor{from{left:-14%}to{left:114%}}
+.farm .bee{position:absolute;width:3.2vmin;min-width:22px;cursor:pointer;animation:beeA 14s ease-in-out infinite}
+.farm .bee.b1{animation-name:beeB;animation-duration:17s}
+.farm .bee svg{width:100%;height:auto;display:block}
+.farm .bee .wings{transform-box:fill-box;transform-origin:50% 100%;animation:beeflap .12s linear infinite}
+@keyframes beeflap{50%{transform:scaleY(.5)}}
+@keyframes beeA{0%{left:58%;top:62%}25%{left:66%;top:58%}50%{left:76%;top:63%}75%{left:66%;top:66%}100%{left:58%;top:62%}}
+@keyframes beeB{0%{left:30%;top:74%}30%{left:24%;top:70%}60%{left:14%;top:76%}100%{left:30%;top:74%}}
+.farm .stream-glint{animation:glint 3s linear infinite}
+@keyframes glint{to{stroke-dashoffset:-54}}
+.farm .pond.ice .pond-svg ellipse:nth-child(2),.farm .pond.ice .pond-svg ellipse:nth-child(3){fill:#e3f3fc}
+.farm .pond.ice .duck{display:none}
+.twl{animation:twinkle 2.4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.45}}
+.farm .egg{transition:transform .5s,opacity .5s}
+.farm .egg.got{transform:translate(-50%,-160%) scale(1.3);opacity:0}
+.bday-banner{position:absolute;left:50%;bottom:calc(112px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2900;background:linear-gradient(90deg,#fde8f0,#fff8e1,#e3f5fd);border-radius:20px;padding:8px 20px;font-weight:900;font-size:1.25rem;color:#8a4f6a;box-shadow:0 4px 12px rgba(0,0,0,.08);pointer-events:none;white-space:nowrap}
+/* Jahreszeiten */
+.farm.season-winter .sky{background:linear-gradient(180deg,#b9d3ee 0%,#dbe8f6 40%,#f2f6fb 60%)}
+.farm.season-autumn .sky{background:linear-gradient(180deg,#9fd0f2 0%,#cfe6f4 38%,#f6efdc 60%)}
+.farm.season-winter .tuft,.farm.season-winter .flw{opacity:.35}
+.farm.season-autumn .flw{opacity:.7}
+.particles{position:absolute;inset:0;z-index:2500;pointer-events:none;overflow:hidden}
+.particles span{position:absolute;top:-6%;animation:pfall linear infinite;opacity:.85;color:#fff;text-shadow:0 0 2px rgba(120,150,190,.5);line-height:1}
+@keyframes pfall{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(var(--dx),55vh) rotate(160deg)}100%{transform:translate(0,112vh) rotate(320deg)}}
+/* Reitplatz-Kulisse */
+.ride-screen .r-mtn{position:absolute;left:0;right:0;top:12%;height:34%}
+.ride-screen .r-mtn svg,.ride-screen .r-hills svg{width:100%;height:100%;display:block}
+.ride-screen .r-hills{position:absolute;left:0;right:0;top:30%;height:24%}
+.ride-screen .r-chapel{position:absolute;left:78%;top:30%;width:5vmin}
+.ride-screen .r-chapel svg{width:100%;height:auto}
+.ride-screen .r-grass{position:absolute;left:0;right:0;top:50%;bottom:0}
+@media (prefers-reduced-motion:reduce){.particles{display:none}.farm .tractor.drive{animation-duration:40s}.farm .bee{animation:none;left:62%;top:62%}.farm .cow .cow-head,.farm .cow .cow-tail,.farm .house .smoke,.twl{animation:none}}
+
+.farm.season-winter .bee,.farm.season-winter .fly{display:none}

@@ -748,6 +748,63 @@ svg.horse .head{transform-box:view-box;transform-origin:128px 96px;animation:hea
 .closet-card{max-height:calc(100vh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch}
 .closet-card .chip{min-height:40px;padding:6px 10px;font-size:.88rem}
 .closet-card .clist{max-height:none}
+/* Bayerisches Voralpenland: Berge, Kapelle, Maibaum, Bauernhaus, Kühe, Traktor */
+.farm .mtn{bottom:46%;height:36%;z-index:3}
+.farm.evening .mtn{opacity:.95}
+.farm .chapel,.farm .maibaum,.farm .woodpile,.farm .fest{cursor:pointer}
+.farm .house{cursor:pointer;filter:drop-shadow(0 6px 6px rgba(60,80,40,.12))}
+.farm .hwin.lit .pane,.farm .hwin.lit rect:first-child{fill:#fff3b0}
+.farm .hwin.lit{animation:winpop .9s ease}
+@keyframes winpop{0%,100%{opacity:1}30%{opacity:.7}}
+.farm .house .smoke{animation:smoke 6s ease-in-out infinite}
+@keyframes smoke{0%,100%{transform:translateY(0);opacity:.9}50%{transform:translateY(-6px);opacity:.5}}
+.farm .cow{cursor:pointer}
+.farm .cow.flip svg{transform:scaleX(-1)}
+.farm .cow .cow-head{transform-box:fill-box;transform-origin:20% 30%;animation:graze 6s ease-in-out infinite}
+.farm .cow[data-cow="1"] .cow-head{animation-delay:-3s}
+@keyframes graze{0%,55%,100%{transform:rotate(0)}65%,90%{transform:rotate(22deg) translateY(6%)}}
+.farm .cow .cow-tail{transform-box:fill-box;transform-origin:90% 0;animation:cowtail 3s ease-in-out infinite}
+@keyframes cowtail{0%,100%{transform:rotate(0)}50%{transform:rotate(14deg)}}
+.farm .tractor{cursor:pointer}
+.farm .tractor.drive{animation:tractor 24s linear forwards}
+.farm .tractor .wheel{transform-box:fill-box;transform-origin:50% 50%}
+.farm .tractor.drive .wheel{animation:wheelspin 1.4s linear infinite}
+@keyframes wheelspin{to{transform:rotate(360deg)}}
+@keyframes tractor{from{left:-14%}to{left:114%}}
+.farm .bee{position:absolute;width:3.2vmin;min-width:22px;cursor:pointer;animation:beeA 14s ease-in-out infinite}
+.farm .bee.b1{animation-name:beeB;animation-duration:17s}
+.farm .bee svg{width:100%;height:auto;display:block}
+.farm .bee .wings{transform-box:fill-box;transform-origin:50% 100%;animation:beeflap .12s linear infinite}
+@keyframes beeflap{50%{transform:scaleY(.5)}}
+@keyframes beeA{0%{left:58%;top:62%}25%{left:66%;top:58%}50%{left:76%;top:63%}75%{left:66%;top:66%}100%{left:58%;top:62%}}
+@keyframes beeB{0%{left:30%;top:74%}30%{left:24%;top:70%}60%{left:14%;top:76%}100%{left:30%;top:74%}}
+.farm .stream-glint{animation:glint 3s linear infinite}
+@keyframes glint{to{stroke-dashoffset:-54}}
+.farm .pond.ice .pond-svg ellipse:nth-child(2),.farm .pond.ice .pond-svg ellipse:nth-child(3){fill:#e3f3fc}
+.farm .pond.ice .duck{display:none}
+.twl{animation:twinkle 2.4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.45}}
+.farm .egg{transition:transform .5s,opacity .5s}
+.farm .egg.got{transform:translate(-50%,-160%) scale(1.3);opacity:0}
+.bday-banner{position:absolute;left:50%;bottom:calc(112px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2900;background:linear-gradient(90deg,#fde8f0,#fff8e1,#e3f5fd);border-radius:20px;padding:8px 20px;font-weight:900;font-size:1.25rem;color:#8a4f6a;box-shadow:0 4px 12px rgba(0,0,0,.08);pointer-events:none;white-space:nowrap}
+/* Jahreszeiten */
+.farm.season-winter .sky{background:linear-gradient(180deg,#b9d3ee 0%,#dbe8f6 40%,#f2f6fb 60%)}
+.farm.season-autumn .sky{background:linear-gradient(180deg,#9fd0f2 0%,#cfe6f4 38%,#f6efdc 60%)}
+.farm.season-winter .tuft,.farm.season-winter .flw{opacity:.35}
+.farm.season-autumn .flw{opacity:.7}
+.particles{position:absolute;inset:0;z-index:2500;pointer-events:none;overflow:hidden}
+.particles span{position:absolute;top:-6%;animation:pfall linear infinite;opacity:.85;color:#fff;text-shadow:0 0 2px rgba(120,150,190,.5);line-height:1}
+@keyframes pfall{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(var(--dx),55vh) rotate(160deg)}100%{transform:translate(0,112vh) rotate(320deg)}}
+/* Reitplatz-Kulisse */
+.ride-screen .r-mtn{position:absolute;left:0;right:0;top:12%;height:34%}
+.ride-screen .r-mtn svg,.ride-screen .r-hills svg{width:100%;height:100%;display:block}
+.ride-screen .r-hills{position:absolute;left:0;right:0;top:30%;height:24%}
+.ride-screen .r-chapel{position:absolute;left:78%;top:30%;width:5vmin}
+.ride-screen .r-chapel svg{width:100%;height:auto}
+.ride-screen .r-grass{position:absolute;left:0;right:0;top:50%;bottom:0}
+@media (prefers-reduced-motion:reduce){.particles{display:none}.farm .tractor.drive{animation-duration:40s}.farm .bee{animation:none;left:62%;top:62%}.farm .cow .cow-head,.farm .cow .cow-tail,.farm .house .smoke,.twl{animation:none}}
+
+.farm.season-winter .bee,.farm.season-winter .fly{display:none}
 
 </style>
 </head>
@@ -787,7 +844,7 @@ const MINUS = '−';
 
 // ---------- Speicher ----------
 const KEY = 'pferde-mathe-v1'; // Schlüssel bleibt gleich → gespeicherter Fortschritt bleibt bei Updates erhalten
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.4.0';
 const GAME_IDS = ['paare', 'haeuser', 'rechnen', 'familie', 'strahl', 'zehner'];
 function defaultState() {
   return {
@@ -922,6 +979,15 @@ const Sound = (() => {
     baa() { tone(560, 0, 0.55, 'triangle', 0.07, 470); tone(565, 0.03, 0.5, 'sine', 0.05, 480); },
     hoof(trot) { nz(0, 0.04, trot ? 0.16 : 0.13, 'bandpass', 700 + Math.random() * 500, null, 4); tone(170 + Math.random() * 60, 0, 0.05, 'sine', 0.1); },
     clap() { nz(0, 0.05, 0.12, 'bandpass', 1500 + Math.random() * 900, null, 1.4); },
+    moo() { const c = ensure(); if (!c) return; const t = c.currentTime; const o = c.createOscillator(), f = c.createBiquadFilter(), v = c.createGain(); o.type = 'sawtooth'; f.type = 'lowpass'; f.frequency.value = 520; o.frequency.setValueAtTime(150, t); o.frequency.linearRampToValueAtTime(175, t + 0.35); o.frequency.linearRampToValueAtTime(128, t + 1.1); env(v, t, 0.07, 0.15, 1.2); o.connect(f); f.connect(v); v.connect(master); o.start(t); o.stop(t + 1.25); },
+    cowbell(t0) { [0, 0.42, 0.95].forEach((d) => { tone(540, (t0 || 0) + d, 0.5, 'triangle', 0.035); tone(812, (t0 || 0) + d, 0.35, 'sine', 0.02); }); },
+    rooster() { [[520, 0, 0.12, 640], [640, 0.13, 0.12, 760], [760, 0.27, 0.5, 600]].forEach(([f, t, d, f2]) => tone(f, t, d, 'triangle', 0.045, f2)); },
+    buzz() { const c = ensure(); if (!c) return; const t = c.currentTime; const o = c.createOscillator(), v = c.createGain(), l = c.createOscillator(), lg = c.createGain(); o.type = 'sawtooth'; o.frequency.value = 220; l.frequency.value = 7; lg.gain.value = 18; l.connect(lg); lg.connect(o.frequency); env(v, t, 0.012, 0.2, 1.4); o.connect(v); v.connect(master); o.start(t); l.start(t); o.stop(t + 1.5); l.stop(t + 1.5); },
+    wind() { nz(0, 2.6, 0.035, 'bandpass', 400, 900, 0.6); },
+    putt() { [0, 0.14, 0.28, 0.42, 0.56, 0.7].forEach((d) => nz(d, 0.07, 0.06, 'lowpass', 260, null, 1)); },
+    honk() { tone(392, 0, 0.18, 'square', 0.035); tone(392, 0.24, 0.24, 'square', 0.035); },
+    chime() { [659.25, 523.25, 587.33, 392].forEach((f, i) => bell(f, i * 0.55, 1.4, 0.12)); },
+    sleigh() { range(0, 7).forEach((i) => bell(2093 + (i % 3) * 120, i * 0.11, 0.25, 0.03)); },
     treasure() { [784, 988, 1175, 1568, 1976].forEach((f, i) => bell(f, i * 0.09, 0.9, 0.16)); bell(2637, 0.5, 1.2, 0.06); }
   };
   return API;
@@ -1980,24 +2046,190 @@ const ART = {
   blanketPv: (c) => svgw('0 0 60 40', `<path d="M6 10 Q30 0 54 10 L56 32 Q30 42 4 32 Z" fill="${c}"/><path d="M4 32 Q30 42 56 32" stroke="#fff" stroke-width="3" fill="none" stroke-dasharray="1 6" stroke-linecap="round"/><path d="M30 20 c-3 -6 -12 -3 -8 4 l8 7 l8 -7 c4 -7 -5 -10 -8 -4z" fill="#fff" opacity=".85"/>`),
   vanePv: svgw('0 0 40 50', `<path d="M20 50 V14" stroke="#7d6a5a" stroke-width="3"/><path d="M6 22 H34 M30 18 l6 4 l-6 4" stroke="#7d6a5a" stroke-width="2.5" fill="none"/><path d="M10 12 q4 -9 12 -7 q6 -5 9 1 l-2 3 q-4 -2 -6 1 l2 6 h-3 l-2 -5 h-5 l-2 5 h-3z" fill="#e5b84a"/>`)
 };
-function barnSVG(evening, vane) {
+function barnSVG(evening, vane, season) {
+  const snow = season === 'winter', win = evening ? '#ffe08a' : '#cfe8f7';
   return svgw('0 0 320 310', `
   ${vane ? `<g class="vane"><path d="M160 54 V8" stroke="#7d6a5a" stroke-width="3.5"/><path d="M142 20 H178 M172 15 l8 5 l-8 5" stroke="#7d6a5a" stroke-width="3" fill="none"/><path d="M146 6 q5 -11 15 -9 q8 -6 12 1 l-3 4 q-5 -3 -8 1 l3 8 h-4 l-3 -7 h-6 l-3 7 h-4z" fill="#e5b84a"/></g>` : ''}
-  <polygon points="6,128 160,46 314,128" fill="#a84a3a"/><polygon points="22,124 160,58 298,124" fill="#c45a45"/>
-  <path d="M6 128 L160 46 L314 128" stroke="#fff" stroke-width="7" fill="none" stroke-linejoin="round"/>
-  <rect x="30" y="122" width="260" height="184" fill="#d9705a"/>
-  <path d="${range(0, 12).map((i) => `M${44 + i * 21} 124 V306`).join(' ')}" stroke="#c4604c" stroke-width="2"/>
-  <rect x="30" y="122" width="260" height="184" fill="none" stroke="#fff" stroke-width="6"/>
-  <rect x="132" y="140" width="56" height="44" rx="6" fill="${evening ? '#ffe08a' : '#fff3d6'}" class="${evening ? 'glow-win' : ''}"/><path d="M160 140 v44 M132 162 h56" stroke="#a84a3a" stroke-width="5"/>
-  <path d="M136 184 l6 -10 l6 10 l6 -12 l6 12 l6 -9 l6 9 l6 -11 l6 11z" fill="#f2d16b"/>
-  <rect x="92" y="200" width="136" height="106" fill="${evening ? '#d9a06a' : '#b98058'}"/>
+  <polygon points="0,132 160,44 320,132" fill="${snow ? '#f6f9fd' : '#7d6152'}"/>
+  ${snow ? '' : range(0, 6).map((i) => `<path d="M${16 + i * 22} ${124 - i * 12} L${304 - i * 22} ${124 - i * 12}" stroke="#6c5244" stroke-width="2"/>`).join('')}
+  <path d="M0 132 L160 44 L320 132" stroke="${snow ? '#e3ebf5' : '#5e4537'}" stroke-width="7" fill="none" stroke-linejoin="round"/>
+  <polygon points="26,128 160,56 294,128" fill="#c48a55"/>
+  ${range(0, 11).map((i) => `<path d="M${38 + i * 22} 128 V${Math.max(62, 128 - Math.min(i + 1, 12 - i) * 11)}" stroke="#a87346" stroke-width="2.2"/>`).join('')}
+  <rect x="26" y="126" width="268" height="150" fill="#b9824f"/>
+  <path d="${range(0, 12).map((i) => `M${36 + i * 22} 128 V276`).join(' ')}" stroke="#a87346" stroke-width="2.4"/>
+  <rect x="20" y="272" width="280" height="34" fill="#e9e2d6"/>${range(0, 6).map((i) => `<rect x="${24 + i * 46}" y="${i % 2 ? 288 : 276}" width="40" height="12" rx="4" fill="#d9cfc4"/>`).join('')}
+  <g class="hwin"><rect x="132" y="138" width="56" height="40" rx="5" fill="${win}" stroke="#fff" stroke-width="4" class="${evening ? 'glow-win' : ''}"/><path d="M160 138 v40 M132 158 h56" stroke="#fff" stroke-width="3"/></g>
+  <g class="fbox">${geraniums(126, 182, 68, 5)}</g>
+  <g class="hwin"><rect x="46" y="176" width="30" height="30" rx="3" fill="${win}" stroke="#fff" stroke-width="3"/><path d="M61 176 v30 M46 191 h30" stroke="#fff" stroke-width="2"/></g>
+  <g class="hwin"><rect x="244" y="176" width="30" height="30" rx="3" fill="${win}" stroke="#fff" stroke-width="3"/><path d="M259 176 v30 M244 191 h30" stroke="#fff" stroke-width="2"/></g>
+  <g class="fbox">${geraniums(40, 210, 42, 3)}${geraniums(238, 210, 42, 3)}</g>
+  <rect x="92" y="200" width="136" height="106" fill="${evening ? '#d9a06a' : '#8a5a36'}"/>
   <ellipse cx="160" cy="300" rx="58" ry="20" fill="#f2d16b"/><path d="M110 296 l8 -12 l6 12 l8 -14 l6 14 l8 -10 l6 10 l8 -13 l6 13 l8 -11 l6 11 l8 -12 l6 12" stroke="#e1bd52" stroke-width="3" fill="none"/>
   ${evening ? '<circle cx="160" cy="226" r="9" fill="#ffd27a"/><circle cx="160" cy="226" r="22" fill="#ffd27a" opacity=".3" class="glow-win"/>' : ''}
-  <g class="door dl"><rect x="92" y="200" width="68" height="106" fill="#fff3d6"/><path d="M96 204 L156 302 M156 204 L96 302" stroke="#d9705a" stroke-width="9"/><rect x="92" y="200" width="68" height="106" fill="none" stroke="#fff" stroke-width="6"/></g>
-  <g class="door dr"><rect x="160" y="200" width="68" height="106" fill="#fff3d6"/><path d="M164 204 L224 302 M224 204 L164 302" stroke="#d9705a" stroke-width="9"/><rect x="160" y="200" width="68" height="106" fill="none" stroke="#fff" stroke-width="6"/></g>
-  <circle cx="160" cy="112" r="15" fill="#f2c14e"/><path d="M153 104 C150 116 154 121 160 121 C166 121 170 116 167 104" stroke="#c9962a" stroke-width="3.5" fill="none"/>
-  <rect x="24" y="300" width="272" height="10" rx="4" fill="#b9a99a"/>`, 'barn-svg');
+  <g class="door dl"><rect x="92" y="200" width="68" height="106" fill="#d29a64"/><path d="M96 204 L156 302 M156 204 L96 302" stroke="#f6e6c8" stroke-width="8"/><rect x="92" y="200" width="68" height="106" fill="none" stroke="#f6e6c8" stroke-width="6"/></g>
+  <g class="door dr"><rect x="160" y="200" width="68" height="106" fill="#d29a64"/><path d="M164 204 L224 302 M224 204 L164 302" stroke="#f6e6c8" stroke-width="8"/><rect x="160" y="200" width="68" height="106" fill="none" stroke="#f6e6c8" stroke-width="6"/></g>
+  <circle cx="160" cy="104" r="15" fill="#f2c14e"/><path d="M153 96 C150 108 154 113 160 113 C166 113 170 108 167 96" stroke="#c9962a" stroke-width="3.5" fill="none"/>
+  ${snow ? '<path d="M20 272 h280 v-4 q-140 -6 -280 0z" fill="#fff"/>' : ''}
+  <rect x="16" y="300" width="288" height="10" rx="4" fill="#b9a99a"/>`, 'barn-svg');
 }
+
+// ---------- Jahreszeiten & Feste (nach echtem Datum) ----------
+function seasonNow(d) {
+  const q = new URLSearchParams(location.search).get('season');
+  if (['spring', 'summer', 'autumn', 'winter'].includes(q)) return q;
+  const m = (d || new Date()).getMonth() + 1;
+  return m >= 3 && m <= 5 ? 'spring' : m >= 6 && m <= 8 ? 'summer' : m >= 9 && m <= 11 ? 'autumn' : 'winter';
+}
+function easterSunday(y) { // Gauß'sche Osterformel
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+  const hh = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - hh - k) % 7, m = Math.floor((a + 11 * hh + 22 * l) / 451);
+  const month = Math.floor((hh + l - 7 * m + 114) / 31), day = ((hh + l - 7 * m + 114) % 31) + 1;
+  return new Date(y, month - 1, day);
+}
+function festNow(d) {
+  const q = new URLSearchParams(location.search).get('fest');
+  if (['advent', 'xmas', 'easter', 'halloween', 'birthday', 'none'].includes(q)) return q === 'none' ? null : q;
+  d = d || new Date();
+  const m = d.getMonth() + 1, day = d.getDate(), today = new Date(d.getFullYear(), m - 1, day);
+  if (S.bday && S.bday.d && S.bday.m) { const diff = Math.round((today - new Date(d.getFullYear(), S.bday.m - 1, S.bday.d)) / 864e5); if (diff >= 0 && diff <= 1) return 'birthday'; }
+  if (m === 12 && day >= 24 && day <= 26) return 'xmas';
+  if ((m === 11 && day >= 27) || (m === 12 && day < 24)) return 'advent';
+  const diffE = Math.round((today - easterSunday(d.getFullYear())) / 864e5);
+  if (diffE >= -7 && diffE <= 1) return 'easter';
+  if (m === 10 && day >= 24) return 'halloween';
+  return null;
+}
+const PAL = {
+  spring: { m1: '#a8dc86', m2: '#8ccb6c', h1: '#c6e9ad', h2: '#b2e09a', h3: '#9fd486', stripe: '#c2ea9f', path: '#ead9b0', forest: '#6fa86a', snow: 1 },
+  summer: { m1: '#a3d684', m2: '#86c46a', h1: '#bfe5ab', h2: '#acdc95', h3: '#98cf82', stripe: '#b4e09a', path: '#e9d6ac', forest: '#5f9a5c', snow: 0.7 },
+  autumn: { m1: '#b9d27e', m2: '#9cbd62', h1: '#d5dc9c', h2: '#c3d488', h3: '#b0c874', stripe: '#cfdf9a', path: '#e6cc9a', forest: '#8a9a4e', snow: 1.1 },
+  winter: { m1: '#f4f8fc', m2: '#e2ecf6', h1: '#f6f9fd', h2: '#eaf1f9', h3: '#dfe9f4', stripe: '#ffffff', path: '#dfe6ee', forest: '#7d9a8e', snow: 2 }
+};
+function mountainsSVG(season, evening) {
+  const P = PAL[season], sn = P.snow;
+  const far = evening ? '#b7a9d6' : '#b9c9e8', near = evening ? '#a597c9' : '#9fb6dc', shd = evening ? '#9283bb' : '#8ba3cc';
+  const peaks = (pts, fill) => {
+    const d = 'M0 300 ' + pts.map(([x, y]) => `L${x} ${y}`).join(' ') + ' L1000 300 Z';
+    const tops = pts.filter((q) => q[2]);
+    const shades = tops.map(([x, y]) => `<path d="M${x} ${y} L${x + 90} 300 L${x + 30} 300 Z" fill="${shd}" opacity=".35"/>`).join('');
+    const caps = tops.map(([x, y]) => { const w = 34 * sn, hh = 30 * sn; return `<path d="M${x - w} ${y + hh} L${x} ${y} L${x + w} ${y + hh} L${x + w * 0.55} ${y + hh * 0.8} L${x + w * 0.2} ${y + hh * 1.05} L${x - w * 0.2} ${y + hh * 0.8} L${x - w * 0.6} ${y + hh * 1.02} Z" fill="#fff"/><path d="M${x} ${y} L${x + w} ${y + hh} L${x + w * 0.55} ${y + hh * 0.8} L${x + w * 0.2} ${y + hh * 1.05} Z" fill="#e3ebf7"/>`; }).join('');
+    return `<path d="${d}" fill="${fill}"/>${shades}${caps}`;
+  };
+  const trees = range(0, 39).map((i) => { const x = i * 26 + (i % 3) * 4, y = 236 + (i % 4) * 4; return [x, y]; });
+  return `<svg viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true">
+    ${peaks([[0, 170], [70, 120, 1], [150, 160], [230, 88, 1], [300, 140], [360, 110, 1], [430, 150], [520, 70, 1], [600, 130], [680, 96, 1], [760, 150], [840, 104, 1], [920, 140], [1000, 118]], far)}
+    ${peaks([[0, 220], [110, 160, 1], [210, 210], [330, 150, 1], [420, 205], [600, 140, 1], [700, 200], [800, 166, 1], [900, 214], [1000, 180]], near)}
+    <path d="M0 250 Q120 220 260 236 T520 228 T800 236 T1000 226 L1000 300 L0 300 Z" fill="${P.forest}"/>
+    <g fill="${shade(P.forest, 0.85)}">${trees.map(([x, y]) => `<path d="M${x} ${y + 24} L${x + 9} ${y} L${x + 18} ${y + 24} Z"/>`).join('')}</g>
+    ${season === 'winter' ? `<g fill="#fff" opacity=".85">${trees.map(([x, y]) => `<path d="M${x + 5} ${y + 10} L${x + 9} ${y} L${x + 13} ${y + 10} Z"/>`).join('')}</g>` : ''}
+  </svg>`;
+}
+function chapelSVG(season) {
+  const roof = season === 'winter' ? '#f4f7fb' : '#c45a45';
+  return svgw('0 0 80 120', `<rect x="20" y="58" width="40" height="56" fill="#fbf7ee"/><path d="M14 62 L40 40 L66 62 Z" fill="${roof}"/>
+    <rect x="30" y="20" width="20" height="40" fill="#fbf7ee"/><rect x="36" y="28" width="8" height="10" rx="4" fill="#7a6a8a"/>
+    <path d="M28 22 C28 8 52 8 52 22 Z" fill="#5f8f5a"/><ellipse cx="40" cy="8" rx="6" ry="7" fill="#5f8f5a"/><path d="M40 -4 V2 M37 -1 H43" stroke="#e5b84a" stroke-width="2"/>
+    <path d="M34 114 V96 a6 6 0 0 1 12 0 V114 Z" fill="#9a6640"/><circle cx="40" cy="76" r="5" fill="#b5dcff"/>`);
+}
+function maibaumSVG() {
+  return svgw('0 0 40 260', `<rect x="17" y="10" width="6" height="250" fill="#fff"/>
+    ${range(0, 19).map((i) => `<path d="M17 ${16 + i * 12} L23 ${22 + i * 12} L23 ${28 + i * 12} L17 ${22 + i * 12} Z" fill="#5b8fd6"/>`).join('')}
+    <ellipse cx="20" cy="58" rx="16" ry="4" fill="#5c9e4a"/><ellipse cx="20" cy="120" rx="13" ry="3.4" fill="#5c9e4a"/>
+    <path d="M20 58 q-10 8 -12 18 M20 58 q10 8 12 18 M20 120 q-8 6 -10 14 M20 120 q8 6 10 14" stroke="#f48fb1" stroke-width="1.6" fill="none"/>
+    <path d="M20 10 L8 -2 L20 4 L32 -2 Z" fill="#5c9e4a"/><rect x="5" y="80" width="10" height="7" rx="2" fill="#fff8ec"/><rect x="25" y="96" width="10" height="7" rx="2" fill="#fff8ec"/>`);
+}
+function geraniums(x, y, w, n) { // rote Geranien im Blumenkasten
+  return `<rect x="${x}" y="${y}" width="${w}" height="9" rx="2" fill="#8a5a36"/><rect x="${x}" y="${y}" width="${w}" height="3" rx="1.5" fill="#a87b52"/>
+    ${range(0, n - 1).map((i) => { const cx = x + 5 + i * ((w - 10) / Math.max(1, n - 1)); return `<ellipse cx="${cx}" cy="${y - 2}" rx="6" ry="4" fill="#5c9e4a"/><circle cx="${cx - 2}" cy="${y - 6}" r="3.6" fill="#e8484f"/><circle cx="${cx + 2.5}" cy="${y - 7}" r="3.2" fill="#f2625f"/><circle cx="${cx}" cy="${y - 9}" r="2.6" fill="#ff7b74"/>`; }).join('')}`;
+}
+function farmhouseSVG(evening, season, fest) {
+  const win = evening ? '#ffe08a' : '#cfe8f7', snow = season === 'winter';
+  const lowWin = (x, i) => `<g class="hwin" data-win="${i}"><rect x="${x - 4}" y="196" width="8" height="40" fill="#4f8f5b"/><rect class="pane" x="${x}" y="196" width="34" height="40" rx="2" fill="${win}" stroke="#fff" stroke-width="3"/><path d="M${x + 17} 196 v40 M${x} 214 h34" stroke="#fff" stroke-width="2.5"/><rect x="${x + 34}" y="196" width="8" height="40" fill="#4f8f5b"/><path d="M${x - 4} 204 h8 M${x - 4} 212 h8 M${x - 4} 220 h8 M${x - 4} 228 h8 M${x + 34} 204 h8 M${x + 34} 212 h8 M${x + 34} 220 h8 M${x + 34} 228 h8" stroke="#3f7a4b" stroke-width="1.4"/></g>
+    <g class="fbox">${geraniums(x - 6, 238, 46, 4)}</g>`;
+  const upWin = (x, i) => `<g class="hwin" data-win="u${i}"><rect x="${x - 4}" y="118" width="7" height="30" fill="#4f8f5b"/><rect class="pane" x="${x}" y="118" width="28" height="30" rx="2" fill="${win}" stroke="#f6e6c8" stroke-width="2.5"/><path d="M${x + 14} 118 v30 M${x} 132 h28" stroke="#f6e6c8" stroke-width="2"/><rect x="${x + 28}" y="118" width="7" height="30" fill="#4f8f5b"/></g>`;
+  const lights = fest === 'advent' || fest === 'xmas';
+  return svgw('0 0 400 300', `
+    <rect x="330" y="30" width="20" height="50" fill="#d9cfc4"/><rect x="326" y="26" width="28" height="8" fill="#b9a99a"/>
+    <g class="smoke"><circle cx="340" cy="18" r="8" fill="#fff" opacity=".7"/><circle cx="348" cy="6" r="10" fill="#fff" opacity=".5"/></g>
+    <polygon points="0,112 200,36 400,112" fill="${snow ? '#f6f9fd' : '#7d6152'}"/>
+    ${snow ? '' : range(0, 5).map((i) => `<path d="M${20 + i * 30} ${104 - i * 11.4} L${380 - i * 30} ${104 - i * 11.4}" stroke="#6c5244" stroke-width="2"/>`).join('')}
+    <path d="M0 112 L200 36 L400 112" stroke="${snow ? '#e3ebf5' : '#5e4537'}" stroke-width="7" fill="none" stroke-linejoin="round"/>
+    <polygon points="40,108 200,50 360,108" fill="#b9824f"/>
+    ${range(0, 14).map((i) => `<path d="M${50 + i * 21} 108 V${Math.max(54, 108 - Math.min(i + 1, 15 - i) * 7.6)}" stroke="#a87346" stroke-width="2"/>`).join('')}
+    <circle cx="200" cy="82" r="11" fill="#f6cf5a"/><path d="M200 66 v32 M184 82 h32 M189 71 l22 22 M211 71 l-22 22" stroke="#e5b84a" stroke-width="2"/>
+    <rect x="40" y="108" width="320" height="64" fill="#c48a55"/>
+    ${range(0, 14).map((i) => `<path d="M${52 + i * 21} 108 V172" stroke="#b07847" stroke-width="2"/>`).join('')}
+    ${upWin(78, 0)}${upWin(186, 1)}${upWin(294, 2)}
+    <rect x="30" y="150" width="340" height="6" fill="#8a5a36"/><rect x="30" y="172" width="340" height="7" fill="#8a5a36"/>
+    ${range(0, 33).map((i) => `<path d="M${36 + i * 10} 156 v16" stroke="#a87346" stroke-width="5" stroke-linecap="round"/>`).join('')}
+    <g class="fbox">${geraniums(36, 146, 100, 7)}${geraniums(150, 146, 100, 7)}${geraniums(264, 146, 100, 7)}</g>
+    <rect x="44" y="179" width="312" height="117" fill="#fbf7ee"/><rect x="44" y="179" width="312" height="10" fill="#ece3d3"/>
+    ${lowWin(70, 0)}${lowWin(132, 1)}${lowWin(258, 2)}${lowWin(318, 3)}
+    <path d="M184 296 V222 a16 16 0 0 1 32 0 V296 Z" fill="#8a5a36"/><path d="M200 206 V296" stroke="#6c4528" stroke-width="2"/><circle cx="194" cy="262" r="2.4" fill="#e5b84a"/>
+    <path d="M200 194 c-3 -6 -12 -3 -8 4 l8 7 l8 -7 c4 -7 -5 -10 -8 -4z" fill="#f48fb1"/>
+    <rect x="176" y="292" width="48" height="8" rx="2" fill="#c9bfb4"/><rect x="36" y="294" width="328" height="6" rx="3" fill="#d9cfc4"/>
+    ${snow ? '<path d="M30 150 h340 v-4 q-170 -8 -340 0 z" fill="#fff"/>' : ''}
+    ${lights ? `<path d="M30 150 ${range(0, 15).map((i) => `Q${41 + i * 21} 162 ${51 + i * 21} 150`).join(' ')}" stroke="#4f8a4a" stroke-width="5" fill="none"/>${range(0, 15).map((i) => `<circle class="twl" style="animation-delay:${-(i % 4) * 0.5}s" cx="${41 + i * 21}" cy="158" r="3.4" fill="${['#ffd166', '#f48fb1', '#b5dcff', '#fff3a8'][i % 4]}"/>`).join('')}<path d="M92 126 l3 6 l7 1 l-5 5 l1 7 l-6 -3 l-6 3 l1 -7 l-5 -5 l7 -1 Z" fill="#ffd166" class="twl"/>` : ''}
+  `, 'house-svg');
+}
+function woodpileSVG(season) {
+  return svgw('0 0 120 70', `<rect x="4" y="8" width="112" height="6" rx="2" fill="${season === 'winter' ? '#fff' : '#7d6152'}"/>${range(0, 2).map((r) => range(0, 5).map((i) => `<circle cx="${12 + i * 17 + (r % 2) * 8}" cy="${58 - r * 15}" r="8" fill="#c99d6e" stroke="#a87b52" stroke-width="2"/><circle cx="${12 + i * 17 + (r % 2) * 8}" cy="${58 - r * 15}" r="3" fill="none" stroke="#a87b52" stroke-width="1.2"/>`).join('')).join('')}<rect x="6" y="12" width="5" height="56" fill="#8a5a36"/><rect x="109" y="12" width="5" height="56" fill="#8a5a36"/>`);
+}
+function cowSVG(spot) {
+  return svgw('0 0 140 100', `<g class="cow-tail"><path d="M18 46 C6 50 6 70 10 78" stroke="#f3eee6" stroke-width="4" fill="none"/><ellipse cx="10" cy="80" rx="4" ry="6" fill="#6a4a38"/></g>
+    <rect x="28" y="62" width="10" height="30" rx="5" fill="#e9e1d6"/><rect x="92" y="62" width="10" height="30" rx="5" fill="#e9e1d6"/>
+    <ellipse cx="66" cy="54" rx="50" ry="24" fill="#fbf8f2"/><ellipse cx="50" cy="48" rx="16" ry="11" fill="${spot}"/><ellipse cx="82" cy="60" rx="12" ry="8" fill="${spot}"/><ellipse cx="38" cy="64" rx="7" ry="5" fill="${spot}"/>
+    <ellipse cx="64" cy="76" rx="9" ry="5" fill="#f7c3cf"/>
+    <rect x="40" y="64" width="10" height="30" rx="5" fill="#fbf8f2"/><rect x="104" y="62" width="10" height="30" rx="5" fill="#fbf8f2"/>
+    <path d="M36 92 h16 M100 92 h16" stroke="#6a4a38" stroke-width="5" stroke-linecap="round"/>
+    <g class="cow-head"><path d="M104 36 l-8 -10 l10 4 Z M128 36 l8 -10 l-10 4 Z" fill="#e9dccb"/><ellipse cx="116" cy="46" rx="15" ry="17" fill="#fbf8f2"/><ellipse cx="116" cy="58" rx="12" ry="8" fill="#f7c3cf"/><circle cx="112" cy="58" r="1.8" fill="#b77a86"/><circle cx="120" cy="58" r="1.8" fill="#b77a86"/>
+    <circle cx="110" cy="43" r="2.6" fill="#3a2a20"/><circle cx="122" cy="43" r="2.6" fill="#3a2a20"/><ellipse cx="104" cy="38" rx="7" ry="3.5" fill="${spot}" transform="rotate(-20 104 38)"/>
+    <path d="M106 64 Q116 70 126 64" stroke="#8a5a36" stroke-width="2.4" fill="none"/><path d="M110 68 L116 80 L122 68 Z" fill="#f2c14e" stroke="#c9962a" stroke-width="1.5"/><circle cx="116" cy="80" r="2" fill="#c9962a"/></g>`);
+}
+function tractorSVG() {
+  return svgw('0 0 130 90', `<rect x="20" y="40" width="70" height="26" rx="6" fill="#6fb85a"/><rect x="50" y="14" width="34" height="30" rx="4" fill="#6fb85a"/><rect x="55" y="19" width="24" height="18" rx="3" fill="#cfe8f7"/>
+    <rect x="86" y="44" width="30" height="20" rx="5" fill="#86c96d"/><rect x="100" y="28" width="5" height="18" fill="#5a4a40"/>
+    <g class="wheel"><circle cx="40" cy="68" r="20" fill="#3b3332"/><circle cx="40" cy="68" r="9" fill="#f2c14e"/><path d="M40 50 v36 M22 68 h36" stroke="#5a504a" stroke-width="3"/></g>
+    <g class="wheel"><circle cx="104" cy="74" r="13" fill="#3b3332"/><circle cx="104" cy="74" r="6" fill="#f2c14e"/></g>
+    <circle cx="68" cy="28" r="5" fill="#f6d0b1"/><path d="M62 26 C62 18 74 18 74 26 Z" fill="#5b8fd6"/>`);
+}
+function beeSVG() { return svgw('0 0 30 24', `<g class="wings"><ellipse cx="12" cy="6" rx="6" ry="5" fill="#fff" opacity=".85"/><ellipse cx="18" cy="6" rx="6" ry="5" fill="#fff" opacity=".85"/></g><ellipse cx="15" cy="14" rx="10" ry="7" fill="#ffd166"/><path d="M12 8 v12 M17 8 v12" stroke="#5a4033" stroke-width="2.6"/><circle cx="24" cy="12" r="1.4" fill="#5a4033"/>`); }
+function pumpkinSVG(k) { // freundliche Kürbisse – nur lächelnd, nichts Gruseliges
+  return svgw('0 0 80 70', `<path d="M40 14 q2 -10 8 -12" stroke="#6a8a3a" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="22" cy="42" rx="18" ry="22" fill="#f59e4c"/><ellipse cx="58" cy="42" rx="18" ry="22" fill="#f59e4c"/><ellipse cx="40" cy="42" rx="20" ry="25" fill="#f8ad5c"/>
+    <path d="M40 18 v48 M28 20 q-6 22 0 44 M52 20 q6 22 0 44" stroke="#e58a3a" stroke-width="2" fill="none"/>
+    ${k % 2 ? '<circle cx="32" cy="38" r="3" fill="#7a4a2a"/><circle cx="48" cy="38" r="3" fill="#7a4a2a"/><path d="M32 48 Q40 55 48 48" stroke="#7a4a2a" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="27" cy="46" r="3" fill="#f7a8c4" opacity=".6"/><circle cx="53" cy="46" r="3" fill="#f7a8c4" opacity=".6"/>' : '<path d="M30 8 q4 4 8 0" stroke="#6fb85a" stroke-width="3" fill="none"/>'}`);
+}
+function eggSVG(c) { return svgw('0 0 30 38', `<ellipse cx="15" cy="21" rx="12" ry="15" fill="${c}"/><path d="M4 20 q5.5 -5 11 0 t11 0" stroke="#fff" stroke-width="3" fill="none"/><circle cx="10" cy="28" r="2" fill="#fff"/><circle cx="19" cy="29" r="2" fill="#fff"/><ellipse cx="10" cy="13" rx="3" ry="4" fill="#fff" opacity=".5"/>`); }
+function xmasTreeSVG() { return svgw('0 0 80 120', `<rect x="35" y="96" width="10" height="18" fill="#8a5a36"/><path d="M40 6 L64 46 L54 46 L72 76 L60 76 L78 104 L2 104 L20 76 L8 76 L26 46 L16 46 Z" fill="#4f8a4a"/>${[[34, 40], [48, 58], [28, 70], [52, 84], [24, 92], [40, 76], [60, 98]].map(([x, y], i) => `<circle class="twl" style="animation-delay:${-i * 0.4}s" cx="${x}" cy="${y}" r="4" fill="${['#f48fb1', '#ffd166', '#b5dcff', '#fff3a8'][i % 4]}"/>`).join('')}<path d="M40 0 l3 6 l7 1 l-5 5 l1 7 l-6 -3 l-6 3 l1 -7 l-5 -5 l7 -1 Z" fill="#ffd166"/>`); }
+function balloonsSVG() { return svgw('0 0 90 160', [[20, 40, '#f48fb1'], [46, 26, '#ffd166'], [70, 44, '#b5dcff']].map(([x, y, c]) => `<path d="M${x} ${y + 22} Q${x + (45 - x) * 0.4} ${y + 70} 45 158" stroke="#b9a99a" stroke-width="1.4" fill="none"/><ellipse cx="${x}" cy="${y}" rx="16" ry="20" fill="${c}"/><ellipse cx="${x - 5}" cy="${y - 7}" rx="4" ry="6" fill="#fff" opacity=".5"/><path d="M${x - 3} ${y + 20} l3 5 l3 -5 z" fill="${c}"/>`).join('')); }
+function treeSVG(season) {
+  const trunk = `<path d="M90 240 C92 200 88 170 80 150 L104 150 C100 172 108 205 114 240 Z" fill="#9a6640"/><path d="M96 175 C80 160 70 150 60 148" stroke="#9a6640" stroke-width="8" fill="none" stroke-linecap="round"/>`;
+  if (season === 'winter') return svgw('0 0 200 240', `${trunk}<g stroke="#9a6640" stroke-linecap="round" fill="none"><path d="M92 152 C88 120 70 100 50 86" stroke-width="9"/><path d="M96 150 C104 116 126 96 150 84" stroke-width="9"/><path d="M94 150 C96 110 98 80 100 44" stroke-width="8"/><path d="M70 106 L46 112 M126 100 L150 108 M99 80 L80 60 M100 70 L120 52" stroke-width="5"/></g>
+    <g stroke="#fff" stroke-linecap="round" fill="none" stroke-width="4"><path d="M54 84 C66 92 78 104 86 120"/><path d="M146 82 C134 92 118 104 108 120"/><path d="M98 48 C98 60 98 70 97 82"/><path d="M48 110 L66 106 M130 100 L148 106"/></g>
+    <ellipse cx="100" cy="238" rx="60" ry="8" fill="#fff"/>`);
+  const C = season === 'autumn' ? ['#eaa24a', '#f4bf5c', '#dc8a3c', '#f6cc6e', '#ffdb8e'] : season === 'spring' ? ['#93d47c', '#a6df8e', '#86c873', '#a6df8e', '#bde9a8'] : ['#7cc36a', '#8fd27a', '#73b862', '#8fd27a', '#9fdc89'];
+  const dots = season === 'spring' ? range(0, 21).map((i) => { const a = i * 2.4, r = 20 + (i * 13) % 52; const x = (100 + Math.cos(a) * r).toFixed(0), y = (88 + Math.sin(a) * r * 0.8).toFixed(0); return `<circle cx="${x}" cy="${y}" r="5.5" fill="${i % 3 ? '#fde3ec' : '#f7a8c4'}"/><circle cx="${x}" cy="${y}" r="1.8" fill="#ffd166"/>`; }).join('')
+    : [[70, 90], [118, 70], [140, 120], [92, 124], [52, 122], [110, 104], [76, 52]].slice(0, season === 'autumn' ? 5 : 7).map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7.5" fill="#f26d6d"/><circle cx="${x - 2.5}" cy="${y - 2.5}" r="2.2" fill="#fff" opacity=".6"/>`).join('');
+  const ground = season === 'autumn' ? [[40, 236, '#eaa24a'], [70, 232, '#dc8a3c'], [130, 234, '#f4bf5c'], [160, 238, '#eaa24a'], [110, 238, '#f26d6d']].map(([x, y, c]) => `<ellipse cx="${x}" cy="${y}" rx="7" ry="3.5" fill="${c}" transform="rotate(${x % 40 - 20} ${x} ${y})"/>`).join('')
+    : season === 'spring' ? [[50, 236], [80, 232], [130, 236], [150, 232]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3" fill="#fde3ec"/>`).join('') : '<circle cx="130" cy="232" r="7" fill="#f26d6d"/><circle cx="62" cy="234" r="6.5" fill="#f26d6d"/>';
+  return svgw('0 0 200 240', `${trunk}<g class="canopy"><circle cx="100" cy="92" r="66" fill="${C[0]}"/><circle cx="55" cy="110" r="42" fill="${C[1]}"/><circle cx="148" cy="108" r="44" fill="${C[2]}"/><circle cx="100" cy="52" r="44" fill="${C[3]}"/><circle cx="80" cy="80" r="28" fill="${C[4]}" opacity=".7"/>${dots}</g>${ground}`);
+}
+// fallende Blüten / Blätter / Schneeflocken (wenige, sanft; bei „Bewegung reduzieren“ aus)
+function seasonParticles(season, n) {
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
+  if (season === 'summer') return null;
+  const box = h('div', { class: 'particles ' + season, 'aria-hidden': 'true' });
+  const chars = season === 'spring' ? ['🌸', '🌸', '💮'] : season === 'autumn' ? ['🍂', '🍁', '🍂'] : ['❄', '❅', '❆'];
+  range(1, n || 12).forEach((i) => { const p = h('span', null, chars[i % chars.length]); p.style.left = ((i * 37) % 100) + '%'; p.style.animationDuration = (season === 'winter' ? 12 : 14) + (i % 5) * 2 + 's'; p.style.animationDelay = -(i * 1.7) + 's'; p.style.fontSize = (season === 'winter' ? 14 : 18) + (i % 3) * 5 + 'px'; p.style.setProperty('--dx', ((i % 2 ? 1 : -1) * (30 + (i % 4) * 15)) + 'px'); box.append(p); });
+  return box;
+}
+const FEST_SAY = { advent: 'Es ist Adventszeit! Am Bauernhaus leuchten Lichter. ✨', xmas: 'Frohe Weihnachten auf dem Pferdehof! 🎄', easter: 'Frohe Ostern! Der Osterhase hat bunte Eier im Gras versteckt – findest du sie? 🥚', halloween: 'Herbstfest! Lustige Kürbisse lächeln dich an. 🎃' };
+// Hintergrund für den Reitplatz: Berge, Wiesen, Kapelle
+function sceneryBack() {
+  const sea = seasonNow(), P = PAL[sea];
+  return `<div class="r-mtn">${mountainsSVG(sea, false)}</div><div class="r-hills"><svg viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true"><path d="M0 120 Q200 50 420 110 T1000 90 L1000 300 L0 300 Z" fill="${P.h1}"/><path d="M0 170 Q300 110 600 160 T1000 140 L1000 300 L0 300 Z" fill="${P.h2}"/></svg></div><div class="r-chapel">${chapelSVG(sea)}</div><div class="r-grass" style="background:linear-gradient(180deg,${P.m1},${P.m2})"></div>`;
+}
+
 function pondSVG() {
   return svgw('0 0 300 130', `<ellipse cx="150" cy="70" rx="146" ry="56" fill="#8bc77a"/><ellipse cx="150" cy="68" rx="134" ry="48" fill="#7fcdef"/><ellipse cx="150" cy="64" rx="118" ry="38" fill="#a6defa"/>
   <ellipse class="ripple" cx="110" cy="66" rx="24" ry="7" fill="none" stroke="#fff" stroke-width="2"/><ellipse class="ripple" style="animation-delay:-2s" cx="196" cy="74" rx="20" ry="6" fill="none" stroke="#fff" stroke-width="2"/>
@@ -2133,6 +2365,8 @@ const cloth = (id) => CLOTHES.find((c) => c.id === id);
 function riderState() {
   if (!S.rider || typeof S.rider !== 'object') S.rider = { set: false, skin: SKINS[1], hair: HAIRS[1], style: 'zopf', wear: {} };
   if (!S.rider.wear) S.rider.wear = {};
+  if (typeof S.rider.skin !== 'string' || !SKINS.includes(S.rider.skin)) S.rider.skin = SKINS[1];
+  if (typeof S.rider.hair !== 'string' || !HAIRS.includes(S.rider.hair)) S.rider.hair = HAIRS[1];
   if (!Array.isArray(S.clothes)) S.clothes = [];
   if (!Array.isArray(S.rosettes)) S.rosettes = [];
   return S.rider;
@@ -2474,9 +2708,9 @@ function showStable() {
   currentScreen = 'stable';
   repairFarm();
   clearInterval(ambientTimer);
-  const mood = farmMood();
+  const mood = farmMood(), season = seasonNow(), fest = festNow(), P = PAL[season];
   app.innerHTML = '';
-  const farm = h('div', { class: 'farm scene ' + mood, id: 'scene' });
+  const farm = h('div', { class: 'farm scene ' + mood + ' season-' + season + (fest ? ' fest-' + fest : ''), id: 'scene' });
   farm.addEventListener('scroll', () => { if (farm.scrollLeft || farm.scrollTop) { farm.scrollLeft = 0; farm.scrollTop = 0; } }); // nie verrutschen (Safari scrollt sonst versteckte Ränder ins Bild)
   const main = h('main', { id: 'screen', class: 'farm-screen' }, farm);
   app.append(main);
@@ -2496,20 +2730,52 @@ function showStable() {
   });
   // Sachen am Himmel (Regenbogen) liegen hinter den Hügeln
   const skyLayer = add(h('div', { class: 'skylayer' }));
-  add(h('div', { class: 'layer hills-far px2', html: `<svg viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true"><path d="M0 180 Q150 60 320 140 T640 120 T1000 130 L1000 300 L0 300 Z" fill="#bfe5ab"/><g fill="#a5d892">${[[120, 128], [480, 140], [820, 120]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="16"/><circle cx="${x + 18}" cy="${y + 6}" r="12"/>`).join('')}</g></svg>` }));
-  add(h('div', { class: 'layer hills-mid px3', html: `<svg viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true"><path d="M0 200 Q200 110 450 170 T1000 150 L1000 300 L0 300 Z" fill="#acdc95"/></svg>` }));
-  add(h('div', { class: 'layer meadow', html: `<svg viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a3d684"/><stop offset="1" stop-color="#86c46a"/></linearGradient></defs><path d="M0 40 Q250 0 520 30 T1000 24 L1000 500 L0 500 Z" fill="url(#mg)"/><path d="M0 200 Q300 160 600 210 T1000 190" stroke="#b4e09a" stroke-width="26" fill="none" opacity=".5"/><path d="M0 360 Q350 320 700 370 T1000 350" stroke="#b4e09a" stroke-width="30" fill="none" opacity=".4"/><path d="M-20 500 Q120 300 260 230 Q330 200 420 196" stroke="#e9d6ac" stroke-width="38" fill="none" opacity=".75" stroke-linecap="round"/></svg>` }));
+  add(h('div', { class: 'layer mtn', html: mountainsSVG(season, mood === 'evening') }));
+  add(h('div', { class: 'layer hills-far px2', html: `<svg viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true"><path d="M0 180 Q150 60 320 140 T640 120 T1000 130 L1000 300 L0 300 Z" fill="${P.h1}"/><g fill="${P.h3}">${[[120, 128], [480, 140], [820, 120]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="16"/><circle cx="${x + 18}" cy="${y + 6}" r="12"/>`).join('')}</g></svg>` }));
+  add(h('div', { class: 'layer hills-mid px3', html: `<svg viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true"><path d="M0 200 Q200 110 450 170 T1000 150 L1000 300 L0 300 Z" fill="${P.h2}"/><path d="M0 262 Q260 228 520 246 T1000 238" stroke="${P.path}" stroke-width="7" fill="none" opacity=".8"/></svg>` }));
+  const chapel = at(add(h('div', { class: 'scen chapel', html: chapelSVG(season) })), 58, 41.5, 4, 5);
+  chapel.addEventListener('click', () => { Sound.chime(); fsay('Ding, dong! Die kleine Kapelle läutet. 🔔'); });
+  const tractor = at(add(h('div', { class: 'scen tractor', html: tractorSVG() })), -14, 47.5, 6.5, 7);
+  let tractorT = 0;
+  const driveTractor = () => { if (currentScreen !== 'stable' || tractor.classList.contains('drive')) return; tractor.classList.add('drive'); Sound.putt(); setTimeout(() => tractor.classList.remove('drive'), 24500); };
+  tractor.addEventListener('animationend', () => tractor.classList.remove('drive'));
+  tractor.addEventListener('click', (e) => { e.stopPropagation(); Sound.honk(); fsay('Tut, tut! Der Bauer winkt dir vom Traktor zu. 🚜👋'); });
+  tractorT = setTimeout(driveTractor, 5000);
+  add(h('div', { class: 'layer meadow', html: `<svg viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.m1}"/><stop offset="1" stop-color="${P.m2}"/></linearGradient></defs><path d="M0 40 Q250 0 520 30 T1000 24 L1000 500 L0 500 Z" fill="url(#mg)"/><path d="M0 200 Q300 160 600 210 T1000 190" stroke="${P.stripe}" stroke-width="26" fill="none" opacity=".5"/><path d="M0 360 Q350 320 700 370 T1000 350" stroke="${P.stripe}" stroke-width="30" fill="none" opacity=".4"/><path d="M-20 500 Q120 300 260 230 Q330 200 420 196" stroke="${P.path}" stroke-width="38" fill="none" opacity=".75" stroke-linecap="round"/><path class="stream" d="M1010 34 C960 70 990 110 940 150 S900 260 860 300 S800 380 805 410" stroke="${season === 'winter' ? '#dcecf8' : '#9fd3f2'}" stroke-width="16" fill="none" stroke-linecap="round"/><path class="stream-glint" d="M1010 34 C960 70 990 110 940 150 S900 260 860 300 S800 380 805 410" stroke="#fff" stroke-width="3" fill="none" stroke-dasharray="14 40" opacity=".8"/></svg>` }));
   add(h('div', { class: 'tint' }));
 
   // Feste Kulisse: Scheune, Baum, Teich mit Enten, Zaun, Gras, Blumen, Schmetterling
-  const barn = at(add(h('div', { class: 'scen barn' + (S.barnOpen ? ' open' : ''), id: 'barn', html: barnSVG(mood === 'evening', has('wetterfahne')) })), 20, 64, 38);
-  barn.addEventListener('click', () => {
+  const barn = at(add(h('div', { class: 'scen barn' + (S.barnOpen ? ' open' : ''), id: 'barn', html: barnSVG(mood === 'evening', has('wetterfahne'), season) })), 20, 64, 38);
+  barn.addEventListener('click', (e) => {
+    if (e.target.closest('.fbox')) { Sound.sparkle(); fsay(pick(['Die roten Geranien duften so gut! 🌺', 'Blumenkästen wie in Bayern – wunderschön! 🌺'])); return; }
     barn.classList.toggle('open'); S.barnOpen = barn.classList.contains('open'); save(); Sound.door();
     if (S.barnOpen) setTimeout(() => { const n = callHorsesOut(true); fsay(n ? 'Alle Pferde kommen aus der Scheune! 🐴💕' : 'Die Scheune ist offen. Alle Pferde sind draußen auf der Koppel! 🐴'); }, 500);
   });
-  at(add(h('div', { class: 'scen tree', html: ART.tree })), 92, 64, 28);
+  at(add(h('div', { class: 'scen tree', html: treeSVG(season) })), 92, 64, 28);
+  const maibaum = at(add(h('div', { class: 'scen maibaum', html: maibaumSVG() })), 41, 50.5, 3.8, 7);
+  maibaum.addEventListener('click', () => { Sound.sparkle(); fsay('Der weiß-blaue Maibaum – das ist typisch bayerisch! 💙🤍'); });
+  const house = at(add(h('div', { class: 'scen house', html: farmhouseSVG(mood === 'evening', season, fest) })), 73, 56, 32);
+  house.addEventListener('click', (e) => {
+    const w = e.target.closest('.hwin'), fb = e.target.closest('.fbox');
+    if (w) { w.classList.toggle('lit'); Sound.pop(); fsay(pick(['Die Bäuerin winkt aus dem Fenster! 👋', 'Hier riecht es nach frischem Apfelstrudel! 🥧', 'Im Fenster sitzt eine Katze und blinzelt. 🐈'])); }
+    else if (fb) { Sound.sparkle(); fsay(pick(['Die roten Geranien blühen so schön! 🌺', 'Auf dem Balkon summen die Bienen in den Blumen. 🐝'])); }
+    else { Sound.tap(); fsay('Das ist das Bauernhaus mit dem Holzbalkon. 🏡'); }
+  });
+  const wood = at(add(h('div', { class: 'scen woodpile', html: woodpileSVG(season) })), 58.5, 57, 7.5);
+  wood.addEventListener('click', () => { Sound.hop(); fsay('Brennholz für den Winter – schön ordentlich gestapelt! 🪵'); });
+  [[47, 54.5, 9, '#8a5a3c', false], [53.5, 51.5, 7, '#4a3a32', true]].forEach(([x, y, sc, spot, flip], i) => {
+    const cow = at(add(h('div', { class: 'scen cow' + (flip ? ' flip' : ''), 'data-cow': String(i), html: cowSVG(spot) })), x, y, sc);
+    cow.addEventListener('click', (e) => { e.stopPropagation(); Sound.moo(); Sound.cowbell(0.4); fsay(pick(['Muuuh! Die Kuh freut sich über Besuch. 🐄', 'Bimmel, bammel – hörst du die Kuhglocke? 🔔', 'Die Kuh kaut gemütlich frisches Gras. 🌿'])); });
+  });
+  range(0, 1).forEach((i) => { const b = add(h('div', { class: 'bee b' + i, html: beeSVG() })); b.style.zIndex = 2800; b.addEventListener('pointerdown', (e) => { e.stopPropagation(); Sound.buzz(); fsay('Summ, summ! Die Biene sammelt Honig. 🐝'); }); });
+  // Feste und Jahreszeit-Schmuck
+  if (fest === 'halloween') [[30, 72, 5], [9, 82, 4], [64, 63, 4.4]].forEach(([x, y, sc], i) => { const k = at(add(h('div', { class: 'scen fest pumpkin', html: pumpkinSVG(i) })), x, y, sc); k.addEventListener('click', () => { Sound.pop(); fsay('Ein lustiger Kürbis! Er lächelt dich an. 🎃😊'); }); });
+  if (fest === 'advent' || fest === 'xmas') { const t = at(add(h('div', { class: 'scen fest xtree', html: xmasTreeSVG() })), 36, 66, 8); t.addEventListener('click', () => { Sound.sleigh(); fsay('Der Christbaum funkelt! ✨🎄'); }); }
+  if (fest === 'easter') ['#f7a8c4', '#b5dcff', '#ffe08a', '#bfe5ab', '#d6c2f2'].forEach((c, i) => { const eg = at(add(h('div', { class: 'scen fest egg', html: eggSVG(c) })), [14, 34, 55, 70, 90][i], [70, 88, 66, 96, 80][i], 3, 2700); eg.addEventListener('click', () => { if (eg.classList.contains('got')) return; eg.classList.add('got'); Sound.sparkle(); const left = farm.querySelectorAll('.egg:not(.got)').length; fsay(left ? `Ein Osterei gefunden! Noch ${left} versteckt. 🥚` : 'Alle Ostereier gefunden! Frohe Ostern! 🐰💕'); }); });
+  if (fest === 'birthday') { at(add(h('div', { class: 'scen fest balloons', html: balloonsSVG() })), 36, 63, 7); }
+  const parts = seasonParticles(season, 12); if (parts) add(parts);
   const fence = add(h('div', { class: 'fence', html: ART.fence })); fence.style.zIndex = 100 + 58 * 10;
-  const pond = at(add(h('div', { class: 'scen pond', id: 'pond', html: pondSVG() })), 83, 92, 34, 95);
+  const pond = at(add(h('div', { class: 'scen pond' + (season === 'winter' ? ' ice' : ''), id: 'pond', html: pondSVG() })), 83, 92, 34, 95);
   [['#fffdf5', '#f6b26b', 7, 0], ['#ffe27a', '#f6b26b', 4.2, -3], ['#ffe27a', '#f6b26b', 4, -3.6]].forEach(([c, bill, s, dl], i) => {
     const d = h('div', { class: 'duck', html: ART.duck(c, bill) });
     d.style.setProperty('--s', s); d.style.animationDelay = dl + 's'; d.style.top = (i ? 34 : 26) + '%'; d.style.left = (18 + i * 9) + '%';
@@ -2611,7 +2877,7 @@ function showStable() {
     renderRosBadge();
     flies.slice(1).forEach((f) => f.remove()); flies.length = 1;
     if (has('schmetterlinge')) ['#f7a8c4', '#b5dcff', '#d6c2f2'].forEach((c, i) => addFly(c, i + 1));
-    if (newId === 'wetterfahne') { barn.innerHTML = barnSVG(mood === 'evening', true); }
+    if (newId === 'wetterfahne') { barn.innerHTML = barnSVG(mood === 'evening', true, seasonNow()); }
     renderTray();
   }
   function makeDraggable(el, it) {
@@ -2950,12 +3216,21 @@ function showStable() {
   // Sicherheitsnetz: falls ein Pferd trotzdem verdeckt ist, kommt es von selbst heraus
   setTimeout(() => { if (currentScreen === 'stable' && callHorsesOut(false)) fsay(`${LN()} ist wieder da! 🐴💕`); }, 700);
   if (!riderState().set && !S.riderAsked && !window.__noRiderPrompt) { S.riderAsked = true; save(); setTimeout(() => { if (currentScreen === 'stable') openRiderSetup((f) => { renderScene(); if (f) riderHello(); }, true); }, 1600); }
-  fsay(S.carrots > 0 ? 'Willkommen auf dem Pferdehof! Zieh eine Karotte zu einem Pferd. 🥕' : 'Willkommen auf dem Pferdehof! Mit der Bürste kannst du die Pferde putzen. ✨');
+  fsay(fest === 'birthday' ? withName('Alles Gute zum Geburtstag', '! Heute feiert der ganze Pferdehof mit dir. 🎂🎈') : fest && FEST_SAY[fest] ? FEST_SAY[fest] : S.carrots > 0 ? 'Willkommen auf dem Pferdehof! Zieh eine Karotte zu einem Pferd. 🥕' : 'Willkommen auf dem Pferdehof! Mit der Bürste kannst du die Pferde putzen. ✨');
+  const hr = new Date().getHours();
+  if (hr >= 6 && hr < 10) setTimeout(() => { if (currentScreen === 'stable') Sound.rooster(); }, 2500);
   // ganz leise Naturgeräusche ab und zu
   ambientTimer = setInterval(() => {
     if (currentScreen !== 'stable') { clearInterval(ambientTimer); return; }
     const r = Math.random();
-    if (r < 0.22) Sound.chirp(); else if (r < 0.32) Sound.quack();
+    if (r < 0.16) { if (season !== 'winter') Sound.chirp(); }
+    else if (r < 0.24) Sound.quack();
+    else if (r < 0.34) Sound.cowbell();
+    else if (r < 0.39) Sound.moo();
+    else if (r < 0.46) { if (season === 'summer' || season === 'spring') Sound.buzz(); else Sound.wind(); }
+    else if (r < 0.52) Sound.wind();
+    else if (r < 0.56 && (fest === 'advent' || fest === 'xmas')) Sound.sleigh();
+    if (Math.random() < 0.18) driveTractor();
   }, 9000);
 }
 
@@ -3304,6 +3579,7 @@ function showMap(o) {
     h('button', { class: 'wnav next', id: 'nextWorld', 'aria-label': 'Nächste Welt', onclick: () => go(1) }, '›'),
     h('div', { class: 'bubble farm-say', id: 'mapSay' }));
   root.append(scroll, ui);
+  { const pp = seasonParticles(seasonNow(), 8); if (pp) root.append(pp); }
   app.append(root);
   // Pfade (in Pixeln, damit Linien in jeder Ausrichtung gleich schön sind)
   $$('.wpanel', scroll).forEach((p, k) => drawPath(p, WORLDS[k], k));
