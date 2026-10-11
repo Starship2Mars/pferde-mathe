@@ -32,7 +32,7 @@ const START = { v: 1, setupSeen: true, shoes: 60, carrots: 4, owned: [] };
         const dr = await (await p.$('#drawer')).boundingBox();
         if (id === 'heu') ok(dr.x >= -1 && dr.y >= -1 && dr.x + dr.width <= w + 1 && dr.y + dr.height <= hh + 1, 'Laden öffnet sich im Bild');
         const btn = await p.$(`[data-buy="${id}"]`);
-        if (btn) { await btn.scrollIntoViewIfNeeded(); await btn.click(); await sleep(500); } else { await p.click('#shopClose'); await sleep(450); }
+        if (btn) { await btn.scrollIntoViewIfNeeded(); await btn.click(); await sleep(900); const wc = await p.$('#wardClose'); if (wc) { await wc.click(); await sleep(450); } } else { await p.click('#shopClose'); await sleep(450); }
       }
       const st = await p.evaluate(() => window.__pm.state);
       ok(st.owned.length === 7 && st.shoes === 60 - (3 + 6 + 12 + 10 + 8 + 10 + 6), 'Sieben Sachen gekauft: ' + st.owned.join(','));

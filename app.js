@@ -29,7 +29,7 @@ const MINUS = '−';
 
 // ---------- Speicher ----------
 const KEY = 'pferde-mathe-v1'; // Schlüssel bleibt gleich → gespeicherter Fortschritt bleibt bei Updates erhalten
-const APP_VERSION = '2.1.1';
+const APP_VERSION = '2.2.0';
 const GAME_IDS = ['paare', 'haeuser', 'rechnen', 'familie', 'strahl', 'zehner'];
 function defaultState() {
   return {
@@ -280,6 +280,7 @@ function shell(title, isHome, back) {
     !isHome ? h('div', { class: 'title' }, title) : null,
     h('div', { class: 'counter', id: 'shoeCount', title: 'Hufeisen', html: SHOE + `<span>${S.shoes}</span>` }),
     h('div', { class: 'counter', id: 'carrotCount', title: 'Karotten' }, h('span', { class: 'emo' }, '🥕'), h('span', null, String(S.carrots))),
+    bagButton(),
     h('button', { class: 'iconbtn', id: 'soundBtn', 'aria-label': 'Ton an oder aus', onclick: toggleSound }, S.sound ? '🔊' : '🔇')
   );
   const main = h('main', { id: 'screen' });
@@ -1387,6 +1388,7 @@ function showStable() {
     h('div', { class: 'farm-hud' },
       h('div', { class: 'counter', id: 'shoeCount', html: SHOE + `<span>${S.shoes}</span>` }),
       h('div', { class: 'counter', id: 'carrotCount' }, h('span', { class: 'emo', html: ART.carrot }), h('span', null, String(S.carrots))),
+      bagButton(),
       h('button', { class: 'farm-btn', id: 'shopBtn', 'aria-label': 'Stall-Laden', onclick: () => { Sound.tap(); openDrawer(); } }, '🛒')),
     h('div', { class: 'bubble farm-say', id: 'farmSay' }, ''));
   const carrotTool = h('button', { class: 'tool', id: 'toolCarrot', 'aria-label': 'Karotte' }, h('span', { html: ART.carrot }), h('b', { class: 'badge' }, String(S.carrots)));
@@ -1933,6 +1935,44 @@ function inventory() {
   WORLDS.forEach((W, w) => W.stations.forEach((st, i) => { if (advDone(w, i)) inv[st.item] = (inv[st.item] || 0) + 1; }));
   return inv;
 }
+// Rucksack: was ist drin, wofür ist es, was wurde schon am Tor benutzt
+const BAG_USE = {
+  blume: 'Die Blumen brauchst du für das Rosentor auf der Blumenwiese.',
+  apfel: 'Die Äpfel bekommt Ziege Zenzi – dann macht sie den Weg frei.',
+  brett: 'Die Bretter brauchst du für die Brücke am Sonnenstrand.',
+  kristall: 'Mit den Kristallen leuchtet die Regenbogen-Brücke.',
+  stern: 'Die Zaubersterne öffnen das Schlosstor.',
+  kartenteil: 'Sammle alle Stücke – dann ist die Schatzkarte ganz!',
+  schluessel: 'Damit ging das Rosentor auf.',
+  ei: 'Ein Geschenk von den Hühnern – ein Schatz zum Sammeln.',
+  glocke: 'Ein Andenken von Ziege Zenzi.',
+  muschel: 'Ein Schatz vom Strand zum Sammeln.',
+  perle: 'Ein glitzernder Schatz aus dem See.',
+  laterne: 'Ein Geschenk vom Murmeltier Mo.',
+  edelweiss: 'Eine seltene Bergblume – ein Schatz zum Sammeln.',
+  goldzaum: 'Liegt auf deinem Pferdehof – ein Pferd kann es tragen.',
+  krone: 'Liegt auf deinem Pferdehof – ein Pferd kann sie tragen.'
+};
+function bagUsed() { // Sachen, die am Tor schon benutzt wurden (werden automatisch benutzt)
+  const u = {};
+  WORLDS.forEach((W, w) => { if (W.need && advDone(w, W.stations.length - 1)) u[W.need.item] = (u[W.need.item] || 0) + W.need.n; });
+  return u;
+}
+function bagCount() { const inv = inventory(), u = bagUsed(); return Object.keys(inv).reduce((a, k) => a + Math.max(0, inv[k] - (u[k] || 0)), 0); }
+function bagButton() {
+  const n = bagCount();
+  return h('button', { class: 'bagbtn', id: 'bagBtn', 'aria-label': 'Rucksack öffnen', onclick: (e) => { e.stopPropagation(); Sound.tap(); openBag(); } },
+    h('span', { class: 'bagemo' }, '🎒'), h('span', { class: 'bagtxt' }, 'Rucksack'), h('b', { class: 'bagbadge' + (n ? '' : ' zero'), id: 'bagBadge' }, String(n)));
+}
+function updBag() { const b = $('#bagBadge'); if (b) { const n = bagCount(); b.textContent = n; b.classList.toggle('zero', !n); } }
+function flyToBag(fromEl, svg) { // Schatz fliegt sichtbar in den Rucksack
+  const bag = $('#bagBtn'); if (!bag || !fromEl) return;
+  const a = fromEl.getBoundingClientRect(), b = bag.getBoundingClientRect();
+  const f = h('div', { class: 'flyitem', html: svg }); document.body.append(f);
+  Object.assign(f.style, { left: a.left + a.width / 2 + 'px', top: a.top + a.height / 2 + 'px' });
+  requestAnimationFrame(() => requestAnimationFrame(() => { f.style.transform = `translate(${b.left + b.width / 2 - a.left - a.width / 2}px, ${b.top + b.height / 2 - a.top - a.height / 2}px) scale(.35)`; f.style.opacity = '.4'; }));
+  setTimeout(() => { f.remove(); bag.classList.remove('gulp'); void bag.offsetWidth; bag.classList.add('gulp'); Sound.pop(); updBag(); }, 1150);
+}
 function stationLevel(st) {
   const g = GAMES.find((x) => x.id === st.game), sk = S.skills[st.game];
   let L = sk.level + (st.diff || 0);
@@ -2082,7 +2122,7 @@ function showMap(o) {
     h('div', { class: 'farm-hud' },
       h('div', { class: 'counter', html: SHOE + `<span>${S.shoes}</span>` }),
       h('div', { class: 'counter' }, h('span', { class: 'emo' }, '🥕'), h('span', null, String(S.carrots))),
-      h('button', { class: 'farm-btn', id: 'bagBtn', 'aria-label': 'Rucksack', onclick: () => { Sound.tap(); openBag(); } }, '🎒'),
+      bagButton(),
       h('button', { class: 'farm-btn', id: 'farmBtn', 'aria-label': 'Pferdehof', onclick: () => { Sound.tap(); showStable(); } }, '🏡'),
       h('button', { class: 'farm-btn', id: 'soundBtn', 'aria-label': 'Ton an oder aus', onclick: toggleSound }, S.sound ? '🔊' : '🔇')),
     h('button', { class: 'wnav prev', id: 'prevWorld', 'aria-label': 'Vorherige Welt', onclick: () => go(-1) }, '‹'),
@@ -2143,7 +2183,8 @@ function openStation(w, i) {
     h('h2', null, st.name),
     h('div', { class: 'sc-story' }, h('div', { class: 'luna mini', html: lunaSVG() }), h('p', null, st.story)),
     st.gate && W.need ? h('div', { class: 'sc-need' }, h('span', { html: TREASURE[W.need.item].svg }),
-      `Gesammelt: ${Math.min(inv[W.need.item] || 0, W.need.n)} von ${W.need.n} ${W.need.pl}`, (inv[W.need.item] || 0) >= W.need.n ? ' ✓' : '') : null,
+      `Gesammelt: ${Math.min(inv[W.need.item] || 0, W.need.n)} von ${W.need.n} ${W.need.pl}`, (inv[W.need.item] || 0) >= W.need.n ? ' ✓' : '',
+      h('small', null, `Die ${W.need.pl} aus deinem Rucksack werden hier am Tor von selbst benutzt.`)) : null,
     st.gate ? h('div', { class: 'sc-gate' }, '🌟 Besondere Tor-Aufgabe: ein kleines bisschen kniffliger. Du kannst dir immer Hilfe holen!') : null,
     h('div', { class: 'sc-reward' }, done ? h('span', null, `⭐ Schon geschafft! Du kannst hier noch einmal üben und Hufeisen sammeln.`)
       : h('span', null, h('b', null, 'Belohnung: '), h('i', { html: T.svg }), ` ${T.name}`, h('span', { class: 'plus' }, ' + Hufeisen + 🥕'))),
@@ -2198,8 +2239,10 @@ function showStationReward(w, i, was, r, gift) {
       h('div', { class: 'btnrow' },
         h('button', { class: 'bigbtn primary', id: 'rewardNext', onclick: () => { Sound.tap(); showMap({ world: w, moveFrom: was ? null : { w, i } }); } }, 'Weiter auf der Karte 🗺️'),
         h('button', { class: 'bigbtn', id: 'toStable', onclick: () => { Sound.tap(); stableBack = showMap; showStable(); } }, '🏡 Zum Pferdehof'))));
+  scr.append(h('div', { class: 'bag-hud' }, bagButton()));
+  if (!was) { const b = $('#bagBadge', scr); b.textContent = Math.max(0, bagCount() - 1); }
   app.append(scr);
-  if (was) Sound.reward(); else { Sound.treasure(); setTimeout(() => { const t = $('.ticon'); if (t) burst(t, ['✨', '⭐', '💖']); }, 350); }
+  if (was) Sound.reward(); else { Sound.treasure(); setTimeout(() => { const t = $('.ticon'); if (t) burst(t, ['✨', '⭐', '💖']); }, 350); setTimeout(() => flyToBag($('.ticon'), T.svg), 1300); }
 }
 function showWorldDone(w, gift) {
   currentScreen = 'worlddone'; clearInterval(ambientTimer); app.innerHTML = '';
@@ -2213,15 +2256,20 @@ function showWorldDone(w, gift) {
         h('div', { class: 'treasure-pop' }, h('div', { class: 'rays' }), h('div', { class: 'ticon', html: T.svg }))),
       h('div', { class: 'stars5' }, W.stations.map(() => h('span', { html: ART_STAR }))),
       h('h2', null, last ? withName('Hurra! Du hast das ganze Abenteuer geschafft', '! 👑') : withName(`Hurra! ${W.name} geschafft`, '! 🎉')),
+      W.need ? h('div', { class: 'used-note', id: 'usedNote' }, h('span', null, `🎒 Du benutzt ${W.need.n} ${W.need.pl} aus deinem Rucksack:`),
+        h('span', { class: 'used-icons' }, range(1, W.need.n).map(() => h('i', { html: TREASURE[W.need.item].svg })))) : null,
       h('p', null, W.doneText),
       giftNote(gift),
       h('div', { class: 'btnrow' },
         last ? h('button', { class: 'bigbtn primary', id: 'worldNext', onclick: () => { Sound.tap(); showMap({ world: w }); } }, 'Zur Karte 🗺️')
           : h('button', { class: 'bigbtn primary', id: 'worldNext', onclick: () => { Sound.tap(); showTravel(w + 1); } }, `${W.next.replace('!', '')} ➜`),
         h('button', { class: 'bigbtn', id: 'toStable', onclick: () => { Sound.tap(); stableBack = showMap; showStable(); } }, '🏡 Zum Pferdehof'))));
+  scr.append(h('div', { class: 'bag-hud' }, bagButton()));
+  $('#bagBadge', scr).textContent = Math.max(0, bagCount() - 1);
   app.append(scr);
   Sound.fanfare();
   setTimeout(() => Sound.neigh(), 1500);
+  setTimeout(() => flyToBag($('.adv-card .ticon'), T.svg), 1500);
   setTimeout(() => { const t = $('.adv-card .ticon'); if (t) burst(t, ['⭐', '💖', '✨', '🌸']); }, 500);
 }
 function showTravel(k) {
@@ -2250,11 +2298,13 @@ function openBag() {
   const maps = inv.kartenteil || 0;
   const card = h('div', { class: 'bag-card', id: 'bag' },
     h('h2', null, '🎒 Mein Rucksack'),
+    h('p', { class: 'bag-hint' }, 'Hier sammelst du deine Schätze. Was du für ein Tor oder eine Brücke brauchst, wird dort von selbst benutzt.'),
     h('div', { class: 'bag-grid' }, order.map((id) => {
-      const n = inv[id] || 0;
-      return h('div', { class: 'bag-item' + (n ? '' : ' empty') },
+      const n = inv[id] || 0, used = Math.min(n, bagUsed()[id] || 0);
+      return h('div', { class: 'bag-item' + (n ? '' : ' empty') + (n && used >= n ? ' used' : ''), 'data-bag': id },
         h('div', { class: 'bi', html: TREASURE[id].svg }), n > 1 ? h('span', { class: 'cnt' }, '×' + n) : null,
-        h('small', null, n ? TREASURE[id].name : '???'));
+        h('small', null, n ? TREASURE[id].name : '???'),
+        n ? h('em', { class: 'use' }, used ? `Am Tor benutzt ✓` : BAG_USE[id] || '') : null);
     })),
     h('div', { class: 'bag-map' }, h('b', null, 'Schatzkarte: '), `${maps} von ${WORLDS.length} Stücken`,
       h('div', { class: 'mapbar' }, range(1, WORLDS.length).map((j) => h('i', { class: j <= maps ? 'on' : '' })))),
@@ -2385,7 +2435,7 @@ function showParent() {
 // ---------- Start ----------
 ensureGear();
 repairFarm();
-window.__pm = { get state() { return S; }, repairFarm, startGame, showStable, showHome, showParent, showMap, openStation, showWorldDone, showTravel, WORLDS, advSetWorld, stationLevel, save, version: APP_VERSION };
+window.__pm = { get state() { return S; }, repairFarm, startGame, showStable, showHome, showParent, showMap, openStation, showWorldDone, showStationReward, openBag, showTravel, WORLDS, advSetWorld, stationLevel, save, version: APP_VERSION };
 showHome();
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !window.__PM_SINGLE__) {
   // Neue Version installiert → neu laden, aber nie mitten in einer Aufgabe (sonst beim nächsten Besuch der Startseite)
