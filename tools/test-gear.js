@@ -25,15 +25,24 @@ const svgHas = (p, id, c) => p.$eval(`.item[data-id="${id}"] svg`, (e, c) => e.i
     await p.evaluate(() => window.__pm.showStable()); await p.waitForSelector('.item[data-id="pony"]'); await sleep(1500);
     ok(await svgHas(p, 'luna', '#d6c2f2') && !(await svgHas(p, 'pony', '#d6c2f2')), 'Hauptpferd trägt die alte Decke, Pony nicht');
     await p.click('.item[data-id="pony"]'); await p.waitForSelector('.dress-btn'); await p.click('.dress-btn'); await p.waitForSelector('#wardrobe'); await sleep(400);
+    ok(await p.$('#wardrobe [data-wcolor]') === null && await p.$('#wardBuyBlanket') !== null, 'Pony hat noch keine eigene Decke → „Eigene Decke holen“');
+    await p.click('#wardBuyBlanket'); await p.waitForSelector('#wardrobe [data-wcolor="#b9e2a0"]'); await sleep(400);
+    ok((await get(p)).shoes === 24, 'Decke fürs Pony gekauft (−6 Hufeisen)');
     await p.click('#wardrobe [data-wcolor="#b9e2a0"]'); await sleep(200);
     await p.click('#wardrobe [data-gear="sattel"]'); await sleep(200);
     await p.click('#wardClose'); await sleep(500);
     ok(await svgHas(p, 'pony', '#b9e2a0') && await svgHas(p, 'luna', '#d6c2f2'), 'Pony bekommt eigene grüne Decke, Hauptpferd behält Lila');
     let g = (await get(p)).gear;
     ok(g.pony.saddle === true && g.luna.saddle === true, 'Sattel auch fürs Pony (Hauptpferd behält seinen)');
-    // Shop-Liste: Farbe direkt je Pferd
+    // Laden: Decke noch einmal kaufen – diesmal für den Schimmel
     await p.click('#shopBtn'); await sleep(600);
-    await p.click('.wardrow[data-ward="wolke"] .swatch[data-color="#ffd27a"]'); await sleep(300);
+    ok(await p.$('.wardrow[data-ward="wolke"] .swatch') === null, 'Schimmel hat noch keine Decke (keine Farbwahl)');
+    await p.click('[data-buy="decke"]'); await p.waitForSelector('#wardrobe [data-wcolor="#ffd27a"]'); await sleep(400);
+    await p.click('#wardrobe [data-wcolor="#ffd27a"]'); await sleep(200); await p.click('#wardClose'); await sleep(500);
+    const s3 = await get(p);
+    ok(s3.shoes === 18 && s3.gear.wolke.ownB && s3.gear.pony.ownB && s3.gear.luna.ownB, 'Zweite Decke gekauft (−6), jetzt hat jedes Pferd eine eigene');
+    await p.click('#shopBtn'); await sleep(600);
+    ok(await p.$('[data-buy="decke"]') === null, 'Laden: Decke erst wieder kaufbar, wenn ein neues Pferd kommt');
     await p.click('#shopClose'); await sleep(400);
     ok(await svgHas(p, 'wolke', '#ffd27a'), 'Im Laden: Schimmel bekommt gelbe Decke');
     await p.reload(); await p.waitForSelector('#advTile'); await p.evaluate(() => window.__pm.showStable()); await sleep(1200);

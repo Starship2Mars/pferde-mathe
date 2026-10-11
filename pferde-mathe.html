@@ -684,7 +684,7 @@ const MINUS = '−';
 
 // ---------- Speicher ----------
 const KEY = 'pferde-mathe-v1'; // Schlüssel bleibt gleich → gespeicherter Fortschritt bleibt bei Updates erhalten
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '2.1.1';
 const GAME_IDS = ['paare', 'haeuser', 'rechnen', 'familie', 'strahl', 'zehner'];
 function defaultState() {
   return {
@@ -885,15 +885,23 @@ function ensureGear() {
     S.gear = { luna: { blanket: has('decke') ? (S.blanket || BLANKET_COLORS[0]) : null, saddle: has('sattel'), bow: has('schleife'), bridle: has('goldzaum'), crown: has('krone') } };
     save();
   }
+  if (!S.blanketV2) { // Decken gehören jetzt einzelnen Pferden: wer schon eine Decke trug, behält sie (die alte Decke gehört dem Hauptpferd)
+    if (has('decke')) { const L = S.gear.luna = S.gear.luna || {}; L.ownB = true; if (!L.blanket && !Object.keys(S.gear).some((k) => k !== 'luna' && S.gear[k] && S.gear[k].blanket)) L.blanket = S.blanket || BLANKET_COLORS[0]; }
+    Object.keys(S.gear).forEach((k) => { const g = S.gear[k]; if (g && g.blanket && has('decke')) g.ownB = true; });
+    S.blanketV2 = true; save();
+  }
   return S.gear;
 }
+function ownsBlanket(id) { const g = ensureGear()[id]; return !!(g && g.ownB); }
 function gearOf(id) { const g = ensureGear(); if (!g[id] || typeof g[id] !== 'object') g[id] = {}; return g[id]; }
 function horseOpts(id) {
   const g = (ensureGear()[id]) || {};
   return { saddle: !!g.saddle && has('sattel'), bow: !!g.bow && has('schleife'), bridle: !!g.bridle && has('goldzaum'), crown: !!g.crown && has('krone'),
-    blanket: g.blanket && has('decke') ? g.blanket : null };
+    blanket: g.blanket && g.ownB ? g.blanket : null };
 }
-function giveGear(itemId, horseId) { const k = GEAR[itemId]; if (!k) return; const g = gearOf(horseId || 'luna'); g[k] = k === 'blanket' ? (g.blanket || S.blanket || BLANKET_COLORS[0]) : true; save(); }
+function giveGear(itemId, horseId) { const k = GEAR[itemId]; if (!k) return; const g = gearOf(horseId || 'luna'); if (k === 'blanket') g.ownB = true; g[k] = k === 'blanket' ? (g.blanket || BLANKET_COLORS[ownedHorses().indexOf(horseId || 'luna') % BLANKET_COLORS.length] || BLANKET_COLORS[0]) : true; save(); }
+// Decken kann man für jedes Pferd einzeln kaufen
+function horsesWithoutBlanket() { return ownedHorses().filter((id) => !ownsBlanket(id)); }
 function ownedHorses() { return ['luna'].concat(['wolke', 'pony', 'fohlen', 'nacht'].filter((id) => has(id))); }
 function lunaOpts() { return horseOpts('luna'); }
 function lunaSVG() { return horseSVG(lunaOpts()); }
@@ -1898,7 +1906,7 @@ const ITEMS = [
   { id: 'schleife', name: 'Mähnenschleife', price: 5, onLuna: true, pv: () => ART.bowPv },
   { id: 'schmetterlinge', name: 'Schmetterlinge', price: 5, fly: true, pv: () => ART.butterfly('#f7a8c4') },
   { id: 'sattel', name: 'Sattel', price: 6, onLuna: true, pv: () => ART.saddlePv },
-  { id: 'decke', name: 'Pferdedecke (jedes Pferd eigene Farbe)', price: 6, onLuna: true, pv: () => ART.blanketPv(S.blanket || BLANKET_COLORS[0]) },
+  { id: 'decke', name: 'Pferdedecke (für jedes Pferd eine eigene)', price: 6, perHorse: true, onLuna: true, pv: () => ART.blanketPv(S.blanket || BLANKET_COLORS[0]) },
   { id: 'kaetzchen', name: 'Kätzchen im Heu', price: 6, art: () => ART.kitten, s: 12, x: 30, y: 67, snd: 'meow' },
   { id: 'sonnenblumen', name: 'Sonnenblumen', price: 6, art: () => ART.sunflowers, s: 11, x: 4, y: 70, snd: 'sparkle' },
   { id: 'huehner', name: 'Hühner', price: 7, art: () => ART.chickens, s: 16, x: 88, y: 98, snd: 'cluck' },
@@ -1915,6 +1923,7 @@ const ITEMS = [
   { id: 'goldzaum', name: 'Goldenes Zaumzeug', price: 0, onLuna: true, pv: () => TREASURE.goldzaum.svg, special: true },
   { id: 'krone', name: 'Krone (vom Märchenschloss)', price: 0, onLuna: true, pv: () => TREASURE.krone.svg, special: true }
 ];
+const DECKE = ITEMS.find((i) => i.id === 'decke');
 // ---- Pferdehof-Positionen absichern (Reparatur für Pferde, die hinter der Scheune verschwunden sind) ----
 // Gilt nur für S.pos (Positionen). Gekaufte Sachen, Hufeisen, Fortschritt usw. werden nie verändert.
 const FARM_HORSES = ['luna', 'pony', 'wolke', 'fohlen', 'nacht'];
@@ -2168,6 +2177,22 @@ function showStable() {
     }
   }
   // Wer bekommt das neue Teil?
+  function buyBlanket(it, forId) {
+    const free = horsesWithoutBlanket();
+    if (S.shoes < it.price || !free.length || (forId && !free.includes(forId))) return;
+    const pay = (id) => {
+      S.shoes -= it.price; if (!has('decke')) S.owned.push('decke'); giveGear('decke', id); save(); updTools(); Sound.fanfare(); renderScene();
+      const el = $(`.item[data-id="${id}"]`, farm); if (el) { burst(el, ['✨', '⭐', '💖']); react(el, 'yay'); }
+      fsay(`${horseName(id)} hat jetzt eine eigene Decke! Tipp ${horseName(id)} an, dann kannst du die Farbe aussuchen. 💖`);
+    };
+    closeDrawer();
+    if (forId || free.length === 1) { pay(forId || free[0]); if (!forId) setTimeout(() => openWardrobe(free[0]), 600); return; }
+    const card = h('div', { class: 'bag-card pick-card', id: 'pickHorse' }, h('h2', null, 'Welches Pferd bekommt die neue Decke?'),
+      h('div', { class: 'pick-grid' }, free.map((id) => h('button', { class: 'pick', 'data-pick': id, onclick: () => { close(); pay(id); setTimeout(() => openWardrobe(id), 600); } },
+        h('span', { class: 'pvh', html: horseSVG(Object.assign({}, HORSES[id], horseOpts(id), { delay: 0 })) }), h('b', null, horseName(id))))),
+      h('button', { class: 'bigbtn', id: 'pickCancel', onclick: () => { Sound.tap(); close(); } }, 'Doch nicht'));
+    const close = sheet(card);
+  }
   function pickHorse(it) {
     const card = h('div', { class: 'bag-card pick-card', id: 'pickHorse' }, h('h2', null, `Wer bekommt: ${itemName(it)}?`),
       h('div', { class: 'pick-grid' }, ownedHorses().map((id) => h('button', { class: 'pick', 'data-pick': id, onclick: () => {
@@ -2188,7 +2213,10 @@ function showStable() {
         h('span', { html: ITEMS.find((x) => x.id === item).pv() }), label) : null;
       card.append(h('h2', null, `🎀 ${horseName(id)} anziehen`),
         h('div', { class: 'ward-pv', html: horseSVG(Object.assign({}, HORSES[id], o, { delay: 0 })) }),
-        has('decke') ? h('div', null, h('div', { class: 'wlabel' }, 'Decke'), h('div', { class: 'swatches' }, BLANKET_COLORS.map((c) => h('button', {
+        !ownsBlanket(id) ? h('div', null, h('div', { class: 'wlabel' }, 'Decke'), S.shoes >= DECKE.price
+          ? h('button', { class: 'smallbtn', id: 'wardBuyBlanket', html: `Eigene Decke holen (${SHOE} ${DECKE.price})`, onclick: () => { close(); buyBlanket(DECKE, id); setTimeout(() => openWardrobe(id), 600); } })
+          : h('small', { html: `Eine eigene Decke kostet ${SHOE} ${DECKE.price}. Spiel eine Runde, dann reicht es bald!` })) : null,
+        ownsBlanket(id) ? h('div', null, h('div', { class: 'wlabel' }, 'Decke'), h('div', { class: 'swatches' }, BLANKET_COLORS.map((c) => h('button', {
           class: 'swatch' + (o.blanket === c ? ' on' : ''), 'data-wcolor': c, style: { background: c }, 'aria-label': 'Deckenfarbe',
           onclick: () => { g.blanket = c; save(); Sound.sparkle(); draw(); renderScene(); } })),
           h('button', { class: 'swatch none' + (o.blanket ? '' : ' on'), 'data-wcolor': 'none', 'aria-label': 'Keine Decke', onclick: () => { g.blanket = null; save(); Sound.plop(); draw(); renderScene(); } }, '–'))) : null,
@@ -2352,10 +2380,12 @@ function showStable() {
       if (it.special && !has(it.id)) return;
       const pvHtml = it.pv ? it.pv() : it.horse ? horseSVG(Object.assign({}, HORSES[it.horse], { delay: 0 })) : it.art();
       let btn;
-      if (has(it.id)) btn = h('button', { class: 'have', disabled: true }, '✔ Da');
+      const done = it.perHorse ? !horsesWithoutBlanket().length : has(it.id);
+      if (done) btn = h('button', { class: 'have', disabled: true }, '✔ Alle haben eine');
       else if (S.shoes >= it.price) btn = h('button', { 'data-buy': it.id, onclick: () => buy(it) }, 'Holen');
       else btn = h('button', { class: 'later', disabled: true }, `Noch ${it.price - S.shoes}`);
-      list.append(h('div', { class: 'sitem' + (has(it.id) ? ' owned' : '') }, h('div', { class: 'pv', html: pvHtml }),
+      if (done && !it.perHorse) btn = h('button', { class: 'have', disabled: true }, '✔ Da');
+      list.append(h('div', { class: 'sitem' + (done ? ' owned' : '') }, h('div', { class: 'pv', html: pvHtml }),
         h('div', { class: 'nm' }, itemName(it), it.special ? h('small', null, '🎁 Geschenk') : h('small', { html: SHOE + ' ' + it.price })), btn));
     });
     body.append(list);
@@ -2363,7 +2393,7 @@ function showStable() {
       body.append(h('h4', null, '🎀 Pferde anziehen'), h('div', { class: 'wardlist' }, ownedHorses().map((id) => h('div', { class: 'wardrow', 'data-ward': id },
         h('span', { class: 'pvh', html: horseSVG(Object.assign({}, HORSES[id], horseOpts(id), { delay: 0 })) }),
         h('b', null, horseName(id)),
-        has('decke') ? h('div', { class: 'swatches' }, BLANKET_COLORS.map((c) => h('button', {
+        ownsBlanket(id) ? h('div', { class: 'swatches' }, BLANKET_COLORS.map((c) => h('button', {
           class: 'swatch' + (horseOpts(id).blanket === c ? ' on' : ''), 'data-color': c, 'data-horse': id, 'aria-label': 'Deckenfarbe', style: { background: c },
           onclick: () => { gearOf(id).blanket = c; save(); Sound.sparkle(); renderScene(); renderDrawer(); }
         })), h('button', { class: 'swatch none' + (horseOpts(id).blanket ? '' : ' on'), 'data-color': 'none', 'data-horse': id, 'aria-label': 'Keine Decke',
@@ -2378,6 +2408,7 @@ function showStable() {
     })));
   }
   function buy(it) {
+    if (it.perHorse) { buyBlanket(it); return; }
     if (S.shoes < it.price || has(it.id)) return;
     S.shoes -= it.price; S.owned.push(it.id); save(); updTools();
     Sound.fanfare();
