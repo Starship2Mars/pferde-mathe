@@ -1,0 +1,394 @@
+/* Pferde-Mathe – sanft, groß, freundlich */
+:root{
+  --bg:#fdf7ec; --meadow:#cdeac0; --meadow2:#a9d89a; --sky:#d9efff;
+  --ink:#4a3b30; --soft:#7a685a; --brown:#b07a4f; --brown-d:#7d5233;
+  --gold:#f2c14e; --gold-d:#c9962a; --pink:#f7b8c8; --lav:#e6dcf7; --lav-d:#b9a6e3;
+  --mint:#c8f0d8; --mint-d:#5fbf86; --blue:#8ec9e8; --orange:#f6b26b;
+  --card:#fffdf8; --shadow:0 4px 0 rgba(125,82,51,.18), 0 8px 18px rgba(125,82,51,.12);
+  --r:22px;
+  --font: ui-rounded, "SF Pro Rounded", "Avenir Next Rounded", "Arial Rounded MT Bold", "Nunito", "Avenir Next", system-ui, -apple-system, sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:20px;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+body{position:fixed;inset:0;overflow:hidden}
+button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulation}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background:linear-gradient(180deg,var(--sky) 0%,var(--bg) 38%,var(--bg) 100%)}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 16px;min-height:72px}
+.topbar .title{flex:1;font-size:1.35rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{min-width:60px;height:60px;border-radius:18px;background:var(--card);box-shadow:var(--shadow);font-size:1.6rem;
+  display:flex;align-items:center;justify-content:center;padding:0 12px}
+.iconbtn:active{transform:translateY(2px)}
+.counter{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:30px;padding:6px 14px 6px 8px;
+  box-shadow:var(--shadow);font-weight:800;font-size:1.25rem;height:52px}
+.counter svg{width:36px;height:36px}
+.counter .emo{font-size:1.6rem}
+
+main#screen{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
+.screen{min-height:100%;padding:8px 18px 24px;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Luna + Sprechblase */
+.luna-wrap{display:flex;align-items:flex-end;gap:10px}
+.luna{width:150px;flex:none;filter:drop-shadow(0 4px 4px rgba(0,0,0,.08))}
+.luna.small{width:104px}
+.bubble{position:relative;background:var(--card);border-radius:24px;padding:14px 18px;box-shadow:var(--shadow);
+  font-size:1.15rem;line-height:1.35;flex:1;min-height:60px;margin-bottom:26px}
+.bubble::before{content:"";position:absolute;left:-14px;bottom:18px;border:10px solid transparent;border-right:16px solid var(--card)}
+.bubble.pop{animation:bubblePop .4s ease}
+@keyframes bubblePop{0%{transform:scale(.96)}60%{transform:scale(1.02)}100%{transform:scale(1)}}
+.bubble.think{background:#f4efff}.bubble.think::before{border-right-color:#f4efff}
+
+svg.horse{width:100%;height:auto;overflow:visible}
+svg.horse .eye{transform-box:fill-box;transform-origin:center;animation:blink 5s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+svg.horse .tail{transform-box:fill-box;transform-origin:90% 10%;animation:tail 3.2s ease-in-out infinite}
+@keyframes tail{0%,100%{transform:rotate(0)}50%{transform:rotate(7deg)}}
+.happy svg.horse,.luna.happy{animation:nod .9s ease}
+@keyframes nod{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-10px) rotate(-3deg)}60%{transform:translateY(0) rotate(2deg)}}
+
+/* Home */
+.home .hero{max-width:900px;margin:4px auto 14px}
+.home .luna{width:190px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:980px;margin:0 auto}
+.tile{background:var(--card);border-radius:28px;box-shadow:var(--shadow);padding:18px 12px;min-height:150px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;font-size:1.2rem;font-weight:800;text-align:center;transition:transform .15s}
+.tile:active{transform:scale(.97)}
+.tile .ti{font-size:3rem;line-height:1}
+.tile small{font-weight:600;color:var(--soft);font-size:.85rem}
+.tile.c1{background:#ffe6ee}.tile.c2{background:#fff1d6}.tile.c3{background:#e2f3ff}.tile.c4{background:#ecf9e3}.tile.c5{background:#f1eaff}
+.tile.stall{background:linear-gradient(160deg,#fff4d6,#ffe1c2)}
+.parent-link{display:block;margin:22px auto 0;background:transparent;color:var(--soft);font-size:.95rem;padding:14px 20px;border-radius:16px}
+.bday{max-width:900px;margin:0 auto 10px;background:linear-gradient(90deg,#ffe0ec,#fff3c9,#e0f4ff);border-radius:22px;padding:12px 18px;
+  text-align:center;font-weight:800;font-size:1.15rem;box-shadow:var(--shadow)}
+
+/* Game layout */
+.game{display:flex;flex-direction:column;gap:12px;max-width:1100px;margin:0 auto}
+.game-top{display:flex;align-items:flex-end;gap:12px}
+.game-top .luna-wrap{flex:1}
+.progress{display:flex;gap:6px;flex:none;margin-bottom:30px}
+.progress svg{width:36px;height:36px;transition:transform .3s}
+.progress .on svg{transform:scale(1.15)}
+.stage{display:flex;gap:18px;align-items:flex-start}
+.stage > .left{flex:1.2;min-width:0;display:flex;flex-direction:column;gap:14px;align-items:center}
+.stage > .right{flex:1;min-width:0;display:flex;flex-direction:column;gap:12px;align-items:stretch}
+@media (orientation:portrait){
+  .stage{flex-direction:column;align-items:stretch}
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .home .luna{width:160px}
+}
+
+/* Zahlen-Knöpfe */
+.pad{display:grid;gap:10px;width:100%}
+.pad.pad10{grid-template-columns:repeat(6,1fr)}
+.pad.pad20{grid-template-columns:repeat(7,1fr)}
+.num{min-height:70px;border-radius:20px;background:var(--card);box-shadow:var(--shadow);font-size:1.75rem;font-weight:800;transition:background .2s, transform .15s}
+.num:active{transform:translateY(2px) scale(.98)}
+.num.soft-no{background:var(--lav);animation:softShake .6s ease}
+.num.yes{background:var(--mint)}
+.num.glow{animation:glow 1.2s ease-in-out infinite;background:#fff6cc}
+@keyframes softShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(242,193,78,.7),var(--shadow)}50%{box-shadow:0 0 0 10px rgba(242,193,78,.25),var(--shadow)}}
+
+.eq{font-size:3rem;font-weight:800;letter-spacing:.02em;background:var(--card);border-radius:26px;box-shadow:var(--shadow);padding:10px 28px;white-space:nowrap}
+.ans{display:inline-block;min-width:1.6em;text-align:center;border-bottom:5px dotted var(--brown);color:var(--brown-d)}
+.ans.filled{border-bottom-color:transparent;color:var(--mint-d);animation:bubblePop .4s}
+.softbtn{min-height:60px;border-radius:20px;background:#fff3c4;box-shadow:var(--shadow);font-size:1.1rem;font-weight:800;padding:8px 20px}
+.softbtn:disabled{opacity:.5}
+.note{color:var(--soft);font-size:.95rem;text-align:center}
+
+/* Zwanzigerfeld */
+.zf{display:grid;grid-template-columns:repeat(5,1fr) 14px repeat(5,1fr);gap:6px;background:#fff;border:4px solid #e9d8c4;border-radius:18px;padding:10px;width:100%;max-width:560px}
+.zf .gap{grid-row:span 2}
+.zf.ten .gap{grid-row:span 1}
+.cell{aspect-ratio:1;border-radius:50%;border:3px dashed #e3d3c0;background:#fffaf2;display:flex;align-items:center;justify-content:center;min-width:0;padding:0;transition:background .25s, transform .25s}
+.cell.a{background:var(--orange);border:3px solid #e39a4c}
+.cell.b{background:var(--blue);border:3px solid #5fa9d1;animation:bubblePop .3s}
+.cell.gone{background:transparent;border:3px dashed #d8c7b4;opacity:.55;transform:scale(.85)}
+.zf.pulse{animation:glow 1.2s ease-in-out 3}
+.zf-caption{font-size:1.5rem;font-weight:800;color:var(--brown-d);min-height:1.6em}
+.strategy{background:#fffbea;border-radius:18px;padding:10px 18px;font-size:1.45rem;font-weight:800;text-align:center;line-height:1.5;box-shadow:var(--shadow)}
+.strategy:empty{display:none}
+.strategy .s2{color:#3f8fb8}.strategy .s1{color:#d07d2b}
+
+/* Paare / Memory */
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;width:100%;max-width:980px;margin:0 auto;perspective:900px}
+.mcard{position:relative;aspect-ratio:3/3.4;border-radius:22px;background:transparent;padding:0;transition:transform .3s}
+.mcard .face{position:absolute;inset:0;border-radius:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:background .3s, transform .3s}
+.mcard .front{background:var(--card);font-size:3.2rem;font-weight:800}
+.mcard .back{background:linear-gradient(145deg,#ffd9a8,#f7b8c8);display:none}
+.mcard .back svg{width:48%}
+.mcard.down .front{display:none}
+.mcard.down .back{display:flex}
+.mcard.flip{animation:flip .35s ease}
+@keyframes flip{0%{transform:scaleX(1)}50%{transform:scaleX(.05)}100%{transform:scaleX(1)}}
+.mcard.sel .front{background:#fff3c4;transform:translateY(-6px)}
+.mcard.matched .front{background:#ffe3ec}
+.mcard.matched{opacity:.8}
+.mcard.matched .heart{display:block}
+.mcard .heart{display:none;position:absolute;top:6px;right:10px;font-size:1.6rem}
+.mcard.glow .front{animation:glow 1.2s ease-in-out infinite}
+.mini10{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;width:62%}
+.mini10 i{aspect-ratio:1;border-radius:50%;border:2px solid #e3d3c0;display:block}
+.mini10 i.f{background:var(--orange);border-color:#e39a4c}
+
+/* Zahlenhaus */
+.house{width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center}
+.roof{width:100%;height:120px;background:linear-gradient(160deg,#e58f73,#c96a52);clip-path:polygon(50% 0,100% 100%,0 100%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px}
+.roof .hc{width:92px;height:70px;font-size:2.3rem}
+.floors{width:88%;background:#fff6e6;border:5px solid #e6cfa9;border-top:0;border-radius:0 0 16px 16px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.floor{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hc{height:70px;border-radius:16px;background:#fff;border:3px solid #ead7bb;display:flex;align-items:center;justify-content:center;font-size:2.1rem;font-weight:800;padding:0}
+.hc.blank{background:#fffdf3;border:3px dashed var(--brown);color:var(--brown-d)}
+.hc.blank.cur{border-style:solid;border-color:var(--gold-d);background:#fff3c4;animation:glow 1.6s ease-in-out infinite}
+.hc.filled{background:var(--mint);border-color:var(--mint-d);animation:bubblePop .35s}
+.dots{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:460px;min-height:10px}
+.dots i{width:30px;height:30px;border-radius:50%;border:3px dashed #d7c2a8;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.8rem;font-weight:800;color:var(--brown-d)}
+.dots i.f{background:var(--orange);border:3px solid #e39a4c}
+.dots i.g{background:var(--blue);border:3px solid #5fa9d1}
+.dots.strong i:not(.f):not(.g){background:#fff3c4;border-color:var(--gold-d);border-style:solid}
+
+/* Familie */
+.family{display:flex;align-items:flex-end;justify-content:center;gap:8px;background:#f3fbef;border-radius:26px;padding:10px 18px;box-shadow:var(--shadow)}
+.fm{display:flex;flex-direction:column;align-items:center}
+.fm .badge{background:var(--card);border-radius:16px;padding:2px 16px;font-size:1.9rem;font-weight:800;box-shadow:var(--shadow);margin-top:-6px}
+.fm.big .horsebox{width:150px}.fm.kid .horsebox{width:96px}
+.family.pulse .badge{animation:glow 1.2s ease-in-out 3}
+.rows{display:flex;flex-direction:column;gap:10px;width:100%;max-width:480px}
+.row{display:flex;align-items:center;justify-content:center;gap:10px;font-size:2.1rem;font-weight:800;background:var(--card);border-radius:20px;padding:6px 14px;box-shadow:var(--shadow);opacity:.75}
+.row.cur{opacity:1;outline:4px solid var(--gold);background:#fffbe9}
+.row.ok{opacity:1;background:#effaf2}
+.row .bx{min-width:1.6em;text-align:center;border-bottom:5px dotted var(--brown);color:var(--brown-d)}
+.row .bx.filled{border-color:transparent;color:var(--mint-d)}
+.row .star{font-size:1.4rem;width:1.4em}
+.choices{display:flex;flex-direction:column;gap:14px;width:100%}
+.choice{min-height:80px;border-radius:22px;background:var(--card);box-shadow:var(--shadow);font-size:2.2rem;font-weight:800}
+.choice.soft-no{background:var(--lav);animation:softShake .6s}
+.choice.yes{background:var(--mint)}
+.choice.glow{animation:glow 1.2s ease-in-out infinite;background:#fff6cc}
+
+/* Zahlenstrahl */
+.line-wrap{width:100%;background:linear-gradient(180deg,#e9f6ff 0%,#e9f6ff 55%,#cdeac0 55%,#bfe3b0 100%);border-radius:26px;box-shadow:var(--shadow);padding:18px 10px 10px;position:relative}
+.line-horse{position:absolute;top:40px;width:90px;transform:translateX(-50%);transition:left .32s ease;z-index:2;pointer-events:none}
+.line-horse.hop svg{animation:hop .32s ease}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-26px)}}
+.ticks{display:flex;margin-top:96px;position:relative}
+.ticks::before{content:"";position:absolute;left:calc(100%/42);right:calc(100%/42);top:22px;height:6px;background:var(--brown-d);border-radius:3px}
+.ticks.t10::before{left:calc(100%/22);right:calc(100%/22)}
+.tick{flex:1;min-width:0;height:96px;background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;position:relative;border-radius:12px}
+.tick .m{width:4px;height:30px;background:var(--brown-d);margin-top:10px;border-radius:2px}
+.tick.five .m{height:44px;margin-top:3px;width:6px}
+.tick .lb{margin-top:6px;font-weight:800;font-size:1.05rem}
+.ticks.t10 .tick .lb{font-size:1.6rem}
+.tick.soft-no{background:var(--lav)}
+.tick.seg{background:#fff3c4}
+.tick.yes{background:var(--mint)}
+.tick.glow{animation:glow 1.2s ease-in-out infinite;background:#fff6cc}
+.tick.start .lb{color:#d07d2b}
+.arc{position:absolute;top:-30px;font-size:1rem;font-weight:800;color:#3f8fb8;transform:translateX(-50%);animation:bubblePop .3s}
+.task-big{font-size:2.2rem;font-weight:800;background:var(--card);border-radius:22px;padding:8px 26px;box-shadow:var(--shadow);text-align:center}
+
+/* Rundenende */
+.end{max-width:760px;margin:10px auto;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
+.end .luna{width:220px}
+.end h2{font-size:2.2rem;margin:0}
+.loot{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.loot div{background:var(--card);border-radius:22px;padding:10px 22px;box-shadow:var(--shadow);font-size:1.6rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.loot svg{width:44px;height:44px}
+.btnrow{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.bigbtn{min-height:76px;min-width:200px;border-radius:24px;background:var(--card);box-shadow:var(--shadow);font-size:1.3rem;font-weight:800;padding:10px 24px}
+.bigbtn.primary{background:#ffe08a}
+.bigbtn:active{transform:translateY(2px)}
+
+/* Eltern */
+.parent{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.panel{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:14px 18px}
+.panel h3{margin:2px 0 10px}
+.prow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0e6da;flex-wrap:wrap}
+.prow:last-child{border-bottom:0}
+.prow .pn{flex:1;min-width:200px;font-weight:700}
+.prow .pn small{display:block;font-weight:500;color:var(--soft);font-size:.85rem}
+.bar{width:140px;height:14px;background:#f0e6da;border-radius:7px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--mint-d)}
+.tag{font-size:.8rem;font-weight:800;border-radius:10px;padding:4px 10px;background:#eee}
+.tag.good{background:var(--mint)}.tag.mid{background:#fff1c2}.tag.help{background:#ffdede}.tag.none{background:#f1ede8;color:var(--soft)}
+.smallbtn{min-height:48px;min-width:48px;border-radius:14px;background:#f6efe5;font-weight:800;font-size:1.1rem;padding:4px 12px}
+.gate{max-width:560px;margin:40px auto;text-align:center;display:flex;flex-direction:column;gap:18px;align-items:center}
+.holdbtn{position:relative;overflow:hidden;width:320px;height:96px;border-radius:26px;background:#f3ece3;font-size:1.2rem;font-weight:800;box-shadow:var(--shadow);touch-action:none}
+.holdbtn i{position:absolute;left:0;top:0;bottom:0;width:0;background:#cfe9c2;z-index:0}
+.holdbtn span{position:relative;z-index:1}
+.danger{background:#ffe9e0}
+.trouble{display:flex;flex-wrap:wrap;gap:8px}
+.trouble span{background:#fff1c2;border-radius:12px;padding:4px 10px;font-weight:700}
+
+/* Effekte */
+.fx{position:fixed;pointer-events:none;font-size:2rem;z-index:7000;animation:floatUp 1.3s ease-out forwards}
+@keyframes floatUp{0%{opacity:0;transform:translate(-50%,0) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),-120px) scale(1.1)}}
+@media (prefers-reduced-motion:reduce) and (min-width:0px){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+@media (max-height:820px) and (orientation:landscape){
+  .fm.big .horsebox{width:112px}.fm.kid .horsebox{width:76px}.row{font-size:1.8rem;padding:4px 14px}.rows{gap:8px}
+}
+@media (max-height:700px) and (orientation:landscape){
+  .luna.small{width:84px}.eq{font-size:2.4rem}.num{min-height:62px}.bubble{font-size:1.05rem}
+}
+input,select{font:inherit;font-size:1.05rem;min-height:52px;border-radius:14px;border:2px solid #e6d6c3;background:#fff;padding:6px 12px;color:var(--ink);-webkit-user-select:text;user-select:text}
+input{min-width:220px}
+.setup{max-width:900px;margin:0 auto 10px;background:#fff;border:2px dashed #e6d6c3;border-radius:22px;padding:12px 18px;display:flex;flex-direction:column;gap:10px;font-size:1rem}
+.setup .btnrow{justify-content:flex-start}
+
+/* ================= Pferdehof (Vollbild) ================= */
+.farm-screen{position:fixed;inset:0;overflow:hidden}
+.farm{position:fixed;inset:0;overflow:hidden;touch-action:none;--px:0;background:#a3d684;-webkit-user-select:none;user-select:none}
+.farm .sky{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,#8fd0ff 0%,#bfe6ff 38%,#e9f7ff 54%,#f6fbf0 62%)}
+.farm.evening .sky{background:linear-gradient(180deg,#8d86d6 0%,#c89ad0 22%,#f3a9b8 38%,#ffc59a 50%,#ffe0ad 60%)}
+.farm .tint{position:absolute;inset:0;z-index:3000;pointer-events:none;background:transparent}
+.farm.evening .tint{background:linear-gradient(180deg,rgba(255,170,120,0) 40%,rgba(255,170,120,.16) 100%)}
+.px1{transform:translateX(calc(var(--px) * -6px));transition:transform 1.2s ease-out}
+.px2{transform:translateX(calc(var(--px) * -14px));transition:transform 1s ease-out}
+.px3{transform:translateX(calc(var(--px) * -24px));transition:transform .9s ease-out}
+.farm .sun{position:absolute;z-index:1;left:78%;top:7%;width:16vmin;height:16vmin}
+.farm .sun-core{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,#fff6c2 0%,#ffe27a 55%,#ffd35a 70%,rgba(255,211,90,0) 72%);box-shadow:0 0 6vmin 2vmin rgba(255,226,122,.55);animation:sunGlow 6s ease-in-out infinite}
+.farm.evening .sun{left:68%;top:36%;width:22vmin;height:22vmin}
+.farm.evening .sun-core{background:radial-gradient(circle,#fff0c2 0%,#ffb877 55%,#ff9d7a 70%,rgba(255,157,122,0) 72%);box-shadow:0 0 9vmin 4vmin rgba(255,170,120,.45)}
+@keyframes sunGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.farm .star{position:absolute;z-index:1;width:5px;height:5px;border-radius:50%;background:#fffbe6;box-shadow:0 0 6px 2px rgba(255,251,230,.7);animation:twinkle 3.6s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:.95;transform:scale(1.15)}}
+.farm .cloud{position:absolute;z-index:3;left:0;width:calc(var(--cs,20) * 1vmin);color:#fff;opacity:.92;animation:drift 150s linear infinite}
+.farm.evening .cloud{color:#ffe3ec}
+.farm .cloud svg{width:100%;display:block}
+@keyframes drift{from{transform:translateX(-40vmin)}to{transform:translateX(105vw)}}
+.farm .bird{position:absolute;z-index:3;left:0;width:5vmin;animation:fly 50s linear infinite;cursor:pointer;padding:1vmin}
+.farm .bird svg{width:100%;display:block}
+.farm .flapb{transform-box:fill-box;transform-origin:center;animation:flapb .7s ease-in-out infinite}
+@keyframes flapb{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.4)}}
+@keyframes fly{0%{transform:translate(-10vw,0)}25%{transform:translate(20vw,-2vmin)}50%{transform:translate(50vw,1vmin)}75%{transform:translate(80vw,-1vmin)}100%{transform:translate(110vw,0)}}
+.farm .skylayer{position:absolute;inset:0;z-index:2;pointer-events:none}
+.farm .skylayer .item{pointer-events:auto}
+.farm .layer{position:absolute;left:-4%;width:108%;pointer-events:none}
+.farm .layer svg{width:100%;height:100%;display:block}
+.farm .hills-far{bottom:44%;height:22%;z-index:4}
+.farm .hills-mid{bottom:38%;height:22%;z-index:5}
+.farm .meadow{bottom:0;height:54%;z-index:6}
+.farm.evening .hills-far svg path{fill:#c9d9a6}
+.farm .scen,.farm .item,.farm .tuft,.farm .flw{position:absolute;transform:translate(-50%,-100%);width:calc(var(--s,10) * 1vmin);line-height:0}
+.farm .scen svg,.farm .item svg,.farm .tuft svg,.farm .flw svg{width:100%;height:auto;display:block;overflow:visible}
+.farm .tuft,.farm .flw{pointer-events:none}
+.farm .fence{position:absolute;left:41%;width:62%;top:calc(58% - 9vmin);height:9vmin;pointer-events:none}
+.farm .fence svg{width:100%;height:100%;display:block}
+.sway{transform-box:fill-box;transform-origin:50% 100%;animation:sway 3.8s ease-in-out infinite}
+.farm .tuft.sway{transform-origin:50% 100%;animation-name:swayT}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes swayT{0%,100%{transform:translate(-50%,-100%) rotate(-4deg)}50%{transform:translate(-50%,-100%) rotate(4deg)}}
+.farm .barn{cursor:pointer}
+.farm .barn .door{transform-box:view-box;transition:transform .9s cubic-bezier(.4,.1,.3,1)}
+.farm .barn .dl{transform-origin:92px 253px}.farm .barn .dr{transform-origin:228px 253px}
+.farm .barn.open .door{transform:scaleX(.14)}
+.farm .barn .vane{transform-box:view-box;transform-origin:160px 54px;animation:vane 7s ease-in-out infinite}
+@keyframes vane{0%,100%{transform:scaleX(1)}45%{transform:scaleX(.55)}55%{transform:scaleX(.55)}}
+.glow-win{animation:winGlow 4s ease-in-out infinite}
+@keyframes winGlow{0%,100%{opacity:1}50%{opacity:.8}}
+.farm .tree .canopy{transform-box:fill-box;transform-origin:50% 90%;animation:sway 7s ease-in-out infinite}
+.farm .pond{pointer-events:auto}
+.farm .pond .ripple{transform-box:fill-box;transform-origin:center;animation:ripple 4s ease-out infinite}
+@keyframes ripple{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.farm .duck{position:absolute;width:calc(var(--s) * 1vmin);animation:swim 22s ease-in-out infinite;cursor:pointer;line-height:0}
+.farm .duck svg{width:100%;display:block}
+.farm .duck.bob svg{animation:itemBounce2 .6s ease}
+@keyframes swim{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(16vmin) scaleX(1)}50%{transform:translateX(16vmin) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}
+@keyframes itemBounce2{0%,100%{transform:translateY(0)}40%{transform:translateY(-12%)}}
+.farm .fly{position:absolute;width:4.4vmin;pointer-events:none;animation:flyA 26s ease-in-out infinite}
+.farm .fly svg{width:100%;display:block}
+.farm .fly .wings{transform-box:fill-box;transform-origin:center;animation:flap .32s ease-in-out infinite}
+@keyframes flap{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.35)}}
+.farm .fly.f0{animation-name:flyA}.farm .fly.f1{animation-name:flyB;animation-duration:31s}.farm .fly.f2{animation-name:flyC;animation-duration:24s}.farm .fly.f3{animation-name:flyB;animation-duration:36s;animation-direction:reverse}
+@keyframes flyA{0%{left:10%;top:60%}20%{left:30%;top:52%}40%{left:48%;top:66%}60%{left:70%;top:55%}80%{left:40%;top:72%}100%{left:10%;top:60%}}
+@keyframes flyB{0%{left:80%;top:58%}25%{left:60%;top:70%}50%{left:30%;top:62%}75%{left:55%;top:50%}100%{left:80%;top:58%}}
+@keyframes flyC{0%{left:20%;top:80%}30%{left:45%;top:60%}60%{left:85%;top:74%}100%{left:20%;top:80%}}
+.farm .item{cursor:grab;touch-action:none;transition:filter .4s}
+.farm .item.dragging{transition:none;filter:drop-shadow(0 1.5vmin 1vmin rgba(60,90,40,.25));cursor:grabbing}
+.farm .item.settle{transition:left .35s cubic-bezier(.34,1.56,.64,1),top .35s cubic-bezier(.34,1.56,.64,1)}
+.farm .item.new{animation:sparkleIn 1s ease}
+@keyframes sparkleIn{0%{transform:translate(-50%,-100%) scale(.3);opacity:0}60%{transform:translate(-50%,-100%) scale(1.12);opacity:1}100%{transform:translate(-50%,-100%) scale(1)}}
+.farm .item.bounce svg{animation:itemBounce2 .6s ease}
+.farm .item.yay svg{animation:yay .9s ease}
+@keyframes yay{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-14%) rotate(-3deg)}50%{transform:translateY(0) rotate(2deg)}70%{transform:translateY(-5%)}}
+.farm .item.munch .head{animation:munch .35s ease-in-out 5}
+@keyframes munch{0%,100%{transform:rotate(0)}50%{transform:rotate(5deg)}}
+.farm .item.target{filter:drop-shadow(0 0 1.6vmin rgba(255,226,122,.95))}
+.farm .item.shiny{filter:brightness(1.07) saturate(1.1) drop-shadow(0 0 1.4vmin rgba(255,240,180,.95))}
+.farm .item .shine{position:absolute;inset:20% 20% 30% 15%;pointer-events:none;opacity:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.75) 50%,transparent 70%);background-size:250% 100%;border-radius:50%}
+.farm .item.shiny .shine{opacity:1;animation:shineSweep 1.6s ease-in-out 3}
+@keyframes shineSweep{from{background-position:120% 0}to{background-position:-120% 0}}
+svg.horse .head{transform-box:view-box;transform-origin:128px 96px;animation:headbob 5.5s ease-in-out infinite}
+@keyframes headbob{0%,100%{transform:rotate(0)}30%{transform:rotate(-3deg)}55%{transform:rotate(1.5deg)}75%{transform:rotate(0)}}
+.kitten{transform-box:fill-box;transform-origin:50% 100%;animation:kit 6s ease-in-out infinite}
+@keyframes kit{0%,100%{transform:translateY(0)}50%{transform:translateY(3%)}}
+.peck{transform-box:fill-box;transform-origin:50% 100%;animation:peck 3.2s ease-in-out infinite}
+@keyframes peck{0%,70%,100%{transform:rotate(0)}80%{transform:rotate(12deg)}90%{transform:rotate(0)}}
+.wag{transform-box:fill-box;transform-origin:100% 90%;animation:wag .8s ease-in-out infinite}
+@keyframes wag{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flick 1.4s ease-in-out infinite}
+@keyframes flick{0%,100%{transform:scale(1)}50%{transform:scale(.88,1.08)}}
+.shimmer{animation:twinkle 3s ease-in-out infinite}
+.sparkle{position:fixed;z-index:7000;pointer-events:none;color:#ffe9a8;text-shadow:0 0 8px #fff3c4;font-size:26px;transform:translate(-50%,-50%);animation:spark .9s ease-out forwards}
+@keyframes spark{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}30%{opacity:1}100%{opacity:0;transform:translate(-50%,-160%) scale(1.2) rotate(40deg)}}
+.ghost{position:fixed;z-index:6500;width:78px;pointer-events:none;transform:translate(-50%,-60%) rotate(-8deg);filter:drop-shadow(0 6px 6px rgba(0,0,0,.18))}
+.ghost svg{width:100%;display:block}
+/* Bedienelemente auf dem Hof */
+.farm-ui{position:absolute;inset:0;z-index:5000;pointer-events:none}
+.farm-ui > *{pointer-events:auto}
+.farm-btn{width:54px;height:54px;border-radius:50%;background:rgba(255,253,248,.78);box-shadow:0 3px 10px rgba(80,60,40,.15);font-size:1.45rem;display:flex;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.farm-btn:active{transform:scale(.95)}
+.farm-btn.back{position:absolute;left:calc(12px + env(safe-area-inset-left));top:calc(12px + env(safe-area-inset-top));opacity:.85}
+.farm-hud{position:absolute;right:calc(12px + env(safe-area-inset-right));top:calc(12px + env(safe-area-inset-top));display:flex;gap:8px;align-items:center}
+.farm-hud .counter{height:46px;background:rgba(255,253,248,.78);box-shadow:0 3px 10px rgba(80,60,40,.12);font-size:1.1rem}
+.farm-hud .counter svg,.counter .emo svg{width:30px;height:30px;display:block}
+.farm-say{position:absolute;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-140%);max-width:min(560px,62vw);margin:0;opacity:0;transition:transform .5s ease,opacity .5s ease;pointer-events:none;font-size:1.1rem;min-height:0;background:rgba(255,253,248,.92)}
+.farm-say::before{display:none}
+.farm-say.show{opacity:1;transform:translate(-50%,0)}
+.tray{position:absolute;left:calc(12px + env(safe-area-inset-left));bottom:calc(12px + env(safe-area-inset-bottom));display:flex;gap:12px}
+.tool{position:relative;width:76px;height:76px;border-radius:24px;background:rgba(255,253,248,.82);box-shadow:0 3px 10px rgba(80,60,40,.15);padding:8px;touch-action:none;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.tool span,.tool svg{display:block;width:100%;height:100%}
+.tool .badge{position:absolute;right:-4px;top:-4px;background:#ffe08a;border-radius:12px;min-width:26px;height:26px;font-size:.9rem;display:flex;align-items:center;justify-content:center;padding:0 6px}
+.tool.empty{opacity:.6}
+.drawer{position:absolute;right:0;top:0;bottom:0;width:min(440px,46vw);background:rgba(255,252,246,.96);box-shadow:-8px 0 30px rgba(80,60,40,.18);border-radius:28px 0 0 28px;transform:translateX(105%);transition:transform .45s cubic-bezier(.3,.1,.3,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);visibility:hidden}
+.drawer.open{transform:none;visibility:visible}
+.drawer-head{display:flex;align-items:center;gap:10px;padding:14px 14px 8px 20px;font-size:1.3rem}
+.drawer-head b{flex:1}
+.drawer-head .counter{height:44px;font-size:1.05rem;box-shadow:none;background:#fff3d6}
+.drawer-head .counter svg{width:28px;height:28px}
+.drawer-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 14px calc(20px + env(safe-area-inset-bottom)) 14px;touch-action:pan-y}
+.drawer h4{margin:16px 4px 8px;font-size:1.1rem}
+@media (orientation:portrait){
+  .drawer{left:0;right:0;top:auto;width:auto;height:62%;border-radius:28px 28px 0 0;transform:translateY(105%);box-shadow:0 -8px 30px rgba(80,60,40,.18);padding-top:0}
+  .drawer .shoplist{grid-template-columns:1fr 1fr}
+  .farm-say{top:calc(78px + env(safe-area-inset-top));max-width:86vw}
+}
+.shoplist{display:grid;grid-template-columns:1fr;gap:10px}
+.sitem{display:flex;align-items:center;gap:12px;background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:8px 12px;min-height:76px}
+.sitem.owned{background:#f6fbf2}
+.sitem .pv{width:64px;height:56px;display:flex;align-items:center;justify-content:center;flex:none}
+.sitem .pv svg{max-width:64px;max-height:56px;width:100%;height:auto}
+.sitem .nm{flex:1;font-weight:800;font-size:1rem;line-height:1.2;min-width:0}
+.sitem .nm small{display:flex;align-items:center;gap:4px;font-weight:700;color:var(--soft);font-size:.9rem}
+.sitem .nm small svg{width:22px;height:22px}
+.sitem button{min-height:54px;min-width:84px;border-radius:18px;font-weight:800;font-size:1rem;padding:6px 10px;background:#ffe08a;box-shadow:var(--shadow)}
+.sitem button.later{background:#f3ece3;color:var(--soft);box-shadow:none;font-size:.9rem}
+.sitem button.have{background:var(--mint);box-shadow:none}
+.swatches{display:flex;gap:12px;flex-wrap:wrap;padding:0 4px}
+.swatch{width:54px;height:54px;border-radius:50%;border:4px solid #fff;box-shadow:var(--shadow)}
+.swatch.on{outline:4px solid var(--gold)}
+.names{display:flex;flex-direction:column;gap:8px}
+.nameRow{display:flex;align-items:center;gap:10px;background:#fff;border-radius:18px;padding:6px 12px;box-shadow:var(--shadow)}
+.nameRow .pvh{width:60px;flex:none;line-height:0}
+.nameRow .pvh svg{width:100%}
+.nameRow input{flex:1;min-width:0}
+@media (prefers-reduced-motion:reduce){
+  .farm *,.farm *::before{animation:none!important;transition:none!important}
+  .farm .cloud{left:calc(var(--cs) * 2%)}
+  .farm .bird,.farm .fly{display:none}
+}
