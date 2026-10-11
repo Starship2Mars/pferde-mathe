@@ -597,3 +597,34 @@ svg.horse .head{transform-box:view-box;transform-origin:128px 96px;animation:hea
 }
 .farm .item.walkout{transition:left 1.2s cubic-bezier(.45,.05,.4,1),top 1.2s cubic-bezier(.45,.05,.4,1)}
 .farm .item.walkout.horse-item svg{animation:trotbob .32s ease-in-out infinite}
+/* Anziehen je Pferd */
+.dress-btn{position:absolute;z-index:3500;transform:translate(-50%,-100%);background:#fff6fb;border-radius:20px;padding:10px 16px;font-weight:800;font-size:1.05rem;box-shadow:0 4px 12px rgba(80,60,40,.18);animation:fadeIn .3s ease}
+.pick-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.pick{background:#fff8ee;border-radius:22px;padding:10px 14px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:130px;font-size:1.1rem;box-shadow:var(--shadow)}
+.pick .pvh{width:110px}.pick .pvh svg,.wardrow .pvh svg,.ward-pv svg{width:100%;display:block}
+.ward-pv{width:min(260px,60vw);margin:0 auto 6px}
+.wlabel{font-weight:800;margin:6px 0 4px}
+.ward-card .swatches{justify-content:center}
+.swatch.none{background:#fff;color:var(--soft);font-weight:900;font-size:1.3rem;border:2px dashed #e0d3c2}
+.wtogs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:14px 0}
+.wtog{display:flex;align-items:center;gap:8px;background:#f6f1ea;border-radius:20px;padding:8px 14px;font-weight:800;font-size:1.05rem;min-height:56px;border:3px solid transparent}
+.wtog span{width:40px;display:inline-block}.wtog span svg{width:100%;display:block}
+.wtog.on{background:#fff3c4;border-color:#f2c14e}
+.wardlist{display:flex;flex-direction:column;gap:8px}
+.wardrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fff8ee;border-radius:18px;padding:6px 10px}
+.wardrow .pvh{width:64px}.wardrow b{min-width:70px}
+.wardrow .swatches{flex:1}
+.wardrow .swatch{width:34px;height:34px}
+.farm-say.show,.map-ui .farm-say.show{pointer-events:auto;cursor:pointer}
+/* Futter & Hundespiel */
+.tool.food.empty,.tool.empty{opacity:.55}
+.farm .item.chase,.farm .item.flutter{transition:left .65s ease-in-out,top .65s ease-in-out}
+.farm .item.chase svg{animation:trotbob .28s ease-in-out infinite}
+.farm .item.chase.faceL svg{transform:scaleX(-1)}
+.farm .item.flutter svg{animation:flutter .3s ease-in-out infinite}
+@keyframes flutter{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10%) rotate(3deg)}}
+.feather{position:fixed;z-index:3600;font-size:1.4rem;pointer-events:none;animation:feather 1.6s ease-out forwards}
+@keyframes feather{0%{opacity:0;transform:translate(0,0) rotate(0)}20%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),-50px) rotate(160deg)}}
+.tray2{position:absolute;left:calc(12px + env(safe-area-inset-left));top:calc(80px + env(safe-area-inset-top));display:flex;flex-direction:column;gap:10px}
+.tray2 .tool{width:64px;height:64px;border-radius:20px;padding:7px}
+.farm{overflow:clip}

@@ -69,7 +69,7 @@ const START = { v: 1, setupSeen: true, shoes: 60, carrots: 4, owned: [] };
       await p.reload(); await p.waitForSelector('.tile'); await p.click('.tile[data-game="stall"]'); await p.waitForSelector('.farm'); await sleep(300);
       const s2 = await p.evaluate(() => window.__pm.state);
       const heuLeft = await p.$eval('.item[data-id="heu"]', (e) => e.style.left);
-      ok(s2.owned.length === 7 && s2.horseNames.wolke === 'Schneeflocke' && s2.blanket === '#b9e2a0' && s2.barnOpen === true && heuLeft === pos.x + '%' && s2.fed === fed0 + 1,
+      ok(s2.owned.length === 7 && s2.horseNames.wolke === 'Schneeflocke' && s2.gear.luna.blanket === '#b9e2a0' && s2.barnOpen === true && heuLeft === pos.x + '%' && s2.fed === fed0 + 1,
         'Nach Reload: Sachen, Namen, Deckenfarbe, Tor, Positionen, Füttern erhalten');
       ok(await p.$('#barn.open') !== null && await p.$('.item[data-id="regenbogen"]') !== null, 'Hof nach Reload korrekt aufgebaut');
       if (mood === 'evening') ok((await p.$$('.farm .star')).length > 0, 'Abendstimmung: Sterne funkeln');

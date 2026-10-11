@@ -614,6 +614,37 @@ svg.horse .head{transform-box:view-box;transform-origin:128px 96px;animation:hea
 }
 .farm .item.walkout{transition:left 1.2s cubic-bezier(.45,.05,.4,1),top 1.2s cubic-bezier(.45,.05,.4,1)}
 .farm .item.walkout.horse-item svg{animation:trotbob .32s ease-in-out infinite}
+/* Anziehen je Pferd */
+.dress-btn{position:absolute;z-index:3500;transform:translate(-50%,-100%);background:#fff6fb;border-radius:20px;padding:10px 16px;font-weight:800;font-size:1.05rem;box-shadow:0 4px 12px rgba(80,60,40,.18);animation:fadeIn .3s ease}
+.pick-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.pick{background:#fff8ee;border-radius:22px;padding:10px 14px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:130px;font-size:1.1rem;box-shadow:var(--shadow)}
+.pick .pvh{width:110px}.pick .pvh svg,.wardrow .pvh svg,.ward-pv svg{width:100%;display:block}
+.ward-pv{width:min(260px,60vw);margin:0 auto 6px}
+.wlabel{font-weight:800;margin:6px 0 4px}
+.ward-card .swatches{justify-content:center}
+.swatch.none{background:#fff;color:var(--soft);font-weight:900;font-size:1.3rem;border:2px dashed #e0d3c2}
+.wtogs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:14px 0}
+.wtog{display:flex;align-items:center;gap:8px;background:#f6f1ea;border-radius:20px;padding:8px 14px;font-weight:800;font-size:1.05rem;min-height:56px;border:3px solid transparent}
+.wtog span{width:40px;display:inline-block}.wtog span svg{width:100%;display:block}
+.wtog.on{background:#fff3c4;border-color:#f2c14e}
+.wardlist{display:flex;flex-direction:column;gap:8px}
+.wardrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fff8ee;border-radius:18px;padding:6px 10px}
+.wardrow .pvh{width:64px}.wardrow b{min-width:70px}
+.wardrow .swatches{flex:1}
+.wardrow .swatch{width:34px;height:34px}
+.farm-say.show,.map-ui .farm-say.show{pointer-events:auto;cursor:pointer}
+/* Futter & Hundespiel */
+.tool.food.empty,.tool.empty{opacity:.55}
+.farm .item.chase,.farm .item.flutter{transition:left .65s ease-in-out,top .65s ease-in-out}
+.farm .item.chase svg{animation:trotbob .28s ease-in-out infinite}
+.farm .item.chase.faceL svg{transform:scaleX(-1)}
+.farm .item.flutter svg{animation:flutter .3s ease-in-out infinite}
+@keyframes flutter{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10%) rotate(3deg)}}
+.feather{position:fixed;z-index:3600;font-size:1.4rem;pointer-events:none;animation:feather 1.6s ease-out forwards}
+@keyframes feather{0%{opacity:0;transform:translate(0,0) rotate(0)}20%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),-50px) rotate(160deg)}}
+.tray2{position:absolute;left:calc(12px + env(safe-area-inset-left));top:calc(80px + env(safe-area-inset-top));display:flex;flex-direction:column;gap:10px}
+.tray2 .tool{width:64px;height:64px;border-radius:20px;padding:7px}
+.farm{overflow:clip}
 
 </style>
 </head>
@@ -653,13 +684,13 @@ const MINUS = '−';
 
 // ---------- Speicher ----------
 const KEY = 'pferde-mathe-v1'; // Schlüssel bleibt gleich → gespeicherter Fortschritt bleibt bei Updates erhalten
-const APP_VERSION = '2.0.1';
+const APP_VERSION = '2.1.0';
 const GAME_IDS = ['paare', 'haeuser', 'rechnen', 'familie', 'strahl', 'zehner'];
 function defaultState() {
   return {
     v: 1, childName: '', bday: null, setupSeen: false, horseNames: {}, blanket: '', brushed: 0, barnOpen: false, adv: { done: {}, last: null }, shoes: 0, carrots: 0, totalShoes: 0, owned: [], pos: {}, sound: true, volume: 0.5,
     skills: Object.fromEntries(GAME_IDS.map((id) => [id, { level: 1, rounds: 0, recent: [] }])),
-    stats: {}, trouble: [], fed: 0, created: Date.now()
+    stats: {}, trouble: [], fed: 0, bones: 2, grain: 2, treats: 2, created: Date.now()
   };
 }
 function load() {
@@ -845,7 +876,26 @@ function horseSVG(o) {
 </svg>`;
 }
 function has(id) { return S.owned.includes(id); }
-function lunaOpts() { return { saddle: has('sattel'), bow: has('schleife'), bridle: has('goldzaum'), crown: has('krone'), blanket: has('decke') ? (S.blanket || BLANKET_COLORS[0]) : null }; }
+// Ausrüstung je Pferd: S.gear[pferd] = { blanket: Farbe|null, saddle, bow, bridle, crown }.
+// Gekauft wird ein Teil einmal (S.owned); welches Pferd es trägt, entscheidet das Kind.
+const GEAR = { decke: 'blanket', sattel: 'saddle', schleife: 'bow', goldzaum: 'bridle', krone: 'crown' };
+function ensureGear() {
+  if (!S.gear || typeof S.gear !== 'object' || Array.isArray(S.gear)) {
+    // Migration: bisher trug immer das Hauptpferd alles → genau so übernehmen (alte Deckenfarbe bleibt)
+    S.gear = { luna: { blanket: has('decke') ? (S.blanket || BLANKET_COLORS[0]) : null, saddle: has('sattel'), bow: has('schleife'), bridle: has('goldzaum'), crown: has('krone') } };
+    save();
+  }
+  return S.gear;
+}
+function gearOf(id) { const g = ensureGear(); if (!g[id] || typeof g[id] !== 'object') g[id] = {}; return g[id]; }
+function horseOpts(id) {
+  const g = (ensureGear()[id]) || {};
+  return { saddle: !!g.saddle && has('sattel'), bow: !!g.bow && has('schleife'), bridle: !!g.bridle && has('goldzaum'), crown: !!g.crown && has('krone'),
+    blanket: g.blanket && has('decke') ? g.blanket : null };
+}
+function giveGear(itemId, horseId) { const k = GEAR[itemId]; if (!k) return; const g = gearOf(horseId || 'luna'); g[k] = k === 'blanket' ? (g.blanket || S.blanket || BLANKET_COLORS[0]) : true; save(); }
+function ownedHorses() { return ['luna'].concat(['wolke', 'pony', 'fohlen', 'nacht'].filter((id) => has(id))); }
+function lunaOpts() { return horseOpts('luna'); }
 function lunaSVG() { return horseSVG(lunaOpts()); }
 const SHOE = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 5 C1 22 7 37 20 37 C33 37 39 22 32 5 L25 5 C29 20 26 30 20 30 C14 30 11 20 15 5 Z" fill="#f2c14e" stroke="#c9962a" stroke-width="2" stroke-linejoin="round"/><circle cx="9.5" cy="15" r="1.4" fill="#a87b1c"/><circle cx="11" cy="24" r="1.4" fill="#a87b1c"/><circle cx="30.5" cy="15" r="1.4" fill="#a87b1c"/><circle cx="29" cy="24" r="1.4" fill="#a87b1c"/></svg>`;
 const SHOE_EMPTY = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 5 C1 22 7 37 20 37 C33 37 39 22 32 5 L25 5 C29 20 26 30 20 30 C14 30 11 20 15 5 Z" fill="#f3ece3" stroke="#dccbb8" stroke-width="2" stroke-dasharray="3 3" stroke-linejoin="round"/></svg>`;
@@ -909,6 +959,28 @@ function say(text, mood) {
 }
 
 // ---------- Startseite ----------
+// Lesezeit für Sprechblasen: wächst mit der Textlänge; Faktor einstellbar im Elternbereich (Standard: doppelt so lang wie früher)
+const READF = { normal: 1, lang: 2, sehrlang: 3 };
+function readMs(text, base) { return Math.round(Math.max(base, 1200 + String(text || '').length * 75) * (READF[S.readTime] || 2)); }
+// Antippen schließt eine Sprechblase sofort
+document.addEventListener('pointerdown', (e) => { const b = e.target.closest && e.target.closest('.farm-say.show'); if (b) { e.stopPropagation(); b.classList.remove('show'); } }, true);
+// Futter für die anderen Tiere: Knochen (Hund), Körner (Hühner), Leckerli (Kätzchen)
+const FOODS = [
+  { key: 'bones', animal: 'hund', name: 'Knochen', one: 'Knochen', emo: '🦴' },
+  { key: 'grain', animal: 'huehner', name: 'Körner', one: 'Handvoll Körner', emo: '🌾' },
+  { key: 'treats', animal: 'kaetzchen', name: 'Leckerli', one: 'Katzen-Leckerli', emo: '🐟' }
+];
+function roundExtraFood() { // pro Runde zusätzlich 1 Futter für ein Tier, das schon auf dem Hof wohnt (abwechselnd)
+  const own = FOODS.filter((f) => S.owned.includes(f.animal));
+  if (!own.length) return null;
+  const f = own[(S.foodTurn = ((S.foodTurn || 0) + 1)) % own.length];
+  S[f.key] = (S[f.key] || 0) + 1;
+  return f.key;
+}
+function extraLoot() {
+  const k = S.lastRound && S.lastRound.extra, f = FOODS.find((x) => x.key === k);
+  return f ? h('div', null, h('span', { style: { fontSize: '2.1rem' } }, f.emo), h('span', null, '+1 ' + f.one)) : null;
+}
 function kidName() { return String(S.childName || '').trim(); }
 function withName(pre, post) { const n = kidName(); return n ? `${pre}, ${n}${post == null ? '!' : post}` : `${pre}${post == null ? '!' : post}`; }
 function birthdayInfo() {
@@ -1036,7 +1108,8 @@ function makeApi(game, root, opts) {
         sk.level--; sk.recent = [];
       }
       S.carrots++;
-      S.lastRound = { game: game.id, level: api.level, n: results.length, ok, at: Date.now() };
+      const extra = roundExtraFood();
+      S.lastRound = { game: game.id, level: api.level, n: results.length, ok, at: Date.now(), extra };
       save();
       if (opts.onFinish) opts.onFinish({ n: results.length, ok, levelUp });
       else showRoundEnd(game, results.length, levelUp);
@@ -1712,7 +1785,7 @@ function showRoundEnd(game, n, levelUp) {
     h('h2', null, msg + ' 🌟'),
     h('div', { class: 'loot' },
       h('div', { html: SHOE + `<span>+${n} Hufeisen</span>` }),
-      h('div', null, h('span', { style: { fontSize: '2.2rem' } }, '🥕'), h('span', null, '+1 Karotte'))),
+      h('div', null, h('span', { style: { fontSize: '2.2rem' } }, '🥕'), h('span', null, '+1 Karotte')), extraLoot()),
     h('p', { style: { fontSize: '1.2rem', margin: 0 } }, levelUp ? `${LN()} sagt: Du wirst immer besser! Beim nächsten Mal gibt es neue Aufgaben. 💖`
       : `${LN()} sagt: Danke, dass du mit mir gerechnet hast! Möchtest du mir auf dem Pferdehof eine Karotte geben?`),
     h('div', { class: 'btnrow' },
@@ -1782,6 +1855,9 @@ const ART = {
     <circle cx="130" cy="232" r="7" fill="#f26d6d"/><circle cx="62" cy="234" r="6.5" fill="#f26d6d"/>`),
   fence: `<svg viewBox="0 0 600 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="0" y="20" width="600" height="9" rx="4" fill="#c99d6e"/><rect x="0" y="46" width="600" height="9" rx="4" fill="#c99d6e"/>${range(0, 8).map((i) => `<rect x="${i * 73 + 6}" y="6" width="12" height="74" rx="4" fill="#a87b52"/>`).join('')}</svg>`,
   tuft: svgw('0 0 30 30', `<path d="M15 30 C13 20 8 12 4 8 C10 12 14 18 16 30Z" fill="#6fb85a"/><path d="M15 30 C15 18 16 8 18 2 C18 10 18 20 17 30Z" fill="#86c96d"/><path d="M15 30 C18 22 22 16 27 12 C22 18 19 24 17 30Z" fill="#78bf62"/>`),
+  bone: svgw('0 0 60 40', '<g transform="rotate(-20 30 20)"><rect x="14" y="15" width="32" height="10" rx="5" fill="#fff6e8" stroke="#e3d3bd" stroke-width="2"/><circle cx="13" cy="14" r="7" fill="#fff6e8" stroke="#e3d3bd" stroke-width="2"/><circle cx="13" cy="26" r="7" fill="#fff6e8" stroke="#e3d3bd" stroke-width="2"/><circle cx="47" cy="14" r="7" fill="#fff6e8" stroke="#e3d3bd" stroke-width="2"/><circle cx="47" cy="26" r="7" fill="#fff6e8" stroke="#e3d3bd" stroke-width="2"/><rect x="14" y="16" width="32" height="8" fill="#fff6e8"/></g>'),
+  grain: svgw('0 0 60 56', '<path d="M8 26 Q30 18 52 26 L46 50 Q30 56 14 50 Z" fill="#b5dcff"/><ellipse cx="30" cy="26" rx="22" ry="7" fill="#f6d27a"/>' + [[18, 24], [26, 22], [34, 25], [42, 23], [22, 28], [30, 27], [38, 28]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="2.4" ry="1.6" fill="#d9a94a"/>`).join('') + '<path d="M16 38 q14 6 28 0" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/>'),
+  treat: svgw('0 0 60 40', '<path d="M8 20 Q22 4 40 14 L52 6 L50 20 L52 34 L40 26 Q22 36 8 20 Z" fill="#f7b38a" stroke="#e58f73" stroke-width="2" stroke-linejoin="round"/><circle cx="17" cy="18" r="2.4" fill="#5a4033"/><path d="M26 14 v12 M32 15 v10" stroke="#e58f73" stroke-width="2"/>'),
   carrot: svgw('0 0 60 60', `<path d="M34 16 C44 18 46 26 40 32 L14 54 C10 57 6 53 9 49 Z" fill="#f59e4c"/><path d="M22 36 l5 3 M18 42 l4 3 M28 30 l5 3" stroke="#d9772c" stroke-width="2" stroke-linecap="round"/><path d="M36 18 C36 8 40 4 44 2 C42 8 42 12 40 18 Z M38 20 C46 12 52 12 58 14 C52 16 48 18 42 22 Z M40 20 C46 20 52 24 54 30 C48 26 44 24 40 24Z" fill="#6fb85a"/>`),
   brush: svgw('0 0 60 60', `<g transform="rotate(-25 30 30)"><rect x="8" y="18" width="44" height="18" rx="9" fill="#c98b57"/><rect x="12" y="20" width="36" height="6" rx="3" fill="#dba57a"/><rect x="10" y="34" width="40" height="12" rx="4" fill="#fff2dc"/><path d="M14 36 v9 M19 36 v9 M24 36 v9 M29 36 v9 M34 36 v9 M39 36 v9 M44 36 v9" stroke="#e8d3b4" stroke-width="2"/></g>`),
   saddlePv: svgw('0 0 60 40', `<path d="M8 18 Q30 4 52 18 L54 30 Q30 40 6 30 Z" fill="#9ad0ec"/><path d="M14 16 Q30 2 46 16 L47 26 Q30 33 13 26 Z" fill="#8b5a2b"/><circle cx="30" cy="36" r="3.5" fill="none" stroke="#c9962a" stroke-width="2.5"/>`),
@@ -1819,10 +1895,10 @@ const ITEMS = [
   { id: 'heu', name: 'Heuballen', price: 3, art: () => HAY, s: 12, x: 9, y: 79, snd: 'plop' },
   { id: 'blumen', name: 'Blumenbeet', price: 3, art: () => ART.flowerbed, s: 18, x: 47, y: 63, snd: 'sparkle' },
   { id: 'trog', name: 'Wassertrog', price: 4, art: () => ART.trough, s: 15, x: 43, y: 93, snd: 'plop' },
-  { id: 'schleife', name: () => `Mähnenschleife für ${LN()}`, price: 5, onLuna: true, pv: () => ART.bowPv },
+  { id: 'schleife', name: 'Mähnenschleife', price: 5, onLuna: true, pv: () => ART.bowPv },
   { id: 'schmetterlinge', name: 'Schmetterlinge', price: 5, fly: true, pv: () => ART.butterfly('#f7a8c4') },
-  { id: 'sattel', name: () => `Sattel für ${LN()}`, price: 6, onLuna: true, pv: () => ART.saddlePv },
-  { id: 'decke', name: 'Pferdedecke (Farbe wählbar)', price: 6, onLuna: true, pv: () => ART.blanketPv(S.blanket || BLANKET_COLORS[0]) },
+  { id: 'sattel', name: 'Sattel', price: 6, onLuna: true, pv: () => ART.saddlePv },
+  { id: 'decke', name: 'Pferdedecke (jedes Pferd eigene Farbe)', price: 6, onLuna: true, pv: () => ART.blanketPv(S.blanket || BLANKET_COLORS[0]) },
   { id: 'kaetzchen', name: 'Kätzchen im Heu', price: 6, art: () => ART.kitten, s: 12, x: 30, y: 67, snd: 'meow' },
   { id: 'sonnenblumen', name: 'Sonnenblumen', price: 6, art: () => ART.sunflowers, s: 11, x: 4, y: 70, snd: 'sparkle' },
   { id: 'huehner', name: 'Hühner', price: 7, art: () => ART.chickens, s: 16, x: 88, y: 98, snd: 'cluck' },
@@ -1836,8 +1912,8 @@ const ITEMS = [
   { id: 'nacht', name: () => `Rappe ${horseName('nacht')}`, price: 20, horse: 'nacht', s: 26, x: 38, y: 75 },
   { id: 'kuchen', name: 'Geburtstagskuchen', price: 0, art: () => ART.cake, s: 9, x: 55, y: 98, special: true, snd: 'sparkle' },
   { id: 'ziege', name: 'Ziege Zenzi (aus dem Apfelgarten)', price: 0, art: () => MAPART.goat, s: 11, x: 93, y: 80, special: true, snd: 'baa' },
-  { id: 'goldzaum', name: () => `Goldenes Zaumzeug für ${LN()}`, price: 0, onLuna: true, pv: () => TREASURE.goldzaum.svg, special: true },
-  { id: 'krone', name: () => `Krone für ${LN()} (vom Märchenschloss)`, price: 0, onLuna: true, pv: () => TREASURE.krone.svg, special: true }
+  { id: 'goldzaum', name: 'Goldenes Zaumzeug', price: 0, onLuna: true, pv: () => TREASURE.goldzaum.svg, special: true },
+  { id: 'krone', name: 'Krone (vom Märchenschloss)', price: 0, onLuna: true, pv: () => TREASURE.krone.svg, special: true }
 ];
 // ---- Pferdehof-Positionen absichern (Reparatur für Pferde, die hinter der Scheune verschwunden sind) ----
 // Gilt nur für S.pos (Positionen). Gekaufte Sachen, Hufeisen, Fortschritt usw. werden nie verändert.
@@ -1905,6 +1981,7 @@ function showStable() {
   const mood = farmMood();
   app.innerHTML = '';
   const farm = h('div', { class: 'farm scene ' + mood, id: 'scene' });
+  farm.addEventListener('scroll', () => { if (farm.scrollLeft || farm.scrollTop) { farm.scrollLeft = 0; farm.scrollTop = 0; } }); // nie verrutschen (Safari scrollt sonst versteckte Ränder ins Bild)
   const main = h('main', { id: 'screen', class: 'farm-screen' }, farm);
   app.append(main);
   const add = (el) => { farm.append(el); return el; };
@@ -1961,11 +2038,24 @@ function showStable() {
   const carrotTool = h('button', { class: 'tool', id: 'toolCarrot', 'aria-label': 'Karotte' }, h('span', { html: ART.carrot }), h('b', { class: 'badge' }, String(S.carrots)));
   const brushTool = h('button', { class: 'tool', id: 'toolBrush', 'aria-label': 'Bürste' }, h('span', { html: ART.brush }));
   ui.append(h('div', { class: 'tray' }, carrotTool, brushTool));
+  const tray = h('div', { class: 'tray2', id: 'foodTray' });
+  ui.append(tray);
+  const foodTools = {};
+  function renderTray() {
+    FOODS.forEach((f) => {
+      const show = has(f.animal);
+      if (show && !foodTools[f.key]) {
+        const t = h('button', { class: 'tool food', id: 'tool-' + f.key, 'data-food': f.key, 'aria-label': f.name }, h('span', { html: ART[{ bones: 'bone', grain: 'grain', treats: 'treat' }[f.key]] }), h('b', { class: 'badge' }, String(S[f.key] || 0)));
+        foodTools[f.key] = t; tray.append(t); foodDrag(t, f);
+      } else if (!show && foodTools[f.key]) { foodTools[f.key].remove(); delete foodTools[f.key]; }
+      if (foodTools[f.key]) { $('.badge', foodTools[f.key]).textContent = S[f.key] || 0; foodTools[f.key].classList.toggle('empty', !(S[f.key] > 0)); }
+    });
+  }
   const drawer = h('div', { class: 'drawer', id: 'drawer' });
   ui.append(drawer);
 
   let sayT = 0;
-  const fsay = (t) => { const b = $('#farmSay'); b.textContent = t; b.classList.add('show'); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); clearTimeout(sayT); sayT = setTimeout(() => b.classList.remove('show'), 4200); };
+  const fsay = (t) => { const b = $('#farmSay'); b.textContent = t; b.classList.add('show'); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); clearTimeout(sayT); sayT = setTimeout(() => b.classList.remove('show'), readMs(t, 4200)); };
   const updTools = () => { updateCounters(); $('.badge', carrotTool).textContent = S.carrots; carrotTool.classList.toggle('empty', S.carrots <= 0); };
   updTools();
 
@@ -2006,7 +2096,7 @@ function showStable() {
   function zFor(it, y) { return it.sky ? 2 : it.flat ? Math.round(90 + y / 10) : Math.round(100 + y * 10); }
   function placeItem(it, isNew) {
     const p = S.pos[it.id] || { x: it.x, y: it.y };
-    const html = it.horse ? (it.id === 'luna' ? lunaSVG() : horseSVG(HORSES[it.horse])) : it.art();
+    const html = it.horse ? horseSVG(Object.assign({}, HORSES[it.horse], horseOpts(it.id))) : it.art();
     const el = h('div', { class: 'item' + (it.horse ? ' horse-item' : '') + (isNew ? ' new' : ''), 'data-id': it.id, html });
     if (it.horse) el.append(h('span', { class: 'shine' }));
     el.style.setProperty('--s', it.s);
@@ -2018,10 +2108,11 @@ function showStable() {
   function renderScene(newId) {
     $$('.item', farm).forEach((x) => x.remove());
     ITEMS.forEach((it) => { if (!it.onLuna && !it.onBarn && !it.fly && has(it.id)) placeItem(it, it.id === newId); });
-    placeItem(itemOf('luna'), ['sattel', 'schleife', 'decke'].includes(newId));
+    placeItem(itemOf('luna'), false);
     flies.slice(1).forEach((f) => f.remove()); flies.length = 1;
     if (has('schmetterlinge')) ['#f7a8c4', '#b5dcff', '#d6c2f2'].forEach((c, i) => addFly(c, i + 1));
     if (newId === 'wetterfahne') { barn.innerHTML = barnSVG(mood === 'evening', true); }
+    renderTray();
   }
   function makeDraggable(el, it) {
     let st = null;
@@ -2069,10 +2160,52 @@ function showStable() {
       react(el, 'yay'); burst(el, ['💖', '💕', '✨']);
       if (Math.random() < 0.5) Sound.neigh(); else Sound.clipclop();
       fsay(pick([`Hallo! Ich bin ${horseName(it.horse)}! 💕`, `${horseName(it.horse)} freut sich, dass du da bist!`, `${horseName(it.horse)} kuschelt mit dir. 🥰`]));
+      dressBtn(el, it.id);
     } else {
       react(el, 'bounce'); (Sound[it.snd] || Sound.plop)();
       fsay(pick([`Schön: ${itemName(it)}!`, `${itemName(it)} – gefällt mir!`]));
+      if (it.id === 'hund' && !playing) playBtn(el);
     }
+  }
+  // Wer bekommt das neue Teil?
+  function pickHorse(it) {
+    const card = h('div', { class: 'bag-card pick-card', id: 'pickHorse' }, h('h2', null, `Wer bekommt: ${itemName(it)}?`),
+      h('div', { class: 'pick-grid' }, ownedHorses().map((id) => h('button', { class: 'pick', 'data-pick': id, onclick: () => {
+        giveGear(it.id, id); Sound.sparkle(); close(); renderScene();
+        const el = $(`.item[data-id="${id}"]`, farm); if (el) { burst(el, ['✨', '⭐', '💖']); react(el, 'yay'); }
+        fsay(`${horseName(id)} freut sich riesig! 💖`);
+        if (it.id === 'decke') setTimeout(() => openWardrobe(id), 500);
+      } }, h('span', { class: 'pvh', html: horseSVG(Object.assign({}, HORSES[id], horseOpts(id), { delay: 0 })) }), h('b', null, horseName(id))))));
+    const close = sheet(card);
+  }
+  // Anziehen: jedes Pferd hat eigene Decke (Farbe), Sattel, Schleife, Zaumzeug, Krone
+  function openWardrobe(id) {
+    const card = h('div', { class: 'bag-card ward-card', id: 'wardrobe' });
+    const draw = () => {
+      card.innerHTML = '';
+      const o = horseOpts(id), g = gearOf(id);
+      const tog = (item, key, label) => has(item) ? h('button', { class: 'wtog' + (o[key] ? ' on' : ''), 'data-gear': item, onclick: () => { g[key] = !o[key]; save(); o[key] ? Sound.plop() : Sound.sparkle(); draw(); renderScene(); } },
+        h('span', { html: ITEMS.find((x) => x.id === item).pv() }), label) : null;
+      card.append(h('h2', null, `🎀 ${horseName(id)} anziehen`),
+        h('div', { class: 'ward-pv', html: horseSVG(Object.assign({}, HORSES[id], o, { delay: 0 })) }),
+        has('decke') ? h('div', null, h('div', { class: 'wlabel' }, 'Decke'), h('div', { class: 'swatches' }, BLANKET_COLORS.map((c) => h('button', {
+          class: 'swatch' + (o.blanket === c ? ' on' : ''), 'data-wcolor': c, style: { background: c }, 'aria-label': 'Deckenfarbe',
+          onclick: () => { g.blanket = c; save(); Sound.sparkle(); draw(); renderScene(); } })),
+          h('button', { class: 'swatch none' + (o.blanket ? '' : ' on'), 'data-wcolor': 'none', 'aria-label': 'Keine Decke', onclick: () => { g.blanket = null; save(); Sound.plop(); draw(); renderScene(); } }, '–'))) : null,
+        h('div', { class: 'wtogs' }, tog('sattel', 'saddle', 'Sattel'), tog('schleife', 'bow', 'Schleife'), tog('goldzaum', 'bridle', 'Zaumzeug'), tog('krone', 'crown', 'Krone')),
+        h('button', { class: 'bigbtn primary', id: 'wardClose', onclick: () => { Sound.tap(); close(); } }, 'Fertig 💖'));
+    };
+    draw();
+    const close = sheet(card);
+  }
+  function dressBtn(el, id) {
+    if (!Object.keys(GEAR).some((g) => has(g))) return;
+    $$('.dress-btn', farm).forEach((b) => b.remove());
+    const r = el.getBoundingClientRect(), fr = farm.getBoundingClientRect();
+    const b = h('button', { class: 'dress-btn', 'data-dress': id, 'aria-label': 'Anziehen', onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); openWardrobe(id); } }, '🎀 Anziehen');
+    b.style.left = Math.min(fr.width - 90, Math.max(70, r.left - fr.left + r.width / 2)) + 'px'; b.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
+    b.addEventListener('pointerdown', (e) => e.stopPropagation());
+    farm.append(b); setTimeout(() => b.remove(), readMs('', 5000));
   }
   // Werkzeuge: Karotte und Bürste zum Pferd ziehen
   function horseAt(x, y) {
@@ -2128,6 +2261,83 @@ function showStable() {
     });
   }
   toolDrag(carrotTool, 'carrot'); toolDrag(brushTool, 'brush');
+  // Futter zu Hund, Hühnern, Kätzchen ziehen
+  function animalAt(x, y, id) {
+    const el = $(`.item[data-id="${id}"]`, farm); if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return x > r.left - 20 && x < r.right + 20 && y > r.top - 20 && y < r.bottom + 20 ? el : null;
+  }
+  const FEED_SAY = {
+    hund: ['Wuff! Der Hofhund wedelt ganz doll mit dem Schwanz! 🐶💖', 'Knusper, knusper – der Hund liebt Knochen! 🦴', 'Der Hund macht Männchen vor Freude! 🐶'],
+    huehner: ['Pick, pick, pick! Die Hühner gackern fröhlich. 🐔', 'Die Hühner freuen sich über die Körner! 🌾💛', 'Gack-gack! Danke für das Frühstück! 🐔'],
+    kaetzchen: ['Miau! Das Kätzchen schnurrt ganz zufrieden. 🐱💕', 'Das Kätzchen putzt sich nach dem Leckerli das Schnäuzchen. 🐟', 'Schnurr, schnurr … 🐱']
+  };
+  function foodDrag(tool, f) {
+    tool.addEventListener('pointerdown', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      if (!(S[f.key] > 0)) { Sound.tap(); fsay(`Spiel eine Runde, dann bekommst du neue ${f.name}. ${f.emo}`); return; }
+      try { tool.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+      const ghost = add(h('div', { class: 'ghost', html: $('span', tool).innerHTML }));
+      const mv = (ev) => { ghost.style.left = ev.clientX + 'px'; ghost.style.top = ev.clientY + 'px'; };
+      mv(e); let moved = false;
+      const onMove = (ev) => { mv(ev); moved = true; const t = animalAt(ev.clientX, ev.clientY, f.animal); $$('.item.target', farm).forEach((x) => x !== t && x.classList.remove('target')); if (t) t.classList.add('target'); };
+      const onUp = (ev) => {
+        tool.removeEventListener('pointermove', onMove); tool.removeEventListener('pointerup', onUp); tool.removeEventListener('pointercancel', onUp);
+        ghost.remove(); $$('.item.target', farm).forEach((x) => x.classList.remove('target'));
+        const t = animalAt(ev.clientX, ev.clientY, f.animal);
+        if (!moved || !t) { Sound.tap(); fsay(`Zieh ${f.name === 'Körner' ? 'die Körner' : f.name === 'Knochen' ? 'den Knochen' : 'das Leckerli'} zu ${f.animal === 'hund' ? 'dem Hund' : f.animal === 'huehner' ? 'den Hühnern' : 'dem Kätzchen'}! ${f.emo}`); return; }
+        S[f.key]--; S.fedAnimals = S.fedAnimals || {}; S.fedAnimals[f.animal] = (S.fedAnimals[f.animal] || 0) + 1; save(); renderTray();
+        react(t, f.animal === 'huehner' ? 'munch' : 'yay'); burst(t, ['💖', f.emo, '💕']);
+        (f.animal === 'hund' ? Sound.woof : f.animal === 'huehner' ? Sound.cluck : Sound.meow)(); setTimeout(() => Sound.munch(), 300);
+        fsay(pick(FEED_SAY[f.animal]));
+      };
+      tool.addEventListener('pointermove', onMove); tool.addEventListener('pointerup', onUp); tool.addEventListener('pointercancel', onUp);
+    });
+  }
+  // Hund spielt Fangen mit den Hühnern – nur Spaß: niemand wird gefangen, alle kommen wieder an ihren Platz
+  let playing = false;
+  function dogPlay() {
+    const dog = $('.item[data-id="hund"]', farm); if (!dog || playing) return;
+    const hens = $('.item[data-id="huehner"]', farm);
+    playing = true;
+    const home = (el) => ({ left: el.style.left, top: el.style.top, z: el.style.zIndex });
+    const dh = home(dog), hh = hens ? home(hens) : null;
+    const path = [[30, 90], [52, 84], [72, 92], [60, 98], [38, 96], [24, 88], [44, 82], [66, 88]];
+    dog.classList.add('chase'); if (hens) hens.classList.add('flutter');
+    fsay(hens ? 'Der Hund will spielen! Die Hühner flattern lustig davon – fang mich doch! 🐶🐔' : 'Der Hund rennt eine fröhliche Runde über die Koppel! 🐶💨');
+    let step = 0;
+    const tick = () => {
+      if (currentScreen !== 'stable' || step >= path.length) { end(); return; }
+      const [x, y] = path[step];
+      if (hens) { hens.style.left = x + '%'; hens.style.top = y + '%'; hens.style.zIndex = 3200; if (step % 2 === 0) { Sound.cluck(); feathers(hens); } }
+      const [px, py] = path[Math.max(0, step - 1)];
+      setTimeout(() => { if (!playing) return; dog.style.left = (hens ? px : x) + '%'; dog.style.top = (hens ? py : y) + '%'; dog.style.zIndex = 3100; if (step % 3 === 1) Sound.woof(); }, hens ? 250 : 0);
+      step++; playT = setTimeout(tick, 650);
+    };
+    let playT = setTimeout(tick, 200);
+    function end() {
+      clearTimeout(playT);
+      setTimeout(() => {
+        dog.style.left = dh.left; dog.style.top = dh.top; if (hens) { hens.style.left = hh.left; hens.style.top = hh.top; }
+        setTimeout(() => {
+          dog.classList.remove('chase'); dog.style.zIndex = dh.z; if (hens) { hens.classList.remove('flutter'); hens.style.zIndex = hh.z; }
+          playing = false; if (currentScreen === 'stable') { burst(dog, ['💖', '🐾']); fsay(hens ? 'Puh, das war lustig! Jetzt ruhen sich alle wieder aus. 💤' : 'Puh! Jetzt legt sich der Hund gemütlich hin. 💤'); }
+        }, 900);
+      }, 300);
+    }
+  }
+  function feathers(el) {
+    const r = el.getBoundingClientRect();
+    for (let i = 0; i < 3; i++) { const f = add(h('span', { class: 'feather' }, '🪶')); f.style.left = (r.left + r.width * Math.random()) + 'px'; f.style.top = (r.top + r.height * 0.4) + 'px'; f.style.setProperty('--dx', rand(-40, 40) + 'px'); setTimeout(() => f.remove(), 1600); }
+  }
+  function playBtn(el) {
+    $$('.dress-btn', farm).forEach((b) => b.remove());
+    const r = el.getBoundingClientRect(), fr = farm.getBoundingClientRect();
+    const b = h('button', { class: 'dress-btn', id: 'dogPlay', 'aria-label': 'Spielen', onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); dogPlay(); } }, has('huehner') ? '🐾 Fang!' : '🐾 Lauf!');
+    b.style.left = Math.min(fr.width - 90, Math.max(70, r.left - fr.left + r.width / 2)) + 'px'; b.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
+    b.addEventListener('pointerdown', (e) => e.stopPropagation());
+    farm.append(b); setTimeout(() => b.remove(), readMs('', 5000));
+  }
 
   // Laden (Schublade)
   function openDrawer() { renderDrawer(); drawer.classList.add('open'); $('#farmSay').classList.remove('show'); }
@@ -2149,11 +2359,16 @@ function showStable() {
         h('div', { class: 'nm' }, itemName(it), it.special ? h('small', null, '🎁 Geschenk') : h('small', { html: SHOE + ' ' + it.price })), btn));
     });
     body.append(list);
-    if (has('decke')) {
-      body.append(h('h4', null, 'Farbe der Pferdedecke'), h('div', { class: 'swatches' }, BLANKET_COLORS.map((c) => h('button', {
-        class: 'swatch' + ((S.blanket || BLANKET_COLORS[0]) === c ? ' on' : ''), 'data-color': c, 'aria-label': 'Farbe', style: { background: c },
-        onclick: () => { S.blanket = c; save(); Sound.sparkle(); renderScene('decke'); renderDrawer(); }
-      }))));
+    if (Object.keys(GEAR).some((id) => has(id))) {
+      body.append(h('h4', null, '🎀 Pferde anziehen'), h('div', { class: 'wardlist' }, ownedHorses().map((id) => h('div', { class: 'wardrow', 'data-ward': id },
+        h('span', { class: 'pvh', html: horseSVG(Object.assign({}, HORSES[id], horseOpts(id), { delay: 0 })) }),
+        h('b', null, horseName(id)),
+        has('decke') ? h('div', { class: 'swatches' }, BLANKET_COLORS.map((c) => h('button', {
+          class: 'swatch' + (horseOpts(id).blanket === c ? ' on' : ''), 'data-color': c, 'data-horse': id, 'aria-label': 'Deckenfarbe', style: { background: c },
+          onclick: () => { gearOf(id).blanket = c; save(); Sound.sparkle(); renderScene(); renderDrawer(); }
+        })), h('button', { class: 'swatch none' + (horseOpts(id).blanket ? '' : ' on'), 'data-color': 'none', 'data-horse': id, 'aria-label': 'Keine Decke',
+          onclick: () => { gearOf(id).blanket = null; save(); Sound.plop(); renderScene(); renderDrawer(); } }, '–')) : null,
+        h('button', { class: 'smallbtn', 'data-wardrobe': id, onclick: () => { Sound.tap(); openWardrobe(id); } }, 'Anziehen')))));
     }
     const horses = ['luna'].concat(ITEMS.filter((i) => i.horse && has(i.id)).map((i) => i.horse));
     body.append(h('h4', null, 'Namen der Pferde'), h('div', { class: 'names' }, horses.map((id) => {
@@ -2168,6 +2383,11 @@ function showStable() {
     Sound.fanfare();
     closeDrawer();
     renderScene(it.id);
+    if (GEAR[it.id]) {
+      const hs = ownedHorses();
+      if (hs.length === 1) { giveGear(it.id, 'luna'); renderScene(); }
+      else { setTimeout(() => pickHorse(it), 350); fsay(`Juhu, ${itemName(it)}! Welches Pferd bekommt es? 🐴`); return; }
+    }
     setTimeout(() => {
       const el = it.onBarn ? barn : $(`.item[data-id="${it.onLuna ? 'luna' : it.id}"]`, farm) || (it.fly ? flies[1] : null);
       if (el) burst(el, ['✨', '⭐', '💖']);
@@ -2345,7 +2565,7 @@ function stationLevel(st) {
 }
 function advSetWorld(w) { // Elternbereich: ab Welt w neu beginnen (alles davor gilt als geschafft)
   const d = {};
-  WORLDS.forEach((W, k) => W.stations.forEach((st, i) => { if (k < w) { d[skey(k, i)] = true; if (st.gift && !has(st.gift)) S.owned.push(st.gift); } }));
+  WORLDS.forEach((W, k) => W.stations.forEach((st, i) => { if (k < w) { d[skey(k, i)] = true; if (st.gift && !has(st.gift)) { S.owned.push(st.gift); giveGear(st.gift, 'luna'); } } }));
   S.adv = { done: d, last: null }; save();
 }
 
@@ -2461,7 +2681,7 @@ let mapSayTimer = 0;
 function mapSay(t) {
   const b = $('#mapSay'); if (!b) return;
   b.textContent = t; b.classList.add('show');
-  clearTimeout(mapSayTimer); mapSayTimer = setTimeout(() => b.classList.remove('show'), 5200);
+  clearTimeout(mapSayTimer); mapSayTimer = setTimeout(() => b.classList.remove('show'), readMs(t, 5200));
 }
 let mapResizeT = 0, mapFocus = 0;
 window.addEventListener('resize', () => {
@@ -2567,7 +2787,7 @@ function stationFinished(w, i, r) {
   const was = advDone(w, i);
   advState().done[skey(w, i)] = true; S.adv.last = { w, i, at: Date.now() };
   let gift = null;
-  if (st.gift && !has(st.gift)) { S.owned.push(st.gift); gift = st.gift; }
+  if (st.gift && !has(st.gift)) { S.owned.push(st.gift); gift = st.gift; giveGear(st.gift, 'luna'); }
   save();
   if (st.gate && !was) showWorldDone(w, gift);
   else showStationReward(w, i, was, r, gift);
@@ -2581,7 +2801,7 @@ function confetti(n) {
 }
 function lootRow(n) {
   return h('div', { class: 'loot' }, h('div', { html: SHOE + `<span>+${n} Hufeisen</span>` }),
-    h('div', null, h('span', { style: { fontSize: '2.1rem' } }, '🥕'), h('span', null, '+1 Karotte')));
+    h('div', null, h('span', { style: { fontSize: '2.1rem' } }, '🥕'), h('span', null, '+1 Karotte')), extraLoot());
 }
 function giftNote(gift) {
   if (!gift) return null;
@@ -2770,12 +2990,14 @@ function showParent() {
   const vol = h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Ton', h('small', null, 'Sanfte Klänge (Standard: an, leise)')),
     h('button', { class: 'smallbtn', onclick: () => { S.sound = !S.sound; save(); showParent(); } }, S.sound ? '🔊 an' : '🔇 aus'),
     ...[['leise', 0.5], ['mittel', 1]].map(([n, v]) => h('button', { class: 'smallbtn', style: S.volume === v ? { background: '#ffe08a' } : null, onclick: () => { S.volume = v; save(); Sound.pop(); showParent(); } }, n)));
+  const readRow = h('div', { class: 'prow', id: 'readRow' }, h('div', { class: 'pn' }, 'Lesezeit der Sprechblasen', h('small', null, 'Wie lange Hinweise stehen bleiben (längere Texte länger). Antippen schließt sie.')),
+    ...[['normal', 'normal'], ['lang', 'lang (empfohlen)'], ['sehrlang', 'sehr lang']].map(([v, n]) => h('button', { class: 'smallbtn', 'data-read': v, style: (S.readTime || 'lang') === v ? { background: '#ffe08a' } : null, onclick: () => { S.readTime = v; save(); Sound.tap(); showParent(); } }, n)));
   const confirmBox = h('div', { style: { display: 'none', marginTop: '10px' } },
     h('p', null, 'Wirklich alles löschen? Hufeisen, Stall und Lernfortschritt gehen verloren (Name und Geburtstag bleiben).'),
     h('div', { class: 'btnrow', style: { justifyContent: 'flex-start' } },
       h('button', { class: 'smallbtn danger', id: 'resetYes', onclick: () => { const keep = { childName: S.childName, bday: S.bday, setupSeen: true }; S = Object.assign(defaultState(), keep); save(); showHome(); } }, 'Ja, alles zurücksetzen'),
       h('button', { class: 'smallbtn', onclick: () => { confirmBox.style.display = 'none'; } }, 'Abbrechen')));
-  wrap.append(h('div', { class: 'panel' }, h('h3', null, 'Einstellungen'), vol,
+  wrap.append(h('div', { class: 'panel' }, h('h3', null, 'Einstellungen'), vol, readRow,
     h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Pferdehof aufräumen', h('small', null, 'Stellt alle Pferde und Sachen wieder an ihren Startplatz. Gekauftes, Hufeisen und Fortschritt bleiben.')),
       h('button', { class: 'smallbtn', id: 'tidyFarm', onclick: (e) => { S.pos = {}; save(); Sound.sparkle(); e.target.textContent = 'Aufgeräumt ✓'; } }, '🧹 Pferdehof aufräumen')),
     h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Zurücksetzen', h('small', null, 'Setzt alles auf den Anfang.')),
@@ -2785,6 +3007,7 @@ function showParent() {
 }
 
 // ---------- Start ----------
+ensureGear();
 repairFarm();
 window.__pm = { get state() { return S; }, repairFarm, startGame, showStable, showHome, showParent, showMap, openStation, showWorldDone, showTravel, WORLDS, advSetWorld, stationLevel, save, version: APP_VERSION };
 showHome();
