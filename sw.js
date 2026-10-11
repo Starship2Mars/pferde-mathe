@@ -1,5 +1,5 @@
 /* Pferde-Mathe – Service Worker (nur lokaler Cache, keine Netzwerkaufrufe nach außen) */
-const CACHE = 'pferde-mathe-v2-abenteuer';
+const CACHE = 'pferde-mathe-v3-hoffix';
 const ASSETS = [
   './', './index.html', './style.css', './app.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'

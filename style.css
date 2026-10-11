@@ -595,3 +595,5 @@ svg.horse .head{transform-box:view-box;transform-origin:128px 96px;animation:hea
   .map-ui .farm-say{left:calc(84px + env(safe-area-inset-left));transform:translate(0,-140%);max-width:calc(100vw - 480px)}
   .map-ui .farm-say.show{transform:translate(0,0)}
 }
+.farm .item.walkout{transition:left 1.2s cubic-bezier(.45,.05,.4,1),top 1.2s cubic-bezier(.45,.05,.4,1)}
+.farm .item.walkout.horse-item svg{animation:trotbob .32s ease-in-out infinite}

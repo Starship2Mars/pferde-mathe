@@ -46,6 +46,9 @@ Pferde blinzeln, wedeln mit dem Schweif, nicken – und freuen sich beim Antippe
 ziehen zum Füttern und Putzen. Mit Hufeisen Sachen holen (Heu, Wassertrog, Blumen, Pferdedecke in Farben, Pony,
 Fohlen, Schimmel, Rappe, Reitplatz mit Hindernissen, Wetterfahne, Kätzchen im Heu, Regenbogen …) und per
 Drag & Drop platzieren. Pferde können eigene Namen bekommen (nur lokal).
+Pferde und Sachen lassen sich nicht hinter die Scheune (oder anders unsichtbar) stellen: Wer auf die Scheune gezogen wird,
+trabt fröhlich wieder heraus. Beim Öffnen der Scheune kommen alle Pferde heraus. Ungültige oder verdeckte gespeicherte
+Positionen werden beim Start automatisch auf einen freien Platz auf der Koppel verschoben (nur die Position; sonst bleibt alles).
 
 ## Klänge
 Alle Klänge werden im Browser erzeugt (WebAudio), leise und sanft; abschaltbar. Richtige Antwort: kleines
@@ -54,7 +57,7 @@ falsche Antwort: nur ein sehr leiser neutraler Ton.
 
 ## Elternbereich
 „Für Eltern“ → Knopf 3 Sekunden halten. Fortschritt je Spiel und Aufgabentyp, knifflige Aufgaben, Stufen anpassen,
-Ton, Zurücksetzen, **Abenteuer-Fortschritt je Welt** mit „Hierhin springen“ / „Von vorn“. Optional: **Name des Kindes** und **Geburtstag (Tag/Monat)** – nur lokal gespeichert;
+Ton, Zurücksetzen, **Abenteuer-Fortschritt je Welt** mit „Hierhin springen“ / „Von vorn“, **Pferdehof aufräumen** (nur Positionen). Optional: **Name des Kindes** und **Geburtstag (Tag/Monat)** – nur lokal gespeichert;
 ohne Angaben spricht die App neutral („du“) und zeigt keinen Geburtstags-Countdown.
 
 ## Aufs iPad
@@ -68,5 +71,6 @@ python3 -m http.server 8000             # http://127.0.0.1:8000/
 URL=http://127.0.0.1:8000/index.html node tools/test.js webkit        # E2E-Test (playwright)
 URL=http://127.0.0.1:8000/index.html node tools/test-stable.js        # Pferdehof in 4 iPad-Größen
 URL=http://127.0.0.1:8000/index.html node tools/test-adventure.js     # Abenteuer in 4 iPad-Größen, offline, Migration
+URL=http://127.0.0.1:8000/index.html node tools/test-farmfix.js       # Reparatur „Pferd hinter der Scheune“, Spielstand bleibt
 python3 tools/build-single.py           # erzeugt pferde-mathe.html (alles in einer Datei)
 ```

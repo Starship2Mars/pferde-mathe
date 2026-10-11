@@ -29,7 +29,7 @@ const MINUS = '−';
 
 // ---------- Speicher ----------
 const KEY = 'pferde-mathe-v1'; // Schlüssel bleibt gleich → gespeicherter Fortschritt bleibt bei Updates erhalten
-const APP_VERSION = '2.0 Abenteuer';
+const APP_VERSION = '2.0.1';
 const GAME_IDS = ['paare', 'haeuser', 'rechnen', 'familie', 'strahl', 'zehner'];
 function defaultState() {
   return {
@@ -1211,10 +1211,58 @@ const ITEMS = [
   { id: 'fohlen', name: () => `Fohlen ${horseName('fohlen')}`, price: 15, horse: 'fohlen', s: 16, x: 60, y: 88 },
   { id: 'nacht', name: () => `Rappe ${horseName('nacht')}`, price: 20, horse: 'nacht', s: 26, x: 38, y: 75 },
   { id: 'kuchen', name: 'Geburtstagskuchen', price: 0, art: () => ART.cake, s: 9, x: 55, y: 98, special: true, snd: 'sparkle' },
-  { id: 'ziege', name: 'Ziege Zenzi (aus dem Apfelgarten)', price: 0, art: () => MAPART.goat, s: 11, x: 78, y: 84, special: true, snd: 'baa' },
+  { id: 'ziege', name: 'Ziege Zenzi (aus dem Apfelgarten)', price: 0, art: () => MAPART.goat, s: 11, x: 93, y: 80, special: true, snd: 'baa' },
   { id: 'goldzaum', name: () => `Goldenes Zaumzeug für ${LN()}`, price: 0, onLuna: true, pv: () => TREASURE.goldzaum.svg, special: true },
   { id: 'krone', name: () => `Krone für ${LN()} (vom Märchenschloss)`, price: 0, onLuna: true, pv: () => TREASURE.krone.svg, special: true }
 ];
+// ---- Pferdehof-Positionen absichern (Reparatur für Pferde, die hinter der Scheune verschwunden sind) ----
+// Gilt nur für S.pos (Positionen). Gekaufte Sachen, Hufeisen, Fortschritt usw. werden nie verändert.
+const FARM_HORSES = ['luna', 'pony', 'wolke', 'fohlen', 'nacht'];
+const FARM_FREE = [[51, 81], [62, 88], [40, 92], [72, 80], [56, 96], [46, 72], [30, 86], [66, 72], [80, 78], [24, 96]];
+function farmDef(id) { return id === 'luna' ? { id: 'luna', horse: 'luna', x: 51, y: 81 } : ITEMS.find((i) => i.id === id); }
+function farmHiddenZone(it, x, y) {
+  if (!it || it.sky || it.flat) return false;
+  if (x < 40 && y < 65) return true;            // hinter/in der Scheune (Scheune steht bei x 20 %, Fuß bei 64 %)
+  if (it.horse && x > 84 && y < 64) return true; // hinter dem Baum
+  return false;
+}
+function farmValid(it, p) {
+  if (!p || typeof p !== 'object' || !Number.isFinite(+p.x) || !Number.isFinite(+p.y)) return false;
+  const [ymin, ymax] = it && it.sky ? [18, 52] : [54, 100];
+  return p.x >= 3 && p.x <= 97 && p.y >= ymin && p.y <= ymax && !farmHiddenZone(it, +p.x, +p.y);
+}
+function farmFreeSpot(selfId) {
+  // belegte Plätze: alle aufgestellten Sachen/Pferde (gespeicherte Position oder Startplatz)
+  const ids = ['luna'].concat((S.owned || []).filter((id) => { const it = farmDef(id); return it && !it.onLuna && !it.onBarn && !it.fly && !it.sky && !it.flat; }));
+  const taken = ids.filter((k) => k !== selfId).map((k) => { const q = S.pos && S.pos[k]; const d = farmDef(k); return q && Number.isFinite(+q.x) && Number.isFinite(+q.y) ? q : { x: d.x, y: d.y }; });
+  let best = FARM_FREE[0], bestD = -1;
+  for (const [x, y] of FARM_FREE) {
+    const d = taken.reduce((m, q) => Math.min(m, Math.hypot(q.x - x, (q.y - y) * 1.6)), 999);
+    if (d >= 16) return { x, y };
+    if (d > bestD) { bestD = d; best = [x, y]; }
+  }
+  return { x: best[0], y: best[1] };
+}
+function farmSafePos(id, x, y) {
+  const it = farmDef(id); if (!it) return { x, y };
+  const p = { x: Math.max(3, Math.min(97, +x)), y: +y };
+  const [ymin, ymax] = it.sky ? [18, 52] : [54, 100];
+  if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) return farmFreeSpot(id);
+  p.y = Math.max(ymin, Math.min(ymax, p.y));
+  if (farmHiddenZone(it, p.x, p.y)) return farmFreeSpot(id);
+  return p;
+}
+function repairFarm() { // läuft bei jedem Start und beim Öffnen des Pferdehofs
+  if (!S.pos || typeof S.pos !== 'object' || Array.isArray(S.pos)) { S.pos = {}; }
+  let changed = false;
+  for (const id of Object.keys(S.pos)) {
+    const it = farmDef(id);
+    if (!it) continue; // unbekannte Einträge unangetastet lassen
+    if (!farmValid(it, S.pos[id])) { S.pos[id] = farmSafePos(id, S.pos[id] && S.pos[id].x, S.pos[id] && S.pos[id].y); changed = true; }
+  }
+  if (changed) save();
+  return changed;
+}
 const itemName = (it) => (typeof it.name === 'function' ? it.name() : it.name);
 const TUFTS = [[6, 58], [16, 62], [27, 59], [47, 61], [58, 57], [72, 60], [96, 59], [8, 72], [21, 76], [46, 70], [53, 82], [70, 78], [80, 70], [94, 76], [4, 88], [18, 90], [36, 84], [64, 94], [76, 90], [96, 92], [12, 99], [48, 99], [90, 99]];
 const FLOWERS = [[10, 66, '#f7a8c4'], [33, 61, '#fff'], [52, 68, '#ffe08a'], [66, 64, '#d6c2f2'], [85, 61, '#fff'], [25, 84, '#ffe08a'], [44, 79, '#f7a8c4'], [74, 86, '#b5dcff'], [92, 84, '#f7a8c4'], [6, 95, '#d6c2f2'], [38, 97, '#fff'], [68, 99, '#ffe08a']];
@@ -1228,6 +1276,7 @@ function farmMood() {
 }
 function showStable() {
   currentScreen = 'stable';
+  repairFarm();
   clearInterval(ambientTimer);
   const mood = farmMood();
   app.innerHTML = '';
@@ -1257,7 +1306,10 @@ function showStable() {
 
   // Feste Kulisse: Scheune, Baum, Teich mit Enten, Zaun, Gras, Blumen, Schmetterling
   const barn = at(add(h('div', { class: 'scen barn' + (S.barnOpen ? ' open' : ''), id: 'barn', html: barnSVG(mood === 'evening', has('wetterfahne')) })), 20, 64, 38);
-  barn.addEventListener('click', () => { barn.classList.toggle('open'); S.barnOpen = barn.classList.contains('open'); save(); Sound.door(); });
+  barn.addEventListener('click', () => {
+    barn.classList.toggle('open'); S.barnOpen = barn.classList.contains('open'); save(); Sound.door();
+    if (S.barnOpen) setTimeout(() => { const n = callHorsesOut(true); fsay(n ? 'Alle Pferde kommen aus der Scheune! 🐴💕' : 'Die Scheune ist offen. Alle Pferde sind draußen auf der Koppel! 🐴'); }, 500);
+  });
   at(add(h('div', { class: 'scen tree', html: ART.tree })), 92, 64, 28);
   const fence = add(h('div', { class: 'fence', html: ART.fence })); fence.style.zIndex = 100 + 58 * 10;
   const pond = at(add(h('div', { class: 'scen pond', id: 'pond', html: pondSVG() })), 83, 92, 34, 95);
@@ -1299,6 +1351,34 @@ function showStable() {
 
   // Gegenstände und Pferde
   function itemOf(id) { return id === 'luna' ? { id: 'luna', horse: 'luna', s: 29, x: 51, y: 81 } : ITEMS.find((i) => i.id === id); }
+  // Pferd (oder Sache) sanft an einen sichtbaren Platz traben lassen
+  function walkTo(el, id, p) {
+    S.pos[id] = { x: p.x, y: p.y }; save();
+    el.classList.remove('settle', 'dragging'); el.classList.add('walkout');
+    const it = itemOf(id);
+    requestAnimationFrame(() => { el.style.left = p.x + '%'; el.style.top = p.y + '%'; el.style.zIndex = zFor(it, p.y); });
+    setTimeout(() => el.classList.remove('walkout'), 1400);
+  }
+  function isVisible(el) {
+    const r = el.getBoundingClientRect();
+    if (r.width < 4 || r.height < 4 || r.right < 0 || r.bottom < 0 || r.left > window.innerWidth || r.top > window.innerHeight) return false;
+    return [[.5, .45], [.35, .6], [.65, .6], [.5, .75], [.3, .35], [.7, .35]].some(([fx, fy]) => {
+      const x = r.left + r.width * fx, y = r.top + r.height * fy;
+      if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) return false;
+      const hit = document.elementFromPoint(x, y); return hit && el.contains(hit);
+    });
+  }
+  // Alle Pferde, die versteckt sind (z. B. hinter der Scheune), kommen heraus. all=true: auch die, die nur halb verdeckt sind
+  function callHorsesOut(all) {
+    let n = 0;
+    $$('.item.horse-item', farm).forEach((el) => {
+      const id = el.dataset.id, p = S.pos[id] || itemOf(id);
+      if (farmHiddenZone(itemOf(id), p.x, p.y) || !isVisible(el)) { walkTo(el, id, farmFreeSpot(id)); n++; }
+      else if (all && p.y < 70 && p.x < 46) { walkTo(el, id, farmFreeSpot(id)); n++; }
+    });
+    if (n) Sound.clipclop();
+    return n;
+  }
   function zFor(it, y) { return it.sky ? 2 : it.flat ? Math.round(90 + y / 10) : Math.round(100 + y * 10); }
   function placeItem(it, isNew) {
     const p = S.pos[it.id] || { x: it.x, y: it.y };
@@ -1348,6 +1428,11 @@ function showStable() {
         el.style.left = x + '%'; el.style.top = y + '%'; el.style.zIndex = zFor(it, y);
         setTimeout(() => el.classList.remove('settle'), 500);
         S.pos[it.id] = { x, y }; save(); Sound.plop();
+        const safe = farmSafePos(it.id, x, y);
+        if (safe.x !== x || safe.y !== y) {
+          // nicht in/hinter die Scheune: das Pferd trabt fröhlich wieder heraus
+          setTimeout(() => { walkTo(el, it.id, safe); Sound.clipclop(); fsay(it.horse ? `${horseName(it.horse)} trabt wieder aus der Scheune – hier draußen ist es schöner! 🐴` : 'Das stellen wir lieber hierhin, damit du es gut sehen kannst. 😊'); }, 380);
+        } else if (it.horse && !it.sky) setTimeout(() => { if (!isVisible(el)) { walkTo(el, it.id, farmFreeSpot(it.id)); Sound.clipclop(); } }, 450);
       } else tapItem(el, it);
       st = null;
     };
@@ -1466,6 +1551,8 @@ function showStable() {
     fsay(`Juhu! ${itemName(it)} ist jetzt auf unserem Hof! 🎉`);
   }
   renderScene();
+  // Sicherheitsnetz: falls ein Pferd trotzdem verdeckt ist, kommt es von selbst heraus
+  setTimeout(() => { if (currentScreen === 'stable' && callHorsesOut(false)) fsay(`${LN()} ist wieder da! 🐴💕`); }, 700);
   fsay(S.carrots > 0 ? 'Willkommen auf dem Pferdehof! Zieh eine Karotte zu einem Pferd. 🥕' : 'Willkommen auf dem Pferdehof! Mit der Bürste kannst du die Pferde putzen. ✨');
   // ganz leise Naturgeräusche ab und zu
   ambientTimer = setInterval(() => {
@@ -2065,6 +2152,8 @@ function showParent() {
       h('button', { class: 'smallbtn danger', id: 'resetYes', onclick: () => { const keep = { childName: S.childName, bday: S.bday, setupSeen: true }; S = Object.assign(defaultState(), keep); save(); showHome(); } }, 'Ja, alles zurücksetzen'),
       h('button', { class: 'smallbtn', onclick: () => { confirmBox.style.display = 'none'; } }, 'Abbrechen')));
   wrap.append(h('div', { class: 'panel' }, h('h3', null, 'Einstellungen'), vol,
+    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Pferdehof aufräumen', h('small', null, 'Stellt alle Pferde und Sachen wieder an ihren Startplatz. Gekauftes, Hufeisen und Fortschritt bleiben.')),
+      h('button', { class: 'smallbtn', id: 'tidyFarm', onclick: (e) => { S.pos = {}; save(); Sound.sparkle(); e.target.textContent = 'Aufgeräumt ✓'; } }, '🧹 Pferdehof aufräumen')),
     h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Zurücksetzen', h('small', null, 'Setzt alles auf den Anfang.')),
       h('button', { class: 'smallbtn danger', id: 'resetBtn', onclick: () => { confirmBox.style.display = 'block'; } }, 'Alles zurücksetzen')), confirmBox,
     h('div', { class: 'note', style: { textAlign: 'left', marginTop: '8px' } }, 'Alle Daten bleiben nur auf diesem Gerät (localStorage). Keine Werbung, kein Tracking, keine Internetverbindung nötig.')));
@@ -2072,7 +2161,8 @@ function showParent() {
 }
 
 // ---------- Start ----------
-window.__pm = { get state() { return S; }, startGame, showStable, showHome, showParent, showMap, openStation, showWorldDone, showTravel, WORLDS, advSetWorld, stationLevel, save, version: APP_VERSION };
+repairFarm();
+window.__pm = { get state() { return S; }, repairFarm, startGame, showStable, showHome, showParent, showMap, openStation, showWorldDone, showTravel, WORLDS, advSetWorld, stationLevel, save, version: APP_VERSION };
 showHome();
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !window.__PM_SINGLE__) {
   // Neue Version installiert → neu laden, aber nie mitten in einer Aufgabe (sonst beim nächsten Besuch der Startseite)
