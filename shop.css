@@ -227,7 +227,8 @@
 .mem-front{background:#fff;transform:rotateY(180deg);overflow:hidden}
 .mem-front svg{width:72%;height:auto;max-height:86%}.mem-front.horse svg{width:96%}
 .mem-card.ok .mem-front{background:#eaf9ee;box-shadow:0 0 0 4px #7fd19a}
-.mg-end{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,90%);background:linear-gradient(180deg,#fffdf8,#fff3dc);border-radius:34px;padding:24px 28px;text-align:center;box-shadow:0 22px 50px rgba(80,60,40,.35);z-index:20;overflow:hidden;animation:pm-pop .5s cubic-bezier(.3,1.5,.5,1)}
+.mg-end{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,90%);background:linear-gradient(180deg,#fffdf8,#fff3dc);border-radius:34px;padding:24px 28px;text-align:center;box-shadow:0 22px 50px rgba(80,60,40,.35);z-index:20;overflow:hidden;animation:mg-pop .5s cubic-bezier(.3,1.5,.5,1)}
+@keyframes mg-pop{0%{transform:translate(-50%,-50%) scale(.7);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
 .mg-end h2{margin:0 0 6px;position:relative}.mg-end p{margin:4px 0;position:relative}
 .mg-rewards{display:flex;gap:14px;justify-content:center;font-size:1.6rem;font-weight:800;margin:10px 0;position:relative}
 .mg-r{display:flex;align-items:center;gap:6px;background:#fff3d6;border-radius:24px;padding:6px 16px}
@@ -242,7 +243,7 @@
 .mg-stage.ride{background:radial-gradient(circle at 82% 20%,#fff6c4 0 6%,rgba(255,246,196,.5) 9%,transparent 18%),radial-gradient(ellipse at 25% 22%,#fff 0 7%,transparent 7.5%),radial-gradient(ellipse at 36% 24%,#fff 0 6%,transparent 6.5%),radial-gradient(ellipse at 62% 14%,#fff 0 6%,transparent 6.5%),linear-gradient(180deg,#b9e2dc 0,#eef9f2 55%,#bfe6a8 55.5%)}
 /* Startseite: Mein Hof */
 .hof-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;max-width:980px;margin:10px auto 4px}
-.hof-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:92px;border-radius:26px;background:linear-gradient(170deg,#fffdf8,#ffeed6);box-shadow:var(--shadow),inset 0 0 0 3px #fff;font-size:1.05rem;transition:transform .15s}
+.hof-tile{padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:92px;border-radius:26px;background:linear-gradient(170deg,#fffdf8,#ffeed6);box-shadow:var(--shadow),inset 0 0 0 3px #fff;font-size:1.05rem;transition:transform .15s}
 .hof-tile:active{transform:scale(.96)}
 .hof-ic{font-size:2.2rem;line-height:1;filter:drop-shadow(0 3px 2px rgba(0,0,0,.15))}
 .hof-shop{background:linear-gradient(170deg,#ffe9f1,#ffd3e3)}.hof-room{background:linear-gradient(170deg,#efe6ff,#ddd0fb)}.hof-care{background:linear-gradient(170deg,#e0f4ff,#c8e8fb)}.hof-mini{background:linear-gradient(170deg,#e4f8e0,#cdeec8)}.hof-album{background:linear-gradient(170deg,#fff2cc,#ffe29a)}

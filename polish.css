@@ -179,3 +179,38 @@ button.hf-cell:active{transform:scale(.92)}
 @keyframes fireflyB{0%,100%{transform:translate(-50%,-100%)}33%{transform:translate(-140%,-170%)}66%{transform:translate(-20%,-60%)}}
 @keyframes fireflyC{0%,100%{transform:translate(-50%,-100%) scale(.8)}50%{transform:translate(60%,-190%) scale(1.2)}}
 @media (prefers-reduced-motion:reduce){.deco.ffly,.gl{animation:none}}
+
+/* ===== art.js: Leerlauf-Animationen (nur Transform/Opacity, leicht für iPad) ===== */
+.pm-bob,.pm-ear,.pm-tail,.pm-sway,.pm-swing,.pm-spin,.pm-hand,.pm-ripple,.pm-steam,.pm-fount,.pm-glow{transform-box:fill-box}
+.pm-bob{transform-origin:50% 100%;animation:pm-bob 3.2s ease-in-out infinite}
+.pm-ear{transform-origin:50% 100%;animation:pm-ear 5s ease-in-out infinite}
+.pm-tail{transform-origin:20% 90%;animation:pm-tail 2.6s ease-in-out infinite}
+.pm-sway{transform-origin:50% 0;animation:pm-sway 3.6s ease-in-out infinite}
+.pm-swing{transform-origin:50% 0;animation:pm-swing 2.8s ease-in-out infinite}
+.pm-spin{transform-origin:50% 50%;animation:pm-spin 6s linear infinite}
+.pm-hand{transform-origin:50% 100%;animation:pm-spin 60s linear infinite}
+.pm-ripple{transform-origin:50% 50%;animation:pm-ripple 3s ease-out infinite}
+.pm-steam{animation:pm-steam 3s ease-in-out infinite}
+.pm-fount{transform-origin:50% 100%;animation:pm-fount 1.6s ease-in-out infinite alternate}
+.pm-glow{animation:pm-glowp 2.4s ease-in-out infinite}
+@keyframes pm-bob{0%,100%{transform:translateY(0) scale(1,1)}50%{transform:translateY(-1.5px) scale(1.01,.99)}}
+@keyframes pm-ear{0%,86%,100%{transform:rotate(0)}91%{transform:rotate(-9deg)}96%{transform:rotate(3deg)}}
+@keyframes pm-tail{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+@keyframes pm-sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes pm-swing{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+@keyframes pm-ripple{0%{transform:scale(.7);opacity:.8}100%{transform:scale(1.15);opacity:0}}
+@keyframes pm-steam{0%,100%{opacity:.2;transform:translateY(2px)}50%{opacity:.7;transform:translateY(-3px)}}
+@keyframes pm-fount{from{transform:scaleY(.88);opacity:.75}to{transform:scaleY(1.05);opacity:1}}
+@keyframes pm-glowp{0%,100%{opacity:.55}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.pm-bob,.pm-ear,.pm-tail,.pm-sway,.pm-swing,.pm-spin,.pm-hand,.pm-ripple,.pm-steam,.pm-fount,.pm-glow{animation:none!important}}
+
+/* ===== Gemeinsamer Look: Buttons, Karten, Übergänge ===== */
+.bigbtn,.smallbtn,.iconbtn{transition:transform .12s,box-shadow .2s,filter .2s}
+.bigbtn.primary{background:linear-gradient(180deg,#ffd76b,#f5b63a);box-shadow:0 5px 0 #c98f1d,0 10px 18px rgba(201,143,29,.35);color:#5a3a10}
+.bigbtn.primary:active{transform:translateY(3px);box-shadow:0 2px 0 #c98f1d}
+.screen{animation:pm-screen .35s ease-out both}
+@keyframes pm-screen{from{opacity:0}to{opacity:1}}
+.tile{background-image:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0) 55%);box-shadow:var(--shadow),inset 0 0 0 3px rgba(255,255,255,.8)}
+.tile .ti{filter:drop-shadow(0 4px 3px rgba(0,0,0,.14))}
+.adv-tile{box-shadow:var(--shadow),inset 0 0 0 3px rgba(255,255,255,.8)}
+@media (prefers-reduced-motion:reduce){.screen{animation:none}}
