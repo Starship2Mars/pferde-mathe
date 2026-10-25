@@ -11,8 +11,12 @@ const st = (p) => p.evaluate(() => JSON.parse(JSON.stringify(window.__pm.state))
 async function solveRound(p, id) {
   for (let i = 1; i <= 5; i++) {
     await p.waitForFunction((n) => window.__pmCore.b100.cur && window.__pmCore.b100.n === n, i, { timeout: 8000 });
-    await p.evaluate(([id]) => window.__solve.correct(id, 1), [id]);
-    if (i < 5) await p.waitForFunction((n) => window.__pmCore.b100.n === n + 1, i, { timeout: 8000 });
+    await sleep(500); // Eingabe erst nach kurzer Pause sicher bereit (unter Last sonst flackerig)
+    for (let t = 0; t < 3; t++) {
+      await p.evaluate(([id]) => { if (window.__pmCore.b100.cur) window.__solve.correct(id, 1); }, [id]);
+      if (i === 5) break;
+      try { await p.waitForFunction((n) => window.__pmCore.b100.n === n + 1, i, { timeout: 4000 }); break; } catch (e) { if (t === 2) throw e; }
+    }
   }
 }
 (async () => {
