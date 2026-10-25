@@ -579,6 +579,11 @@ hooks.farmUI = (ctx) => {
   ui.append(h('div', { class: 'farm-dock' }, menu, tg));
 };
 
+// Startseite: Kachelreihe "Mein Hof"
+hooks.homeHof = () => h('div', { class: 'hof-row', id: 'hofRow' },
+  MENU.filter((m) => m[0] !== 'board').map(([k, ic, nm, fn]) => h('button', { class: 'hof-tile hof-' + k, 'data-hof': k, onclick: () => { Sound.tap(); fn(); } },
+    h('span', { class: 'hof-ic' }, ic), h('b', null, nm))));
+
 // =====================================================================
 // Elternbereich: Überblick Hofladen und Album
 // =====================================================================

@@ -240,3 +240,9 @@
 .mg-hud>span:not(.mg-score){font-weight:800;font-size:1.2rem;color:#6a4a38}
 .mg-score span+span{font-weight:700}
 .mg-stage.ride{background:radial-gradient(circle at 82% 20%,#fff6c4 0 6%,rgba(255,246,196,.5) 9%,transparent 18%),radial-gradient(ellipse at 25% 22%,#fff 0 7%,transparent 7.5%),radial-gradient(ellipse at 36% 24%,#fff 0 6%,transparent 6.5%),radial-gradient(ellipse at 62% 14%,#fff 0 6%,transparent 6.5%),linear-gradient(180deg,#b9e2dc 0,#eef9f2 55%,#bfe6a8 55.5%)}
+/* Startseite: Mein Hof */
+.hof-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;max-width:980px;margin:10px auto 4px}
+.hof-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:92px;border-radius:26px;background:linear-gradient(170deg,#fffdf8,#ffeed6);box-shadow:var(--shadow),inset 0 0 0 3px #fff;font-size:1.05rem;transition:transform .15s}
+.hof-tile:active{transform:scale(.96)}
+.hof-ic{font-size:2.2rem;line-height:1;filter:drop-shadow(0 3px 2px rgba(0,0,0,.15))}
+.hof-shop{background:linear-gradient(170deg,#ffe9f1,#ffd3e3)}.hof-room{background:linear-gradient(170deg,#efe6ff,#ddd0fb)}.hof-care{background:linear-gradient(170deg,#e0f4ff,#c8e8fb)}.hof-mini{background:linear-gradient(170deg,#e4f8e0,#cdeec8)}.hof-album{background:linear-gradient(170deg,#fff2cc,#ffe29a)}

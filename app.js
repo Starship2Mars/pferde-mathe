@@ -317,6 +317,7 @@ function showHome() {
     setup, banner,
     h('div', { class: 'hero' }, lunaBlock(bd && bd.isToday ? 'Heute ist dein Geburtstag! Ich habe dir einen Kuchen in den Stall gestellt. 🎂' : greeting())),
     advTile,
+    core.hooks.homeHof ? core.hooks.homeHof() : null,
     h('div', { class: 'free-label' }, 'Freies Üben'),
     tiles,
     h('div', { class: 'free-label label100' }, 'Zahlenraum bis 100 🌲'),
