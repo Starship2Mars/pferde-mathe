@@ -236,3 +236,7 @@
 .mg-end .lc-btns{position:relative}
 .mg-pick{margin:auto;text-align:center;background:#fffdf8;border-radius:30px;padding:20px 26px;box-shadow:var(--shadow);max-width:720px}
 .board-tile.locked{opacity:.8;background:linear-gradient(180deg,#f1ece4,#e6dfd3)}
+.mem-grid.c6{grid-template-columns:repeat(3,1fr);width:min(100%,600px)}
+.mg-hud>span:not(.mg-score){font-weight:800;font-size:1.2rem;color:#6a4a38}
+.mg-score span+span{font-weight:700}
+.mg-stage.ride{background:radial-gradient(circle at 82% 20%,#fff6c4 0 6%,rgba(255,246,196,.5) 9%,transparent 18%),radial-gradient(ellipse at 25% 22%,#fff 0 7%,transparent 7.5%),radial-gradient(ellipse at 36% 24%,#fff 0 6%,transparent 6.5%),radial-gradient(ellipse at 62% 14%,#fff 0 6%,transparent 6.5%),linear-gradient(180deg,#b9e2dc 0,#eef9f2 55%,#bfe6a8 55.5%)}
