@@ -58,8 +58,8 @@
 .lad-pack{width:min(720px,100%)}
 .lad-pack h2{margin:0;text-align:center}
 .pk-stage{min-height:230px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
-.pk-bag{background:none;display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:800;font-size:1.1rem;animation:pm-wiggle 1.6s ease-in-out infinite;min-height:44px}
-.pk-bag svg{width:150px;height:auto;filter:drop-shadow(0 8px 8px rgba(80,60,40,.25))}
+.pk-bag{background:none;display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:800;font-size:1.1rem;min-height:44px}
+.pk-bag svg{animation:pm-wiggle 1.6s ease-in-out infinite;width:150px;height:auto;filter:drop-shadow(0 8px 8px rgba(80,60,40,.25))}
 @keyframes pm-wiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg) scale(1.04)}}
 .pk-card{width:150px;background:#fff;border-radius:22px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 8px 18px rgba(80,60,40,.18);opacity:0;animation:pm-flip .6s cubic-bezier(.3,1.5,.5,1) forwards}
 @keyframes pm-flip{from{transform:rotateY(90deg) scale(.4);opacity:0}to{transform:none;opacity:1}}
@@ -118,7 +118,7 @@
 .care-spot.knot::after{content:'🪢';font-size:1.5rem}
 .care-spot.shine{width:60px;height:60px;border:4px dotted #b39ddb;background:rgba(255,255,255,.55);animation:pm-pulse 1.3s ease-in-out infinite}
 .care-spot.shine::after{content:'✨';font-size:1.6rem}
-@keyframes pm-pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.12)}}
+@keyframes pm-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,200,80,.7)}50%{box-shadow:0 0 0 10px rgba(255,200,80,0)}}
 .care-spot.gone{opacity:0!important;transform:translate(-50%,-50%) scale(0)!important;pointer-events:none}
 .care-hand{position:absolute;pointer-events:none;font-size:2.4rem;transform:translate(-30%,-80%);display:none;z-index:4;filter:drop-shadow(0 3px 3px rgba(0,0,0,.25))}
 .care-stage.down .care-hand{display:block}
@@ -178,7 +178,7 @@
 .dock-item .di-ic{font-size:1.6rem}
 .dock-item:active{transform:translateY(2px)}
 @media (max-width:600px){.lad-grid{grid-template-columns:repeat(2,1fr)}.care-main{grid-template-columns:1fr}.alb-page{grid-template-columns:repeat(2,1fr)}}
-@media (prefers-reduced-motion:reduce){.pk-bag,.lc-rays,.lad-card.ready .lc-art,.room-kamin .flame,.care-spot{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.pk-bag svg,.lc-rays,.lad-card.ready .lc-art,.room-kamin .flame,.care-spot{animation:none!important}}
 :where(.ih){display:inline-flex;vertical-align:middle;align-items:center}
 :where(.ih) svg{width:1.3em;height:1.3em}
 .lad-note .ih svg,.pk-page .ih svg,.lc-left .ih svg{width:1.3em;height:1.3em}
