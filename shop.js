@@ -594,5 +594,5 @@ hooks.parentPanels = (wrap) => {
     h('p', { class: 'psmall' }, 'Alles im Hofladen kostet nur Hufeisen und Karotten, die beim Rechnen verdient werden. Es gibt keine Käufe mit echtem Geld, keine Werbung und keine Zeitdrücke.')));
 };
 
-core.shop = { open: openShop, openCare, openAlbum, showRoom, openBoard, CAT, purchase, owned, openPack };
+core.shop = { daily, open: openShop, openCare, openAlbum, showRoom, openBoard, CAT, purchase, owned, openPack };
 });
