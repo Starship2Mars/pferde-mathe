@@ -1,7 +1,7 @@
 /* Pferde-Mathe – Service Worker (nur lokaler Cache, keine Netzwerkaufrufe nach außen) */
-const CACHE = 'pferde-mathe-v8-voralpen';
+const CACHE = 'pferde-mathe-v9-bis100';
 const ASSETS = [
-  './', './index.html', './style.css', './app.js', './manifest.webmanifest',
+  './', './index.html', './style.css', './polish.css', './audio.js', './art.js', './bis100.js', './shop.js', './minigames.js', './app.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
 ];
 self.addEventListener('install', (e) => {

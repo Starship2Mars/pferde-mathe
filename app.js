@@ -29,23 +29,32 @@ const MINUS = '−';
 
 // ---------- Speicher ----------
 const KEY = 'pferde-mathe-v1'; // Schlüssel bleibt gleich → gespeicherter Fortschritt bleibt bei Updates erhalten
-const APP_VERSION = '2.4.0';
-const GAME_IDS = ['paare', 'haeuser', 'rechnen', 'familie', 'strahl', 'zehner'];
+const APP_VERSION = '3.0.0';
+const GAME_IDS = ['paare', 'haeuser', 'rechnen', 'familie', 'strahl', 'zehner', 'h100', 'ze', 's100', 'nb', 'vgl', 'ord', 'pm100'];
 function defaultState() {
   return {
-    v: 1, childName: '', bday: null, setupSeen: false, horseNames: {}, blanket: '', brushed: 0, barnOpen: false, adv: { done: {}, last: null }, shoes: 0, carrots: 0, totalShoes: 0, owned: [], pos: {}, sound: true, volume: 0.5,
+    v: 1, childName: '', bday: null, setupSeen: false, horseNames: {}, blanket: '', brushed: 0, barnOpen: false, adv: { done: {}, last: null }, shoes: 0, carrots: 0, totalShoes: 0, owned: [], pos: {}, sound: true, volume: 0.5, audio: { music: true, sfx: true, amb: true, mvol: 0.5 }, rev: 3, stickers: {}, room: { pos: {} }, care: {}, minis: {}, wardrobe: {},
     skills: Object.fromEntries(GAME_IDS.map((id) => [id, { level: 1, rounds: 0, recent: [] }])),
     stats: {}, trouble: [], fed: 0, bones: 2, grain: 2, treats: 2, created: Date.now()
   };
 }
 function load() {
   try {
-    const s = JSON.parse(localStorage.getItem(KEY));
+    const raw = localStorage.getItem(KEY);
+    const s = JSON.parse(raw);
     if (s && s.v === 1) {
+      // Update-Schutz: Vor der ersten Migration auf Version 3 bleibt eine unveränderte Kopie des alten Stands erhalten
+      if (!s.rev) { try { if (!localStorage.getItem(KEY + '-backup-2.4')) localStorage.setItem(KEY + '-backup-2.4', raw); } catch (e) { /* ignore */ } }
       const d = defaultState();
       const skills = {};
       for (const id of GAME_IDS) skills[id] = Object.assign({}, d.skills[id], (s.skills || {})[id]);
-      return Object.assign(d, s, { skills, adv: Object.assign({ done: {}, last: null }, s.adv || {}) });
+      const nested = {};
+      ['audio', 'room', 'stickers', 'care', 'minis', 'wardrobe'].forEach((k) => { nested[k] = Object.assign({}, d[k], s[k] && typeof s[k] === 'object' && !Array.isArray(s[k]) ? s[k] : {}); });
+      if (!nested.room.pos || typeof nested.room.pos !== 'object') nested.room.pos = {};
+      const out = Object.assign(d, s, nested, { skills, adv: Object.assign({ done: {}, last: null }, s.adv || {}) });
+      if (!Array.isArray(out.owned)) out.owned = [];
+      out.rev = 3;
+      return out;
     }
   } catch (e) { /* ignore */ }
   return defaultState();
@@ -54,130 +63,10 @@ let S = load();
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } }
 try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { /* ignore */ }
 
-// ---------- Sanfte Klänge (WebAudio, alles synthetisch, keine Dateien) ----------
-const Sound = (() => {
-  let ctx = null, master = null, noiseBuf = null;
-  function ensure() {
-    if (!S.sound) return null;
-    if (!ctx) {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return null;
-      try { ctx = new AC(); } catch (e) { return null; }
-      master = ctx.createGain();
-      master.connect(ctx.destination);
-    }
-    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) { /* ignore */ } }
-    master.gain.value = 0.16 * S.volume;
-    return ctx;
-  }
-  function noise() {
-    if (!noiseBuf) {
-      const len = ctx.sampleRate;
-      noiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
-      const d = noiseBuf.getChannelData(0);
-      for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-    }
-    return noiseBuf;
-  }
-  function env(g, t, peak, a, dur) {
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(peak, t + a);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  }
-  function tone(f, t0, dur, type, g, f2) {
-    const c = ensure(); if (!c) return;
-    const o = c.createOscillator(), v = c.createGain();
-    o.type = type || 'sine';
-    const t = c.currentTime + (t0 || 0);
-    o.frequency.setValueAtTime(f, t);
-    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur * 0.8);
-    env(v, t, g || 0.5, 0.02, dur);
-    o.connect(v); v.connect(master); o.start(t); o.stop(t + dur + 0.05);
-  }
-  function bell(f, t0, dur, g) { tone(f, t0, dur, 'sine', g); tone(f * 2, t0, dur * 0.6, 'sine', g * 0.22); tone(f * 3.01, t0, dur * 0.3, 'sine', g * 0.07); }
-  function nz(t0, dur, g, type, freq, freq2, q) {
-    const c = ensure(); if (!c) return;
-    const s = c.createBufferSource(); s.buffer = noise();
-    const f = c.createBiquadFilter(); f.type = type || 'bandpass';
-    const t = c.currentTime + (t0 || 0);
-    f.frequency.setValueAtTime(freq || 1000, t);
-    if (freq2) f.frequency.exponentialRampToValueAtTime(freq2, t + dur);
-    f.Q.value = q || 1;
-    const v = c.createGain(); env(v, t, g, 0.01, dur);
-    s.connect(f); f.connect(v); v.connect(master);
-    s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.05);
-  }
-  const API = {
-    unlock() { ensure(); },
-    tap() { tone(880, 0, 0.09, 'sine', 0.18); },
-    pop() { tone(660, 0, 0.14, 'sine', 0.3); tone(990, 0.06, 0.16, 'sine', 0.18); },
-    plop() { tone(520, 0, 0.18, 'sine', 0.32, 170); },
-    /** Fröhliches Glockenspiel bei richtiger Antwort – leicht variiert, ab und zu mit Wiehern oder Hufgeklapper */
-    correct() {
-      const pats = [[523.25, 659.25, 783.99, 1046.5], [587.33, 739.99, 880, 1174.66], [523.25, 783.99, 659.25, 1046.5], [659.25, 783.99, 987.77, 1318.51], [392, 523.25, 659.25, 783.99]];
-      pick(pats).forEach((f, i) => bell(f, i * 0.1, 0.55, 0.3));
-      const r = Math.random();
-      if (r < 0.14) API.neigh(0.55); else if (r < 0.28) API.clipclop(0.5);
-    },
-    /** Falsche Antwort: nur ein sehr leiser, neutraler Ton */
-    hint() { tone(415, 0, 0.35, 'sine', 0.1); },
-    /** Größere, aber sanfte Fanfare: Rundenende und neue Stall-Sachen */
-    fanfare() {
-      [523.25, 659.25, 783.99].forEach((f, i) => bell(f, i * 0.14, 0.6, 0.26));
-      [523.25, 659.25, 783.99].forEach((f) => tone(f, 0.46, 1.3, 'triangle', 0.1));
-      bell(1046.5, 0.46, 1.3, 0.24);
-      [1318.51, 1567.98, 2093].forEach((f, i) => bell(f, 0.95 + i * 0.12, 0.5, 0.08));
-    },
-    reward() { API.fanfare(); },
-    hop() { nz(0, 0.05, 0.3, 'bandpass', 900, null, 3); tone(200, 0, 0.07, 'sine', 0.22); },
-    clipclop(t0) { [0, 0.16, 0.36, 0.52].forEach((d, i) => { nz((t0 || 0) + d, 0.05, 0.26, 'bandpass', i % 2 ? 1150 : 850, null, 4); tone(i % 2 ? 230 : 190, (t0 || 0) + d, 0.06, 'sine', 0.18); }); },
-    neigh(t0) {
-      const c = ensure(); if (!c) return;
-      const t = c.currentTime + (t0 || 0);
-      const o = c.createOscillator(), v = c.createGain(), l = c.createOscillator(), lg = c.createGain(), f = c.createBiquadFilter();
-      o.type = 'sawtooth'; f.type = 'lowpass'; f.frequency.value = 1300;
-      o.frequency.setValueAtTime(520, t); o.frequency.linearRampToValueAtTime(840, t + 0.15);
-      o.frequency.linearRampToValueAtTime(700, t + 0.45); o.frequency.linearRampToValueAtTime(560, t + 0.8);
-      l.frequency.value = 11; lg.gain.value = 26; l.connect(lg); lg.connect(o.frequency);
-      env(v, t, 0.07, 0.06, 0.85);
-      o.connect(f); f.connect(v); v.connect(master); o.start(t); l.start(t); o.stop(t + 0.9); l.stop(t + 0.9);
-    },
-    munch() { [0, 0.17, 0.34, 0.5].forEach((t) => nz(t, 0.08, 0.26, 'lowpass', 1800, 600, 0.7)); },
-    swish() { nz(0, 0.22, 0.07, 'bandpass', 1800, 4200, 1.2); },
-    sparkle() { bell(pick([1567.98, 1760, 2093, 2349.32]), 0, 0.3, 0.05); },
-    quack() {
-      const c = ensure(); if (!c) return;
-      [0, 0.2].forEach((d) => {
-        const t = c.currentTime + d;
-        const o = c.createOscillator(), f = c.createBiquadFilter(), v = c.createGain();
-        o.type = 'square'; f.type = 'lowpass'; f.frequency.value = 900;
-        o.frequency.setValueAtTime(390, t); o.frequency.exponentialRampToValueAtTime(260, t + 0.13);
-        env(v, t, 0.05, 0.02, 0.15);
-        o.connect(f); f.connect(v); v.connect(master); o.start(t); o.stop(t + 0.2);
-      });
-    },
-    chirp() { [0, 0.09, 0.2].forEach((t) => tone(2600 + Math.random() * 400, t, 0.07, 'sine', 0.05, 3400)); },
-    meow() { tone(620, 0, 0.18, 'sine', 0.08, 800); tone(800, 0.16, 0.3, 'sine', 0.07, 520); },
-    woof() { [0, 0.22].forEach((t) => tone(300, t, 0.13, 'triangle', 0.1, 190)); },
-    cluck() { [0, 0.12, 0.24].forEach((t) => tone(520, t, 0.07, 'triangle', 0.07, 420)); },
-    door() { tone(196, 0, 0.28, 'triangle', 0.14, 150); nz(0, 0.22, 0.04, 'lowpass', 600); },
-    baa() { tone(560, 0, 0.55, 'triangle', 0.07, 470); tone(565, 0.03, 0.5, 'sine', 0.05, 480); },
-    hoof(trot) { nz(0, 0.04, trot ? 0.16 : 0.13, 'bandpass', 700 + Math.random() * 500, null, 4); tone(170 + Math.random() * 60, 0, 0.05, 'sine', 0.1); },
-    clap() { nz(0, 0.05, 0.12, 'bandpass', 1500 + Math.random() * 900, null, 1.4); },
-    moo() { const c = ensure(); if (!c) return; const t = c.currentTime; const o = c.createOscillator(), f = c.createBiquadFilter(), v = c.createGain(); o.type = 'sawtooth'; f.type = 'lowpass'; f.frequency.value = 520; o.frequency.setValueAtTime(150, t); o.frequency.linearRampToValueAtTime(175, t + 0.35); o.frequency.linearRampToValueAtTime(128, t + 1.1); env(v, t, 0.07, 0.15, 1.2); o.connect(f); f.connect(v); v.connect(master); o.start(t); o.stop(t + 1.25); },
-    cowbell(t0) { [0, 0.42, 0.95].forEach((d) => { tone(540, (t0 || 0) + d, 0.5, 'triangle', 0.035); tone(812, (t0 || 0) + d, 0.35, 'sine', 0.02); }); },
-    rooster() { [[520, 0, 0.12, 640], [640, 0.13, 0.12, 760], [760, 0.27, 0.5, 600]].forEach(([f, t, d, f2]) => tone(f, t, d, 'triangle', 0.045, f2)); },
-    buzz() { const c = ensure(); if (!c) return; const t = c.currentTime; const o = c.createOscillator(), v = c.createGain(), l = c.createOscillator(), lg = c.createGain(); o.type = 'sawtooth'; o.frequency.value = 220; l.frequency.value = 7; lg.gain.value = 18; l.connect(lg); lg.connect(o.frequency); env(v, t, 0.012, 0.2, 1.4); o.connect(v); v.connect(master); o.start(t); l.start(t); o.stop(t + 1.5); l.stop(t + 1.5); },
-    wind() { nz(0, 2.6, 0.035, 'bandpass', 400, 900, 0.6); },
-    putt() { [0, 0.14, 0.28, 0.42, 0.56, 0.7].forEach((d) => nz(d, 0.07, 0.06, 'lowpass', 260, null, 1)); },
-    honk() { tone(392, 0, 0.18, 'square', 0.035); tone(392, 0.24, 0.24, 'square', 0.035); },
-    chime() { [659.25, 523.25, 587.33, 392].forEach((f, i) => bell(f, i * 0.55, 1.4, 0.12)); },
-    sleigh() { range(0, 7).forEach((i) => bell(2093 + (i % 3) * 120, i * 0.11, 0.25, 0.03)); },
-    treasure() { [784, 988, 1175, 1568, 1976].forEach((f, i) => bell(f, i * 0.09, 0.9, 0.16)); bell(2637, 0.5, 1.2, 0.06); }
-  };
-  return API;
-})();
-['touchend', 'pointerdown', 'click'].forEach((ev) => document.addEventListener(ev, () => Sound.unlock(), { passive: true }));
+// ---------- Klänge: eigene Klang-Engine in audio.js (WebAudio, alles synthetisch) ----------
+const Sound = window.PMSound;
+Sound.attach(() => S);
+
 
 // ---------- Grafiken ----------
 function shade(hex, f) {
@@ -259,7 +148,8 @@ function horseOpts(id) {
 function giveGear(itemId, horseId) { const k = GEAR[itemId]; if (!k) return; const g = gearOf(horseId || 'luna'); if (k === 'blanket') g.ownB = true; g[k] = k === 'blanket' ? (g.blanket || BLANKET_COLORS[ownedHorses().indexOf(horseId || 'luna') % BLANKET_COLORS.length] || BLANKET_COLORS[0]) : true; save(); }
 // Decken kann man für jedes Pferd einzeln kaufen
 function horsesWithoutBlanket() { return ownedHorses().filter((id) => !ownsBlanket(id)); }
-function ownedHorses() { return ['luna'].concat(['wolke', 'pony', 'fohlen', 'nacht'].filter((id) => has(id))); }
+const HORSE_ORDER = ['wolke', 'pony', 'fohlen', 'nacht'];
+function ownedHorses() { return ['luna'].concat(HORSE_ORDER.filter((id) => has(id))); }
 function lunaOpts() { return horseOpts('luna'); }
 function lunaSVG() { return horseSVG(lunaOpts()); }
 const SHOE = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 5 C1 22 7 37 20 37 C33 37 39 22 32 5 L25 5 C29 20 26 30 20 30 C14 30 11 20 15 5 Z" fill="#f2c14e" stroke="#c9962a" stroke-width="2" stroke-linejoin="round"/><circle cx="9.5" cy="15" r="1.4" fill="#a87b1c"/><circle cx="11" cy="24" r="1.4" fill="#a87b1c"/><circle cx="30.5" cy="15" r="1.4" fill="#a87b1c"/><circle cx="29" cy="24" r="1.4" fill="#a87b1c"/></svg>`;
@@ -293,6 +183,7 @@ function shell(title, isHome, back) {
     h('div', { class: 'counter', id: 'shoeCount', title: 'Hufeisen', html: SHOE + `<span>${S.shoes}</span>` }),
     h('div', { class: 'counter', id: 'carrotCount', title: 'Karotten' }, h('span', { class: 'emo' }, '🥕'), h('span', null, String(S.carrots))),
     bagButton(),
+    h('button', { class: 'iconbtn' + (S.audio.music ? '' : ' off'), id: 'musicBtn', 'aria-label': 'Musik an oder aus', onclick: toggleMusic }, '🎵'),
     h('button', { class: 'iconbtn', id: 'soundBtn', 'aria-label': 'Ton an oder aus', onclick: toggleSound }, S.sound ? '🔊' : '🔇')
   );
   const main = h('main', { id: 'screen' });
@@ -305,8 +196,15 @@ function updateCounters() {
 }
 function toggleSound() {
   S.sound = !S.sound; save();
-  const b = $('#soundBtn'); if (b) b.textContent = S.sound ? '🔊' : '🔇';
+  $$('#soundBtn').forEach((b) => { b.textContent = S.sound ? '🔊' : '🔇'; });
+  Sound.applySettings();
   if (S.sound) Sound.pop();
+}
+function toggleMusic() {
+  S.audio.music = !S.audio.music; save();
+  $$('#musicBtn').forEach((b) => { b.textContent = S.audio.music ? '🎵' : '🎵\u0338'; b.classList.toggle('off', !S.audio.music); });
+  Sound.applySettings();
+  if (S.audio.music) Sound.pop();
 }
 function lunaBlock(text, small, mood) {
   const wrap = h('div', { class: 'luna-wrap' },
@@ -369,6 +267,7 @@ function greeting() {
 function showHome() {
   currentScreen = 'home'; stableBack = showHome;
   if (window.__pmUpdate) { location.reload(); return; }
+  Sound.setScene('home');
   const main = shell('Pferde-Mathe', true);
   const bd = birthdayInfo();
   let banner = null;
@@ -395,16 +294,21 @@ function showHome() {
       h('small', null, cur ? `Welt ${cur.w + 1}: ${WORLDS[cur.w].name} · Station ${cur.i + 1}` : 'Alle Welten geschafft! 👑')),
     h('span', { class: 'adv-go' }, 'Los ➜'));
   const tiles = h('div', { class: 'tiles' },
-    GAMES.filter((g) => !g.adventureOnly).map((g, i) => h('button', { class: 'tile c' + (i + 1), 'data-game': g.id, onclick: () => { Sound.tap(); startGame(g.id); } },
+    GAMES.filter((g) => !g.adventureOnly && !g.b100).map((g, i) => h('button', { class: 'tile c' + (i + 1), 'data-game': g.id, onclick: () => { Sound.tap(); startGame(g.id); } },
       h('div', { class: 'ti' }, g.icon), g.name, h('small', null, g.sub))),
     h('button', { class: 'tile stall', 'data-game': 'stall', onclick: () => { Sound.tap(); showStable(); } },
       h('div', { class: 'ti' }, '🏡'), 'Pferdehof', h('small', null, 'Hufeisen eintauschen')));
+  const tiles100 = h('div', { class: 'tiles tiles100', id: 'tiles100' },
+    GAMES.filter((g) => g.b100).map((g, i) => h('button', { class: 'tile t100 c' + (i + 1), 'data-game': g.id, onclick: () => { Sound.tap(); startGame(g.id); } },
+      h('div', { class: 'ti' }, g.icon), g.name, h('small', null, g.sub))));
   main.append(h('div', { class: 'screen home' },
     setup, banner,
     h('div', { class: 'hero' }, lunaBlock(bd && bd.isToday ? 'Heute ist dein Geburtstag! Ich habe dir einen Kuchen in den Stall gestellt. 🎂' : greeting())),
     advTile,
     h('div', { class: 'free-label' }, 'Freies Üben'),
     tiles,
+    h('div', { class: 'free-label label100' }, 'Zahlenraum bis 100 🌲'),
+    tiles100,
     h('button', { class: 'parent-link', id: 'parentLink', onclick: showGate }, '👪 Für Eltern')));
 }
 
@@ -488,6 +392,7 @@ function startGame(id, opts) {
   opts = opts || {};
   const game = GAMES.find((g) => g.id === id);
   currentScreen = 'game-' + id;
+  Sound.setScene('game', { world: opts.world != null ? opts.world : null });
   const main = shell(opts.title || game.name, false, opts.back);
   const scr = h('div', { class: 'screen' },
     h('div', { class: 'game game-' + id },
@@ -1143,7 +1048,7 @@ const GAME_TYPES = {
 
 // ---------- Rundenende ----------
 function showRoundEnd(game, n, levelUp) {
-  currentScreen = 'end';
+  currentScreen = 'end'; Sound.setScene('end');
   const main = shell(game.name, false);
   const msg = pick([withName('Toll gemacht'), withName('Super'), 'Wunderbar gerechnet!', 'Du bist ein Mathe-Star!']);
   main.append(h('div', { class: 'screen' }, h('div', { class: 'end' },
@@ -1746,7 +1651,7 @@ function judgeTask() {
 }
 let rideRaf = 0;
 function showRide(horseId, mode) {
-  currentScreen = 'ride'; clearInterval(ambientTimer); cancelAnimationFrame(rideRaf); app.innerHTML = '';
+  currentScreen = 'ride'; clearInterval(ambientTimer); cancelAnimationFrame(rideRaf); app.innerHTML = ''; Sound.setScene('ride');
   const tour = mode === 'turnier';
   const scr = h('div', { class: 'ride-screen' + (tour ? ' tour' : ''), id: 'ride' });
   const RX = 37, RY = 15, CX = 50, CY = 67;
@@ -1894,6 +1799,7 @@ function showStable() {
   repairFarm();
   clearInterval(ambientTimer);
   const mood = farmMood(), season = seasonNow(), fest = festNow(), P = PAL[season];
+  Sound.setScene('hof', { mood, season, fest });
   app.innerHTML = '';
   const farm = h('div', { class: 'farm scene ' + mood + ' season-' + season + (fest ? ' fest-' + fest : ''), id: 'scene' });
   farm.addEventListener('scroll', () => { if (farm.scrollLeft || farm.scrollTop) { farm.scrollLeft = 0; farm.scrollTop = 0; } }); // nie verrutschen (Safari scrollt sonst versteckte Ränder ins Bild)
@@ -2405,16 +2311,9 @@ function showStable() {
   const hr = new Date().getHours();
   if (hr >= 6 && hr < 10) setTimeout(() => { if (currentScreen === 'stable') Sound.rooster(); }, 2500);
   // ganz leise Naturgeräusche ab und zu
+  // Umgebungsgeräusche (Vögel, Glocke, Wind, Grillen am Abend …) kommen aus der Klang-Engine (Sound.setScene)
   ambientTimer = setInterval(() => {
     if (currentScreen !== 'stable') { clearInterval(ambientTimer); return; }
-    const r = Math.random();
-    if (r < 0.16) { if (season !== 'winter') Sound.chirp(); }
-    else if (r < 0.24) Sound.quack();
-    else if (r < 0.34) Sound.cowbell();
-    else if (r < 0.39) Sound.moo();
-    else if (r < 0.46) { if (season === 'summer' || season === 'spring') Sound.buzz(); else Sound.wind(); }
-    else if (r < 0.52) Sound.wind();
-    else if (r < 0.56 && (fest === 'advent' || fest === 'xmas')) Sound.sleigh();
     if (Math.random() < 0.18) driveTractor();
   }, 9000);
 }
@@ -2557,7 +2456,7 @@ const WORLDS = [
       { name: 'Das Schlosstor', game: 'rechnen', diff: 1, min: 5, gate: true, item: 'krone', gift: 'krone', story: 'Die Prinzessin öffnet das Schlosstor für alle, die ihre besondere Aufgabe lösen. Wir schaffen das zusammen!' }
     ],
     doneText: 'Das Schlosstor öffnet sich, und alle feiern ein großes Schlossfest! Die Prinzessin schenkt mir eine Krone.',
-    next: '' }
+    next: 'Auf in den Zauberwald!' }
 ];
 const skey = (w, i) => w + '-' + i;
 function advState() { if (!S.adv || typeof S.adv !== 'object') S.adv = { done: {}, last: null }; if (!S.adv.done) S.adv.done = {}; return S.adv; }
@@ -2571,6 +2470,7 @@ function inventory() {
   return inv;
 }
 // Rucksack: was ist drin, wofür ist es, was wurde schon am Tor benutzt
+const BAG_EXTRA = [];
 const BAG_USE = {
   blume: 'Die Blumen brauchst du für das Rosentor auf der Blumenwiese.',
   apfel: 'Die Äpfel bekommt Ziege Zenzi – dann macht sie den Weg frei.',
@@ -2621,8 +2521,10 @@ function advSetWorld(w) { // Elternbereich: ab Welt w neu beginnen (alles davor 
 }
 
 // ---------- Landschaften (geschichtet; Hintergründe dehnen sich, Figuren behalten ihre Form) ----------
+const WORLD_ART = {};
 const wl = (inner, cls) => `<svg class="wl ${cls || ''}" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${inner}</svg>`;
 function worldLayers(k) {
+  if (WORLD_ART[k]) return WORLD_ART[k].layers(wl);
   switch (k) {
     case 0: return wl(`<path d="M0 40 Q14 30 30 38 T62 34 T100 38 V100 H0Z" fill="#d3efbd"/><path d="M0 46 Q24 38 50 46 T100 44 V100 H0Z" fill="#bfe6a4"/>`, 'far')
       + wl(`<path d="M0 54 Q30 46 60 53 T100 52 V100 H0Z" fill="#acdc8f"/><path d="M0 70 Q40 64 100 72 V100 H0Z" fill="#a2d685" opacity=".7"/>`);
@@ -2640,6 +2542,7 @@ function worldLayers(k) {
 // Deko je Welt: [Kunst, x%, y% (Fußpunkt), Breite vmin, Extra-Klasse]
 function worldDecor(k, done) {
   const fl = (x, y, c) => [svgw('0 0 30 40', flowerSVG(15, 34, 22, c, 0)), x, y, 3.4];
+  if (WORLD_ART[k]) return WORLD_ART[k].decor(done, fl);
   switch (k) {
     case 0: return [[ART.tree, 5, 50, 17], [ART.tree, 96, 47, 14], [MAPART.mushroom, 19, 88, 6], [MAPART.mushroom, 34, 44, 4.6], [MAPART.mushroom, 64, 90, 5],
       [ART.sunflowers, 47, 47, 7], [ART.flowerbed, 50, 97, 16], [pondSVG(), 82, 94, 18], [MAPART.bee, 30, 34, 4.5, 'fly'], [MAPART.bee, 66, 40, 4, 'fly f2'],
@@ -2759,6 +2662,7 @@ function showMap(o) {
       h('div', { class: 'counter' }, h('span', { class: 'emo' }, '🥕'), h('span', null, String(S.carrots))),
       bagButton(),
       h('button', { class: 'farm-btn', id: 'farmBtn', 'aria-label': 'Pferdehof', onclick: () => { Sound.tap(); showStable(); } }, '🏡'),
+      h('button', { class: 'farm-btn' + (S.audio.music ? '' : ' off'), id: 'musicBtn', 'aria-label': 'Musik an oder aus', onclick: toggleMusic }, '🎵'),
       h('button', { class: 'farm-btn', id: 'soundBtn', 'aria-label': 'Ton an oder aus', onclick: toggleSound }, S.sound ? '🔊' : '🔇')),
     h('button', { class: 'wnav prev', id: 'prevWorld', 'aria-label': 'Vorherige Welt', onclick: () => go(-1) }, '‹'),
     h('button', { class: 'wnav next', id: 'nextWorld', 'aria-label': 'Nächste Welt', onclick: () => go(1) }, '›'),
@@ -2791,8 +2695,10 @@ function showMap(o) {
     if (!o.quiet) setTimeout(() => mapSay(cur ? (cur.i === 0 && cur.w === 0 && !advState().last ? `Hallo! Ich bin ${LN()}. Komm mit auf die große Reise! Tippe auf den leuchtenden Kreis.` : `Weiter geht's! Unsere nächste Station: ${WORLDS[cur.w].stations[cur.i].name}.`) : 'Wir haben das ganze Abenteuer geschafft! Du kannst jede Station noch einmal besuchen. 💖'), 500);
   }
   horse.addEventListener('click', () => { Sound.neigh(); horse.classList.remove('nuzzle'); void horse.offsetWidth; horse.classList.add('nuzzle'); });
+  let lastSceneWorld = focus;
   function nav() {
     const k = Math.round(scroll.scrollLeft / Math.max(1, scroll.clientWidth));
+    if (k !== mapFocus || k !== lastSceneWorld) { lastSceneWorld = k; Sound.setScene('map', { world: k }); if (worldOpen(k)) Sound.worldJingle(k); }
     mapFocus = k;
     $('#prevWorld').classList.toggle('hide', k <= 0);
     $('#nextWorld').classList.toggle('hide', k >= WORLDS.length - 1 || !worldOpen(k + 1) && k >= curW + 1);
@@ -2800,7 +2706,7 @@ function showMap(o) {
   function go(dir) { Sound.swish(); const k = Math.max(0, Math.min(WORLDS.length - 1, mapFocus + dir)); scroll.scrollTo({ left: k * scroll.clientWidth, behavior: 'smooth' }); mapFocus = k; setTimeout(nav, 600); }
   scroll.addEventListener('scroll', () => { clearTimeout(scroll._t); scroll._t = setTimeout(nav, 120); }, { passive: true });
   nav();
-  ambientTimer = setInterval(() => { if (Math.random() < 0.35) Sound.chirp(); }, 9000);
+  Sound.setScene('map', { world: focus });
 }
 
 // ---------- Stations-Karte ----------
@@ -2832,7 +2738,7 @@ function openStation(w, i) {
 }
 function playStation(w, i) {
   const W = WORLDS[w], st = W.stations[i];
-  startGame(st.game, { level: stationLevel(st), title: st.name, intro: st.story, gate: !!st.gate,
+  startGame(st.game, { level: stationLevel(st), title: st.name, intro: st.story, gate: !!st.gate, world: w,
     back: () => showMap({ world: w }), onFinish: (r) => stationFinished(w, i, r) });
 }
 function stationFinished(w, i, r) {
@@ -2930,7 +2836,7 @@ function showTravel(k) {
 // ---------- Rucksack ----------
 function openBag() {
   const inv = inventory();
-  const order = ['blume', 'apfel', 'ei', 'muschel', 'brett', 'kristall', 'laterne', 'stern', 'kartenteil', 'schluessel', 'glocke', 'perle', 'edelweiss', 'goldzaum', 'krone'];
+  const order = ['blume', 'apfel', 'ei', 'muschel', 'brett', 'kristall', 'laterne', 'stern', 'kartenteil', 'schluessel', 'glocke', 'perle', 'edelweiss', 'goldzaum', 'krone'].concat(BAG_EXTRA);
   const maps = inv.kartenteil || 0;
   const card = h('div', { class: 'bag-card', id: 'bag' },
     h('h2', null, '🎒 Mein Rucksack'),
@@ -2980,7 +2886,7 @@ function tagFor(st) {
   return h('span', { class: 'tag help' }, 'braucht Hilfe');
 }
 function showParent() {
-  currentScreen = 'parent';
+  currentScreen = 'parent'; Sound.setScene('parent');
   const main = shell('Elternbereich', false);
   const wrap = h('div', { class: 'parent' });
   const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
@@ -3049,15 +2955,28 @@ function showParent() {
   if (!S.trouble.length) tr.append(h('div', { class: 'note', style: { textAlign: 'left' } }, 'Bisher nichts – prima!'));
   else tr.append(h('div', { class: 'trouble' }, S.trouble.slice(0, 24).map((x) => h('span', { title: TYPE_LABELS[x.t] || '' }, x.l))));
   wrap.append(tr);
-  const vol = h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Ton', h('small', null, 'Sanfte Klänge (Standard: an, leise)')),
-    h('button', { class: 'smallbtn', onclick: () => { S.sound = !S.sound; save(); showParent(); } }, S.sound ? '🔊 an' : '🔇 aus'),
-    ...[['leise', 0.5], ['mittel', 1]].map(([n, v]) => h('button', { class: 'smallbtn', style: S.volume === v ? { background: '#ffe08a' } : null, onclick: () => { S.volume = v; save(); Sound.pop(); showParent(); } }, n)));
+  const slider = (id, val, on) => h('input', { type: 'range', id, min: '0', max: '1', step: '0.05', value: String(val), class: 'vslider', 'aria-label': id, oninput: (e) => on(+e.target.value), onchange: () => { save(); Sound.pop(); } });
+  const tog = (id, label, on, off, get, set) => h('button', { class: 'smallbtn tog' + (get() ? ' on' : ''), id, onclick: (e) => { set(!get()); save(); Sound.applySettings(); e.currentTarget.classList.toggle('on', get()); e.currentTarget.textContent = get() ? on : off; if (get()) Sound.pop(); } }, get() ? on : off);
+  const vol = h('div', { class: 'audiopanel', id: 'audioPanel' },
+    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Ton insgesamt', h('small', null, 'Alle Klänge an oder aus (Standard: an, leise). Auf dem iPad bitte den Seitenschalter nicht auf stumm stellen.')),
+      tog('sndAll', 'Ton', '🔊 an', '🔇 aus', () => S.sound, (v) => { S.sound = v; $$('#soundBtn').forEach((b) => { b.textContent = v ? '🔊' : '🔇'; }); })),
+    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Gesamtlautstärke', h('small', null, 'Leise bis mittel.')),
+      slider('volRange', S.volume, (v) => { S.volume = Math.max(0.05, v); Sound.applySettings(); })),
+    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Musik', h('small', null, 'Eine kurze, ruhige Melodie – für jede Welt anders.')),
+      tog('sndMusic', 'Musik', '🎵 an', '🎵 aus', () => S.audio.music, (v) => { S.audio.music = v; $$('#musicBtn').forEach((b) => b.classList.toggle('off', !v)); })),
+    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Musik-Lautstärke', h('small', null, 'Standard: dezent.')),
+      slider('musicRange', S.audio.mvol, (v) => { S.audio.mvol = v; Sound.applySettings(); })),
+    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Effekte', h('small', null, 'Tippen, Belohnungen, Wiehern, Hufe …')),
+      tog('sndSfx', 'Effekte', '✨ an', '✨ aus', () => S.audio.sfx, (v) => { S.audio.sfx = v; })),
+    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Umgebung', h('small', null, 'Vögel, Glocke, Wind, Grillen am Abend …')),
+      tog('sndAmb', 'Umgebung', '🌿 an', '🌿 aus', () => S.audio.amb, (v) => { S.audio.amb = v; })),
+    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Klang testen'), h('button', { class: 'smallbtn', id: 'sndTest', onclick: () => { Sound.unlock(); Sound.correct(); setTimeout(() => Sound.neigh(), 450); } }, '▶ Probe hören')));
   const readRow = h('div', { class: 'prow', id: 'readRow' }, h('div', { class: 'pn' }, 'Lesezeit der Sprechblasen', h('small', null, 'Wie lange Hinweise stehen bleiben (längere Texte länger). Antippen schließt sie.')),
     ...[['normal', 'normal'], ['lang', 'lang (empfohlen)'], ['sehrlang', 'sehr lang']].map(([v, n]) => h('button', { class: 'smallbtn', 'data-read': v, style: (S.readTime || 'lang') === v ? { background: '#ffe08a' } : null, onclick: () => { S.readTime = v; save(); Sound.tap(); showParent(); } }, n)));
   const confirmBox = h('div', { style: { display: 'none', marginTop: '10px' } },
     h('p', null, 'Wirklich alles löschen? Hufeisen, Stall und Lernfortschritt gehen verloren (Name und Geburtstag bleiben).'),
     h('div', { class: 'btnrow', style: { justifyContent: 'flex-start' } },
-      h('button', { class: 'smallbtn danger', id: 'resetYes', onclick: () => { const keep = { childName: S.childName, bday: S.bday, setupSeen: true }; S = Object.assign(defaultState(), keep); save(); showHome(); } }, 'Ja, alles zurücksetzen'),
+      h('button', { class: 'smallbtn danger', id: 'resetYes', onclick: () => { const keep = { childName: S.childName, bday: S.bday, setupSeen: true, sound: S.sound, volume: S.volume, audio: S.audio }; S = Object.assign(defaultState(), keep); save(); showHome(); } }, 'Ja, alles zurücksetzen'),
       h('button', { class: 'smallbtn', onclick: () => { confirmBox.style.display = 'none'; } }, 'Abbrechen')));
   wrap.append(h('div', { class: 'panel' }, h('h3', null, 'Einstellungen'), vol, readRow,
     h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Pferdehof aufräumen', h('small', null, 'Stellt alle Pferde und Sachen wieder an ihren Startplatz. Gekauftes, Hufeisen und Fortschritt bleiben.')),
@@ -3071,7 +2990,12 @@ function showParent() {
 // ---------- Start ----------
 ensureGear();
 repairFarm();
-window.__pm = { get state() { return S; }, repairFarm, startGame, showStable, showHome, showParent, showMap, openStation, showWorldDone, showStationReward, openBag, showTravel, WORLDS, advSetWorld, stationLevel, save, version: APP_VERSION };
+const core = { $, $$, h, rand, pick, shuffle, range, sleep, MINUS, Sound, svgw, shade, ART, TREASURE, MAPART, WORLDS, WORLD_ART, GAMES, GAME_IDS, GAME_TYPES, TYPE_LABELS, BAG_USE, BAG_EXTRA, ITEMS, HORSES, HORSE_ORDER, DEFAULT_HNAMES, ADULT, CLOTHES, WCATS, SHOE, SHOE_EMPTY, ROUND, PRAISE,
+  get S() { return S; }, save, burst, confetti, numPad, softNo, glowBtn, clearMarks, miniTen, say, shell, sheet, kidName, withName, LN, horseName, horseSVG, lunaSVG, has, updateCounters, showHome, showStable, showMap, startGame, stationLevel, gearOf, horseOpts, ownedHorses, itemName, riderSVG, riderLook, flowerSVG, hooks: {},
+  get currentScreen() { return currentScreen; }, set currentScreen(v) { currentScreen = v; } };
+window.__pmCore = core;
+(window.PM_MODS || []).forEach((fn) => { try { fn(core); } catch (e) { console.error('Modul-Fehler', e); } });
+window.__pm = { get state() { return S; }, core, repairFarm, startGame, showStable, showHome, showParent, showMap, openStation, showWorldDone, showStationReward, openBag, showTravel, WORLDS, advSetWorld, stationLevel, save, version: APP_VERSION };
 showHome();
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !window.__PM_SINGLE__) {
   // Neue Version installiert → neu laden, aber nie mitten in einer Aufgabe (sonst beim nächsten Besuch der Startseite)
