@@ -95,9 +95,9 @@ SEAS.forEach(([id, name, price, carrots, art, s, season, snd]) => {
 // Reiterstübchen
 const FURN = [
   // id, Name, Preis, Bild, Breite (% der Stube), Standard x, y, Wand?
-  ['teppich', 'Flauschiger Teppich', 25, R.teppich, 34, 50, 90, 0], ['sofa', 'Kuschel-Sofa', 60, R.sofa, 32, 30, 74, 0], ['regal', 'Bücherregal', 55, R.regal, 17, 84, 74, 0], ['tisch', 'Teetisch', 35, R.tisch, 20, 58, 82, 0],
+  ['teppich', 'Flauschiger Teppich', 25, R.teppich, 34, 50, 90, 0], ['sofa', 'Kuschel-Sofa', 60, R.sofa, 32, 30, 74, 0], ['regal', 'Bücherregal', 55, R.regal, 17, 84, 74, 0], ['tisch', 'Teetisch', 35, R.tisch, 20, 66, 86, 0],
   ['lampe', 'Stehlampe', 30, R.lampe, 8, 8, 84, 0], ['pflanze', 'Zimmerpflanze', 25, R.pflanze, 10, 93, 90, 0], ['sattelstaender', 'Sattelständer', 45, R.sattelstaender, 13, 70, 92, 0], ['pokalvitrine', 'Pokal-Vitrine', 80, R.pokalvitrine, 14, 14, 76, 0],
-  ['bild', 'Pferde-Bild', 28, R.bild, 14, 62, 38, 1], ['uhr', 'Wanduhr', 22, R.uhr, 8, 44, 30, 1], ['fensterbild', 'Fenster mit Vorhang', 45, R.fensterbild, 15, 24, 34, 1], ['sitzsack', 'Sitzsack', 40, R.sitzsack, 14, 44, 94, 0],
+  ['bild', 'Pferde-Bild', 28, R.bild, 14, 72, 30, 1], ['uhr', 'Wanduhr', 22, R.uhr, 8, 34, 22, 1], ['fensterbild', 'Fenster mit Vorhang', 45, R.fensterbild, 15, 20, 30, 1], ['sitzsack', 'Sitzsack', 40, R.sitzsack, 14, 44, 94, 0],
   ['plueschpferd', 'Plüschpferd', 35, R.plueschpferd, 11, 20, 93, 0], ['schreibtisch', 'Schreibtisch', 65, R.schreibtisch, 22, 76, 82, 0]
 ];
 FURN.forEach(([id, name, price, art, w, x, y, wall]) => add({ id: 'r_' + id, rid: id, cat: 'stuebchen', kind: 'room', name, price, art, w, x, y, wall: !!wall, sub: wall ? 'Hängt an der Wand' : 'Steht im Reiterstübchen' }));

@@ -140,13 +140,13 @@
 .ca-ic svg{width:30px;height:30px;display:block}
 .care-counters{display:flex;gap:8px}.care-counters .counter{height:48px;font-size:1.1rem;background:#fff3d6;box-shadow:none}.care-counters svg{width:30px;height:30px}
 /* Reiterstübchen */
-.room-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:6px 18px 18px;min-height:100%}
-.room-scene{position:relative;width:min(100%,calc((100dvh - 250px)*1.5));aspect-ratio:3/2;border-radius:30px;overflow:hidden;box-shadow:0 14px 34px rgba(80,60,40,.28),0 0 0 8px #e9cfa8,0 0 0 11px #c79f6c;touch-action:none;background:#f9e3ea}
-@media (orientation:portrait){.room-scene{aspect-ratio:4/3;width:100%}}
+.room-wrap{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:6px 18px 18px;min-height:100%}
+.room-scene{position:relative;width:100%;max-width:calc((100dvh - 250px)*1.5);margin:0 auto;aspect-ratio:3/2;border-radius:30px;overflow:hidden;box-shadow:0 14px 34px rgba(80,60,40,.28),0 0 0 8px #e9cfa8,0 0 0 11px #c79f6c;touch-action:none;background:#f9e3ea}
+@media (orientation:portrait){.room-scene{aspect-ratio:4/3;max-width:none}}
 .room-wall{position:absolute;inset:0 0 38% 0;background:repeating-linear-gradient(90deg,#fbe4ec 0 34px,#fdf0f4 34px 68px);box-shadow:inset 0 -30px 40px rgba(255,255,255,.35)}
 .room-board{position:absolute;left:0;right:0;top:56%;height:7%;background:linear-gradient(180deg,#fff9ee,#f0e2cc);border-top:3px solid #fff;box-shadow:0 4px 8px rgba(120,80,40,.18)}
 .room-floor{position:absolute;inset:63% 0 0 0;background:repeating-linear-gradient(90deg,#dba873 0 92px,#cf9a64 92px 95px),linear-gradient(180deg,#e0b07b,#c99560);background-blend-mode:multiply}
-.room-kamin{position:absolute;left:3%;top:36%;width:15%;z-index:3;filter:drop-shadow(0 4px 4px rgba(0,0,0,.2))}
+.room-kamin{position:absolute;left:41%;top:38%;width:15%;z-index:3;filter:drop-shadow(0 4px 4px rgba(0,0,0,.2))}
 .room-kamin svg{display:block;width:100%;height:auto}
 .room-kamin .flame{transform-origin:60px 96px;animation:pm-flame 1.2s ease-in-out infinite alternate}
 @keyframes pm-flame{from{transform:scale(1,1)}to{transform:scale(.94,1.1)}}
@@ -163,8 +163,8 @@
 .rm-ros{position:absolute;left:14%;right:14%;top:14%;display:flex;flex-wrap:wrap;gap:3%;justify-content:center;pointer-events:none}
 .rm-ros span{width:22%;font-size:1rem;line-height:1}.rm-ros svg{width:100%;height:auto}
 .room-empty{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:rgba(255,253,248,.92);border-radius:22px;padding:14px 22px;text-align:center;display:flex;flex-direction:column;gap:2px;z-index:950;box-shadow:0 6px 16px rgba(80,60,40,.2)}
-.room-tip{margin:0;color:var(--soft);font-size:.95rem}
-.room-dock{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+.room-tip{margin:0;text-align:center;color:var(--soft);font-size:.95rem}
+.room-dock{align-self:center;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
 .room-dock .bigbtn{min-width:150px;min-height:64px;font-size:1.1rem;padding:6px 16px}
 .room-count{font-weight:800;color:var(--soft)}
 /* Hof-Menü */
