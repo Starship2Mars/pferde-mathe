@@ -105,10 +105,12 @@ function horseSVG(o) {
     kranz: `<path d="M120 80 C126 62 132 50 140 38" stroke="#6fbf6a" stroke-width="5" fill="none" stroke-linecap="round"/>${[[122, 76, '#f7a8c4'], [126, 66, '#fff'], [131, 56, '#ffd27a'], [136, 46, '#f7a8c4']].map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="4.2" fill="${c}"/><circle cx="${x}" cy="${y}" r="1.6" fill="#ffe08a"/>`).join('')}`,
     glocke: `<path d="M124 86 Q134 96 146 90" stroke="#ec6f9c" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="135" cy="97" r="5" fill="#f6cf5a" stroke="#c9962a" stroke-width="1.4"/><path d="M130 98 h10" stroke="#c9962a" stroke-width="1"/>`,
     stern: `<path d="M157 58 l2.6 5.4 l5.8 .8 l-4.2 4 l1 5.8 l-5.2 -2.8 l-5.2 2.8 l1 -5.8 l-4.2 -4 l5.8 -.8z" fill="#ffe08a" stroke="#e5b84a" stroke-width="1"/>`,
+    zopf: `<path d="M121 80 L131 54 L139 40" stroke="${mane}" stroke-width="9" fill="none" stroke-linecap="round"/>${[[123, 76], [127, 66], [131, 56], [136, 46]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.2" fill="#f48fb1"/>`).join('')}`,
+    glanz: `${[[110, 80], [130, 70], [96, 100], [70, 90], [150, 40]].map(([x, y], i) => `<path class="spk" style="animation-delay:${i * 0.4}s" d="M${x} ${y - 5} l1.6 3.4 l3.4 1.6 l-3.4 1.6 l-1.6 3.4 l-1.6 -3.4 l-3.4 -1.6 l3.4 -1.6z" fill="#fff"/>`).join('')}`,
     haube: `<path d="M137 32 Q128 14 150 10 Q166 12 160 30 Z" fill="#b39ddb"/><circle cx="150" cy="10" r="3.4" fill="#fff"/>`
   }[a] || '')).join('');
   const dl = o.delay != null ? o.delay : -Math.random() * 5;
-  return `<svg class="horse" viewBox="0 0 210 170" viewBox="0 0 210 170" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  return `<svg class="horse" viewBox="0 0 210 170" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <g class="tail" style="animation-delay:${dl}s"><path d="M50 88 C22 90 14 122 26 148 C34 130 40 112 54 100 Z" fill="${mane}"/></g>
   ${wings}${leg(60, far, 'a')}${leg(124, far, 'b')}
   <ellipse cx="95" cy="98" rx="54" ry="31" fill="${body}"/>${spots}${patch ? patch.replace(/<path[^>]*\/>/, '') : ''}
@@ -152,7 +154,7 @@ function gearOf(id) { const g = ensureGear(); if (!g[id] || typeof g[id] !== 'ob
 function horseOpts(id) {
   const g = (ensureGear()[id]) || {};
   return { saddle: !!g.saddle && has('sattel'), bow: !!g.bow && has('schleife'), bridle: !!g.bridle && has('goldzaum'), crown: !!g.crown && has('krone'),
-    blanket: g.blanket && g.ownB ? g.blanket : null, acc: Array.isArray(g.acc) ? g.acc.filter((a) => has('acc_' + a)) : [], pad: g.pad && (S.clothes || []).some((c) => CLOTHES.find((x) => x.id === c && x.c === g.pad && x.cat === 'pad')) ? g.pad : null,
+    blanket: g.blanket && g.ownB ? g.blanket : null, acc: (Array.isArray(g.acc) ? g.acc.filter((a) => has('acc_' + a)) : []).concat(((S.care || {})[id] || {}).day === new Date().toDateString() ? ['zopf', 'glanz'].filter((k) => ((S.care || {})[id] || {})[k]) : []), pad: g.pad && (S.clothes || []).some((c) => CLOTHES.find((x) => x.id === c && x.c === g.pad && x.cat === 'pad')) ? g.pad : null,
     rein: g.rein && (S.clothes || []).some((c) => CLOTHES.find((x) => x.id === c && x.c === g.rein && x.cat === 'zaum')) ? g.rein : null };
 }
 function giveGear(itemId, horseId) { const k = GEAR[itemId]; if (!k) return; const g = gearOf(horseId || 'luna'); if (k === 'blanket') g.ownB = true; g[k] = k === 'blanket' ? (g.blanket || BLANKET_COLORS[ownedHorses().indexOf(horseId || 'luna') % BLANKET_COLORS.length] || BLANKET_COLORS[0]) : true; save(); }
@@ -390,6 +392,7 @@ function makeApi(game, root, opts) {
       S.carrots++;
       const extra = roundExtraFood();
       S.lastRound = { game: game.id, level: api.level, n: results.length, ok, at: Date.now(), extra };
+      if (core.hooks.roundDone) { try { core.hooks.roundDone(S.lastRound, game); } catch (e) { console.error('roundDone', e); } }
       save();
       if (opts.onFinish) opts.onFinish({ n: results.length, ok, levelUp });
       else showRoundEnd(game, results.length, levelUp);
@@ -1067,6 +1070,7 @@ function showRoundEnd(game, n, levelUp) {
     h('div', { class: 'loot' },
       h('div', { html: SHOE + `<span>+${n} Hufeisen</span>` }),
       h('div', null, h('span', { style: { fontSize: '2.2rem' } }, '🥕'), h('span', null, '+1 Karotte')), extraLoot()),
+    core.hooks.roundEnd ? core.hooks.roundEnd(S.lastRound) : null,
     h('p', { style: { fontSize: '1.2rem', margin: 0 } }, levelUp ? `${LN()} sagt: Du wirst immer besser! Beim nächsten Mal gibt es neue Aufgaben. 💖`
       : `${LN()} sagt: Danke, dass du mit mir gerechnet hast! Möchtest du mir auf dem Pferdehof eine Karotte geben?`),
     h('div', { class: 'btnrow' },
@@ -3008,7 +3012,7 @@ function showParent() {
 ensureGear();
 repairFarm();
 const core = { $, $$, h, rand, pick, shuffle, range, sleep, MINUS, Sound, svgw, shade, ART, TREASURE, MAPART, WORLDS, WORLD_ART, GAMES, GAME_IDS, GAME_TYPES, TYPE_LABELS, BAG_USE, BAG_EXTRA, ITEMS, HORSES, HORSE_ORDER, DEFAULT_HNAMES, ADULT, CLOTHES, WCATS, SHOE, SHOE_EMPTY, ROUND, PRAISE,
-  get S() { return S; }, save, burst, confetti, numPad, softNo, glowBtn, clearMarks, miniTen, say, shell, sheet, kidName, withName, LN, horseName, horseSVG, lunaSVG, has, updateCounters, showHome, showStable, showMap, startGame, stationLevel, gearOf, horseOpts, ownedHorses, itemName, riderSVG, riderLook, flowerSVG, hooks: {}, app, seasonNow, festNow, farmFreeSpot, advDone, inventory, openRosettes, addRosette, rosetteSVG, riderState, hasCloth, cloth, riderName, openCloset, sheet, GEAR, giveGear, ensureGear, pondSVG, HAY, FEST_SAY,
+  get S() { return S; }, save, burst, confetti, numPad, softNo, glowBtn, clearMarks, miniTen, say, shell, sheet, kidName, withName, LN, horseName, horseSVG, lunaSVG, has, updateCounters, showHome, showStable, showMap, startGame, stationLevel, gearOf, horseOpts, ownedHorses, itemName, riderSVG, riderLook, flowerSVG, rideHorseSVG, adultHorses, hooks: {}, app, seasonNow, festNow, farmFreeSpot, advDone, inventory, openRosettes, addRosette, rosetteSVG, riderState, hasCloth, cloth, riderName, openCloset, sheet, GEAR, giveGear, ensureGear, pondSVG, HAY, FEST_SAY,
   get currentScreen() { return currentScreen; }, set currentScreen(v) { currentScreen = v; } };
 window.__pmCore = core;
 (window.PM_MODS || []).forEach((fn) => { try { fn(core); } catch (e) { console.error('Modul-Fehler', e); } });
