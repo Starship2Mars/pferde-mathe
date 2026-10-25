@@ -27,9 +27,10 @@ async function openMap(p) { await p.click('#advTile'); await p.waitForSelector('
     await p.waitForSelector('#advTile');
     ok(/Welt 1/.test(await p.textContent('#advTile')), 'Startseite: Abenteuer-Kachel zeigt Welt 1');
     await openMap(p);
-    ok((await p.$$('.wpanel')).length === 5, 'Karte: 5 Welten');
-    ok((await p.$$('.station')).length === 30, 'Karte: 30 Stationen');
-    ok((await p.$$('.mist')).length === 4, 'Karte: 4 Welten noch hinter sanften Wolken');
+    const NW = await p.evaluate(() => __pm.WORLDS.length), NS = await p.evaluate(() => __pm.WORLDS.reduce((a, w) => a + w.stations.length, 0));
+    ok((await p.$$('.wpanel')).length === NW && NW === 6, 'Karte: 6 Welten');
+    ok((await p.$$('.station')).length === NS, `Karte: ${NS} Stationen`);
+    ok((await p.$$('.mist')).length === NW - 1, 'Karte: 5 Welten noch hinter sanften Wolken');
     ok(!(await p.$('.topbar')), 'Karte im Vollbild');
     const hb = await box(p, '#mapHorse'), sb = await box(p, '.station.current');
     ok(hb && sb && hb.x >= -5 && hb.y >= 0 && hb.x + hb.width <= W + 5 && sb.y + sb.height <= H, 'Pferd und aktuelle Station sichtbar');
@@ -81,7 +82,7 @@ async function openMap(p) { await p.click('#advTile'); await p.waitForSelector('
     await p.waitForSelector('.map-screen', { timeout: 6000 }); await sleep(3000);
     const sl = await p.$eval('#mapScroll', (e) => Math.round(e.scrollLeft / e.clientWidth));
     ok(sl === 1, 'Karte zeigt Welt 2');
-    ok((await p.$$('.mist')).length === 3, 'Nebel über Welt 2 ist verschwunden');
+    ok((await p.$$('.mist')).length === 4, 'Nebel über Welt 2 ist verschwunden');
     ok(await p.$eval('.station.current', (e) => e.dataset.w + '-' + e.dataset.i) === '1-0', 'Welt 2 freigeschaltet, Station 1 ist dran');
     ok(!!(await p.$('.wpanel[data-world="1"] #mapHorse')), 'Pferd steht in Welt 2');
     await p.reload(); await p.waitForSelector('#advTile');
@@ -110,7 +111,7 @@ async function openMap(p) { await p.click('#advTile'); await p.waitForSelector('
       await p.goto(BASE); await p.evaluate(() => navigator.serviceWorker.ready); await sleep(800);
       await ctx.setOffline(true);
       await p.reload(); await p.waitForSelector('#advTile', { timeout: 8000 }); await openMap(p);
-      ok((await p.$$('.station')).length === 30, 'Offline: Karte lädt aus dem Cache');
+      ok((await p.$$('.station')).length === (await p.evaluate(() => __pm.WORLDS.reduce((a, w) => a + w.stations.length, 0))), 'Offline: Karte lädt aus dem Cache');
       await ctx.setOffline(false);
     }
     ok(errs.length === 0, 'Keine JS-Fehler / keine externen Anfragen' + (errs.length ? ': ' + errs.join(' | ') : ''));

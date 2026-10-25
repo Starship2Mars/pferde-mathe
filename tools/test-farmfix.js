@@ -26,6 +26,7 @@ const strip = (s) => { const c = JSON.parse(JSON.stringify(s)); delete c.pos; re
     await p.evaluate(() => window.__pm.showStable()); await p.waitForSelector('.item[data-id="luna"]'); await sleep(2800);
     const after = await p.evaluate(() => JSON.parse(localStorage.getItem('pferde-mathe-v1')));
     const sb = strip(before), sa = strip(after);
+    if (sb.skills && sa.skills) { const k0 = Object.keys(sb.skills); sa.skills = Object.fromEntries(k0.map((k) => [k, sa.skills[k]])); } // neue Lernspiele dürfen ergänzt werden
     const diff = Object.keys(sb).filter((k) => JSON.stringify(sb[k]) !== JSON.stringify(sa[k]));
     ok(diff.length === 0, 'Alle gespeicherten Felder außer Positionen unverändert' + (diff.length ? ': ' + diff.join(',') : ''));
     if (W === 1024) { console.log('    vorher pos:', JSON.stringify(before.pos)); console.log('    nachher pos:', JSON.stringify(after.pos)); }
