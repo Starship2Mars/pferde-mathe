@@ -34,7 +34,7 @@ async function playGame(p, id, fn, ...args) {
     p.on('request', (r) => { if (!r.url().startsWith(new URL(BASE).origin)) external.push(r.url()); });
     await p.goto(BASE);
     await p.waitForSelector('.tile');
-    ok((await p.$$('.tile')).length === 6, 'Startseite: 5 Spiele + Stall');
+    ok((await p.$$('.tiles:not(.tiles100) .tile')).length === 6 && (await p.$$('.tiles100 .tile')).length === 7, 'Startseite: 5 Spiele + Stall, 7 Spiele bis 100');
     // Neutral ohne Einstellungen
     const hello = await p.textContent('.bubble');
     ok(!/,\s*\w+!/.test(hello.split(' ').slice(0, 3).join(' ')) && !(await p.$('#bdayBanner')), 'Ohne Einstellungen: neutrale Begrüßung, kein Geburtstags-Countdown ("' + hello.slice(0, 40) + '…")');
