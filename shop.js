@@ -380,8 +380,8 @@ hooks.roundEnd = (last) => {
 const CARE = {
   buerste: { nm: 'Bürste', ic: '🪮', free: true, tip: 'Fahre mit dem Finger über den Staub!', mode: 'rub', n: 6, need: 5, cls: 'dust', pos: [[38, 46], [50, 41], [58, 52], [44, 58], [30, 52], [54, 34]], snd: 'swish' },
   schwamm: { nm: 'Schwamm', ic: '🧽', tool: 'schwamm', tip: 'Reibe den Schlamm mit dem Schwamm weg!', mode: 'rub', n: 5, need: 8, cls: 'mud', pos: [[33, 80], [40, 68], [60, 72], [68, 82], [50, 60]], snd: 'bubble' },
-  kratzer: { nm: 'Hufkratzer', ic: '🔧', tool: 'kratzer', tip: 'Tippe auf jeden Huf!', mode: 'tap', n: 4, cls: 'hoof', pos: [[31, 90], [37, 90], [62, 90], [68, 90]], snd: 'tick' },
-  flecht: { nm: 'Flechtband', ic: '🎀', tool: 'flecht', tip: 'Tippe auf die Knoten in der Mähne!', mode: 'tap', n: 4, cls: 'knot', pos: [[60, 42], [62, 34], [65, 27], [68, 20]], snd: 'plop', flag: 'zopf' },
+  kratzer: { nm: 'Hufkratzer', ic: '🔧', tool: 'kratzer', tip: 'Tippe auf jeden Huf!', mode: 'tap', n: 4, cls: 'hoof', pos: [[27, 90], [39, 90], [61, 90], [73, 90]], snd: 'tick' },
+  flecht: { nm: 'Flechtband', ic: '🎀', tool: 'flecht', tip: 'Tippe auf die Knoten in der Mähne!', mode: 'tap', n: 4, cls: 'knot', pos: [[57, 46], [62, 35], [66, 24], [70, 13]], snd: 'plop', flag: 'zopf' },
   spray: { nm: 'Glanzspray', ic: '✨', tool: 'spray', tip: 'Tippe auf das Fell – es beginnt zu glitzern!', mode: 'tap', n: 5, cls: 'shine', pos: [[40, 52], [50, 46], [58, 56], [46, 62], [66, 38]], snd: 'sparkle', flag: 'glanz' }
 };
 const CARE_ORDER = ['buerste', 'schwamm', 'kratzer', 'flecht', 'spray'];

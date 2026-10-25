@@ -183,7 +183,12 @@ const small = async (p, sel) => p.$$eval(sel, (els) => els.filter((e) => e.offse
     await shot(p, `ausritt-${tag}`);
     const ms = await S(p);
     ok(ms.shoes <= 8 && ms.carrots <= 2 && ms.shoes > 0, `Tageslimit der Mini-Spiele greift (${ms.shoes} Hufeisen, ${ms.carrots} Karotten nach 3 Spielen)`);
-    ok(await p.$eval('#mgEnd', (e) => /genug Belohnung/.test(e.textContent)) || ms.shoes < 8, 'Hinweis bei erreichtem Tageslimit freundlich');
+    await p.evaluate(() => { __pm.core.S.minis.miniDay = { d: new Date().toDateString(), shoes: 7, car: 2, n: 0 }; __pm.core.S.shoes = 0; __pm.core.S.carrots = 0; });
+    await p.click('#mgFarm'); await sleep(300); await p.evaluate(() => __pm.core.minis.start('memory')); await p.waitForSelector('.mem-card');
+    { const ks = await p.$$eval('.mem-card', (e) => e.map((x) => x.dataset.k)); const cs = await p.$$('.mem-card'); const sn = {}; ks.forEach((k, i) => (sn[k] = sn[k] || []).push(i)); for (const k in sn) { await cs[sn[k][0]].click(); await cs[sn[k][1]].click(); await sleep(120); } }
+    await p.waitForSelector('#mgEnd', { timeout: 8000 });
+    const cap = await S(p);
+    ok(cap.shoes === 1 && cap.carrots === 0 && /genug Belohnung/.test(await p.textContent('#mgEnd')), 'Tageslimit: nur noch 1 Hufeisen, freundlicher Hinweis statt Fehler');
     await p.click('#mgFarm'); await sleep(300);
 
     // Startseite, Lernschild, Elternbereich
