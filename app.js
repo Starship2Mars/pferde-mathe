@@ -97,15 +97,25 @@ function horseSVG(o) {
   const crown = o.crown ? `<g transform="translate(153 16) rotate(-12)"><path d="M-13 9 L-13 -4 L-6 2 L0 -9 L6 2 L13 -4 L13 9 Z" fill="#f6cf5a" stroke="#c9962a" stroke-width="1.6" stroke-linejoin="round"/><circle cx="0" cy="-9" r="2.6" fill="#f7a8c4"/><circle cx="-13" cy="-4" r="2" fill="#b5dcff"/><circle cx="13" cy="-4" r="2" fill="#b5dcff"/></g>` : '';
   const bow = o.bow ? `<g transform="translate(136 30)"><path d="M0 0 L-14 -9 L-14 9 Z" fill="#f48fb1"/><path d="M0 0 L14 -9 L14 9 Z" fill="#f48fb1"/><circle r="5" fill="#ec6f9c"/></g>` : '';
   const blaze = o.blaze ? `<path d="M152 34 Q160 40 172 56 Q166 58 160 50 Q154 42 150 37 Z" fill="#fff" opacity=".85"/>` : '';
+  const patch = o.patch ? `<ellipse cx="78" cy="90" rx="18" ry="13" fill="${o.patch}"/><ellipse cx="118" cy="104" rx="12" ry="9" fill="${o.patch}"/><path d="M118 84 C124 66 130 54 138 42 L150 50 C144 64 140 76 138 90 Z" fill="${o.patch}"/>` : '';
+  const socks = o.socks ? [60, 124, 72, 136].map((x) => `<rect x="${x - 1}" y="${ly + lh - 17}" width="14" height="15" rx="4" fill="${o.socks}"/>`).join('') : '';
+  const horn = o.horn ? `<g transform="translate(156 24) rotate(18)"><path d="M-4 4 L0 -26 L4 4 Z" fill="#fff3b8" stroke="#e6c35c" stroke-width="1.2" stroke-linejoin="round"/><path d="M-3 -2 L3 -6 M-2.4 -10 L2.4 -14 M-1.6 -18 L1.6 -21" stroke="#e6c35c" stroke-width="1.2"/></g>` : '';
+  const wings = o.wings ? `<g class="wing"><path d="M82 82 C60 40 30 38 18 56 C34 52 44 60 52 72 C40 68 34 74 34 86 C52 76 66 82 82 94 Z" fill="#fff" stroke="#d6c2f2" stroke-width="1.6" stroke-linejoin="round" opacity=".95"/></g>` : '';
+  const acc = (o.acc || []).map((a) => ({
+    kranz: `<path d="M120 80 C126 62 132 50 140 38" stroke="#6fbf6a" stroke-width="5" fill="none" stroke-linecap="round"/>${[[122, 76, '#f7a8c4'], [126, 66, '#fff'], [131, 56, '#ffd27a'], [136, 46, '#f7a8c4']].map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="4.2" fill="${c}"/><circle cx="${x}" cy="${y}" r="1.6" fill="#ffe08a"/>`).join('')}`,
+    glocke: `<path d="M124 86 Q134 96 146 90" stroke="#ec6f9c" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="135" cy="97" r="5" fill="#f6cf5a" stroke="#c9962a" stroke-width="1.4"/><path d="M130 98 h10" stroke="#c9962a" stroke-width="1"/>`,
+    stern: `<path d="M157 58 l2.6 5.4 l5.8 .8 l-4.2 4 l1 5.8 l-5.2 -2.8 l-5.2 2.8 l1 -5.8 l-4.2 -4 l5.8 -.8z" fill="#ffe08a" stroke="#e5b84a" stroke-width="1"/>`,
+    haube: `<path d="M137 32 Q128 14 150 10 Q166 12 160 30 Z" fill="#b39ddb"/><circle cx="150" cy="10" r="3.4" fill="#fff"/>`
+  }[a] || '')).join('');
   const dl = o.delay != null ? o.delay : -Math.random() * 5;
-  return `<svg class="horse" viewBox="0 0 210 170" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  return `<svg class="horse" viewBox="0 0 210 170" viewBox="0 0 210 170" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <g class="tail" style="animation-delay:${dl}s"><path d="M50 88 C22 90 14 122 26 148 C34 130 40 112 54 100 Z" fill="${mane}"/></g>
-  ${leg(60, far, 'a')}${leg(124, far, 'b')}
-  <ellipse cx="95" cy="98" rx="54" ry="31" fill="${body}"/>${spots}
-  ${leg(72, body, 'b')}${leg(136, body, 'a')}
+  ${wings}${leg(60, far, 'a')}${leg(124, far, 'b')}
+  <ellipse cx="95" cy="98" rx="54" ry="31" fill="${body}"/>${spots}${patch ? patch.replace(/<path[^>]*\/>/, '') : ''}
+  ${leg(72, body, 'b')}${leg(136, body, 'a')}${socks}
   ${blanket}${saddle}
   <g class="head" style="animation-delay:${dl * 1.3}s">
-  <path d="M116 84 C122 62 130 46 140 32 L166 46 C156 64 150 84 146 104 Z" fill="${body}"/>
+  <path d="M116 84 C122 62 130 46 140 32 L166 46 C156 64 150 84 146 104 Z" fill="${body}"/>${o.patch ? `<path d="M118 84 C124 66 130 54 138 42 L150 50 C144 64 140 76 138 90 Z" fill="${o.patch}"/>` : ''}
   <path d="M138 28 C128 44 120 62 113 86 L123 86 C128 66 136 50 147 36 Z" fill="${mane}"/>
   <polygon points="143,32 147,10 157,30" fill="${body}"/><polygon points="146,28 148,16 153,29" fill="#f3b6c3"/>
   <ellipse cx="164" cy="50" rx="31" ry="18" transform="rotate(32 164 50)" fill="${body}"/>
@@ -116,7 +126,7 @@ function horseSVG(o) {
   <circle cx="168" cy="58" r="4.5" fill="#f3a0b5" opacity=".55"/>
   <ellipse cx="189" cy="63" rx="2.2" ry="1.6" fill="#7a5a48"/>
   <path d="M175 73 Q182 78 190 72" stroke="#7a5a48" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-  ${bridle}${bow}${crown}
+  ${bridle}${bow}${crown}${horn}${acc}
   </g>${o.rider || ''}
 </svg>`;
 }
@@ -142,7 +152,7 @@ function gearOf(id) { const g = ensureGear(); if (!g[id] || typeof g[id] !== 'ob
 function horseOpts(id) {
   const g = (ensureGear()[id]) || {};
   return { saddle: !!g.saddle && has('sattel'), bow: !!g.bow && has('schleife'), bridle: !!g.bridle && has('goldzaum'), crown: !!g.crown && has('krone'),
-    blanket: g.blanket && g.ownB ? g.blanket : null, pad: g.pad && (S.clothes || []).some((c) => CLOTHES.find((x) => x.id === c && x.c === g.pad && x.cat === 'pad')) ? g.pad : null,
+    blanket: g.blanket && g.ownB ? g.blanket : null, acc: Array.isArray(g.acc) ? g.acc.filter((a) => has('acc_' + a)) : [], pad: g.pad && (S.clothes || []).some((c) => CLOTHES.find((x) => x.id === c && x.c === g.pad && x.cat === 'pad')) ? g.pad : null,
     rein: g.rein && (S.clothes || []).some((c) => CLOTHES.find((x) => x.id === c && x.c === g.rein && x.cat === 'zaum')) ? g.rein : null };
 }
 function giveGear(itemId, horseId) { const k = GEAR[itemId]; if (!k) return; const g = gearOf(horseId || 'luna'); if (k === 'blanket') g.ownB = true; g[k] = k === 'blanket' ? (g.blanket || BLANKET_COLORS[ownedHorses().indexOf(horseId || 'luna') % BLANKET_COLORS.length] || BLANKET_COLORS[0]) : true; save(); }
@@ -1469,7 +1479,7 @@ function riderLook(riding) {
   const helm = w.helm && hasCloth(w.helm) ? cloth(w.helm).c : (riding ? cloth('helm_basis').c : null);
   return { skin: r.skin, hair: r.hair, style: r.style, helm, glitter: helm && !!w.glitzer && hasCloth('glitzer'), bow: !!w.schleife && hasCloth('haarschleife'),
     top: c('top', '#ffffff'), jacket: !!(w.top && cloth(w.top) && cloth(w.top).jacket && hasCloth(w.top)), vest: c('weste', null), pants: c('hose', '#e9e4da'),
-    boots: c('stiefel', null), gloves: c('hand', null), crop: !!w.gerte && hasCloth('gerte'), stirrup: hasCloth('buegel') && w.buegel ? '#eef2f6' : '#a9b0ba' };
+    boots: c('stiefel', null), gloves: c('hand', null), scarf: c('tuch', null), glasses: c('brille', null), crop: !!w.gerte && hasCloth('gerte'), stirrup: hasCloth('buegel') && w.buegel ? '#eef2f6' : '#a9b0ba' };
 }
 function riderSVG(L, big) { // stehende Reiterin (viewBox 100×190)
   L = L || riderLook(false);
@@ -1496,8 +1506,10 @@ function riderSVG(L, big) { // stehende Reiterin (viewBox 100×190)
   const helmet = L.helm ? `<path d="M30.5 45 C29 21 71 21 69.5 45 Z" fill="${L.helm}"/><path d="M33 40 C38 30 50 28 58 30" stroke="#fff" stroke-width="2.4" fill="none" opacity=".45" stroke-linecap="round"/>
     <path d="M47 43 Q61 38 74 45 Q62 48 49 47 Z" fill="${sh(L.helm, 0.75)}"/><path d="M33 46 Q35 60 45 63 M67 46 Q65 60 55 63" stroke="#4a3f3a" stroke-width="1.4" fill="none"/>
     ${L.glitter ? [[38, 32], [46, 27], [56, 28], [63, 35], [42, 38], [53, 34]].map(([x, y], i) => `<path d="M${x} ${y - 2.4} L${x + 0.8} ${y - 0.8} L${x + 2.4} ${y} L${x + 0.8} ${y + 0.8} L${x} ${y + 2.4} L${x - 0.8} ${y + 0.8} L${x - 2.4} ${y} L${x - 0.8} ${y - 0.8} Z" fill="${i % 2 ? '#fff' : '#ffe08a'}"/>`).join('') : ''}` : '';
+  const scarf = L.scarf ? `<path d="M40 70 Q50 78 60 70 L61 76 Q50 85 39 76 Z" fill="${L.scarf}"/><path d="M52 78 L58 92 L51 90 Z" fill="${sh(L.scarf, 0.85)}"/>` : '';
+  const glasses = L.glasses ? `<g fill="none" stroke="${L.glasses}" stroke-width="1.8"><circle cx="44" cy="50" r="5.2"/><circle cx="56" cy="50" r="5.2"/><path d="M49 50 h2 M38.8 49 L34 47 M61.2 49 L66 47"/></g>` : '';
   const bow = L.bow ? `<g transform="translate(${L.style === 'zopf' ? '70 57' : '34 34'})"><path d="M0 0 L-8 -6 L-8 6 Z M0 0 L8 -6 L8 6 Z" fill="#f48fb1"/><circle r="2.8" fill="#ec6f9c"/></g>` : '';
-  return `<svg class="rider${big ? ' big' : ''}" viewBox="0 0 100 190" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="50" cy="172" rx="26" ry="5" fill="#000" opacity=".08"/>${hairBack}${legs}${feet}${torso}${head}${hairTop}${bangs}${helmet}${bow}</svg>`;
+  return `<svg class="rider${big ? ' big' : ''}" viewBox="0 0 100 190" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="50" cy="172" rx="26" ry="5" fill="#000" opacity=".08"/>${hairBack}${legs}${feet}${torso}${head}${scarf}${glasses}${hairTop}${bangs}${helmet}${bow}</svg>`;
 }
 function riderSeated(L) { // sitzende Reiterin, in Pferde-Koordinaten (Sattel bei ~95/72)
   L = L || riderLook(true);
@@ -1521,6 +1533,7 @@ function riderSeated(L) { // sitzende Reiterin, in Pferde-Koordinaten (Sattel be
     <path d="M-12 -53 C-12 -70 15 -70 14.5 -53 Z" fill="${L.helm}"/><path d="M8 -56 Q16 -58 21 -53 Q15 -51 9 -52 Z" fill="${sh(L.helm, 0.75)}"/>
     <path d="M-9 -60 C-5 -66 3 -67 8 -65" stroke="#fff" stroke-width="2" fill="none" opacity=".45" stroke-linecap="round"/><path d="M-8 -52 Q-6 -42 2 -40" stroke="#4a3f3a" stroke-width="1.2" fill="none"/>
     ${L.glitter ? [[-6, -62], [0, -66], [6, -63], [-2, -58]].map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="1.4" fill="${i % 2 ? '#fff' : '#ffe08a'}"/>`).join('') : ''}
+    ${L.scarf ? `<path d="M-6 -42 Q1 -37 8 -42 L8 -37 Q1 -32 -6 -37 Z" fill="${L.scarf}"/>` : ''}${L.glasses ? `<g fill="none" stroke="${L.glasses}" stroke-width="1.5"><circle cx="7" cy="-53" r="4"/><path d="M3 -53 L-6 -55"/></g>` : ''}
     ${L.bow ? `<g transform="translate(-11 -48)"><path d="M0 0 L-6 -4 L-6 4 Z M0 0 L6 -4 L6 4 Z" fill="#f48fb1"/><circle r="2" fill="#ec6f9c"/></g>` : ''}
     <path d="M26 -16 Q58 -6 88 -8" stroke="#7a4e2e" stroke-width="1.8" fill="none"/>
   </g>`;
@@ -1913,6 +1926,7 @@ function showStable() {
   const fsay = (t) => { const b = $('#farmSay'); b.textContent = t; b.classList.add('show'); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); clearTimeout(sayT); sayT = setTimeout(() => b.classList.remove('show'), readMs(t, 4200)); };
   const updTools = () => { updateCounters(); $('.badge', carrotTool).textContent = S.carrots; carrotTool.classList.toggle('empty', S.carrots <= 0); };
   updTools();
+  if (core.hooks.farmUI) { try { core.hooks.farmUI({ ui, farm, add, at, fsay, renderScene, updTools, season, mood, fest, openDrawer, closeDrawer, itemOf, walkTo }); } catch (e) { console.error('farmUI', e); } }
 
   // Parallaxe (sanft)
   let pxRaf = 0, pxv = 0;
@@ -2255,7 +2269,7 @@ function showStable() {
       h('button', { class: 'farm-btn', id: 'shopClose', 'aria-label': 'Schließen', onclick: () => { Sound.tap(); closeDrawer(); } }, '✕')), body);
     const list = h('div', { class: 'shoplist' });
     ITEMS.forEach((it) => {
-      if (it.special && !has(it.id)) return;
+      if (it.nu || (it.special && !has(it.id))) return;
       const pvHtml = it.pv ? it.pv() : it.horse ? horseSVG(Object.assign({}, HORSES[it.horse], { delay: 0 })) : it.art();
       let btn;
       const done = it.perHorse ? !horsesWithoutBlanket().length : has(it.id);
@@ -2929,7 +2943,9 @@ function showParent() {
   ap.append(h('div', { class: 'note', style: { textAlign: 'left', marginTop: '6px' } }, '„Hierhin springen“ setzt die Reise auf den Anfang dieser Welt: frühere Welten gelten als geschafft, diese und spätere Welten beginnen neu. Hufeisen, Stall und Lernstand bleiben erhalten. Die Tor-Aufgabe am Ende jeder Welt ist eine Stufe schwerer als das aktuelle Niveau.'));
   wrap.append(ap);
   const gp = h('div', { class: 'panel' }, h('h3', null, 'Spiele & Schwierigkeitsstufe (passt sich automatisch an)'));
+  let gpSub = null;
   GAMES.forEach((g) => {
+    if (g.b100 && gpSub !== 'b') { gpSub = 'b'; gp.append(h('h4', { class: 'psub', id: 'psub100' }, '🌲 Zahlenraum bis 100 (2. Klasse)')); }
     const sk = S.skills[g.id];
     const agg = GAME_TYPES[g.id].reduce((a, t) => { const s = S.stats[t]; if (s) { a.n += s.n; a.ok += s.ok; } return a; }, { n: 0, ok: 0 });
     const p = pct(agg);
@@ -2955,6 +2971,7 @@ function showParent() {
   if (!S.trouble.length) tr.append(h('div', { class: 'note', style: { textAlign: 'left' } }, 'Bisher nichts – prima!'));
   else tr.append(h('div', { class: 'trouble' }, S.trouble.slice(0, 24).map((x) => h('span', { title: TYPE_LABELS[x.t] || '' }, x.l))));
   wrap.append(tr);
+  if (core.hooks.parentPanels) { try { core.hooks.parentPanels(wrap); } catch (e) { console.error('parentPanels', e); } }
   const slider = (id, val, on) => h('input', { type: 'range', id, min: '0', max: '1', step: '0.05', value: String(val), class: 'vslider', 'aria-label': id, oninput: (e) => on(+e.target.value), onchange: () => { save(); Sound.pop(); } });
   const tog = (id, label, on, off, get, set) => h('button', { class: 'smallbtn tog' + (get() ? ' on' : ''), id, onclick: (e) => { set(!get()); save(); Sound.applySettings(); e.currentTarget.classList.toggle('on', get()); e.currentTarget.textContent = get() ? on : off; if (get()) Sound.pop(); } }, get() ? on : off);
   const vol = h('div', { class: 'audiopanel', id: 'audioPanel' },
@@ -2991,7 +3008,7 @@ function showParent() {
 ensureGear();
 repairFarm();
 const core = { $, $$, h, rand, pick, shuffle, range, sleep, MINUS, Sound, svgw, shade, ART, TREASURE, MAPART, WORLDS, WORLD_ART, GAMES, GAME_IDS, GAME_TYPES, TYPE_LABELS, BAG_USE, BAG_EXTRA, ITEMS, HORSES, HORSE_ORDER, DEFAULT_HNAMES, ADULT, CLOTHES, WCATS, SHOE, SHOE_EMPTY, ROUND, PRAISE,
-  get S() { return S; }, save, burst, confetti, numPad, softNo, glowBtn, clearMarks, miniTen, say, shell, sheet, kidName, withName, LN, horseName, horseSVG, lunaSVG, has, updateCounters, showHome, showStable, showMap, startGame, stationLevel, gearOf, horseOpts, ownedHorses, itemName, riderSVG, riderLook, flowerSVG, hooks: {},
+  get S() { return S; }, save, burst, confetti, numPad, softNo, glowBtn, clearMarks, miniTen, say, shell, sheet, kidName, withName, LN, horseName, horseSVG, lunaSVG, has, updateCounters, showHome, showStable, showMap, startGame, stationLevel, gearOf, horseOpts, ownedHorses, itemName, riderSVG, riderLook, flowerSVG, hooks: {}, app, seasonNow, festNow, farmFreeSpot, advDone, inventory, openRosettes, addRosette, rosetteSVG, riderState, hasCloth, cloth, riderName, openCloset, sheet, GEAR, giveGear, ensureGear, pondSVG, HAY, FEST_SAY,
   get currentScreen() { return currentScreen; }, set currentScreen(v) { currentScreen = v; } };
 window.__pmCore = core;
 (window.PM_MODS || []).forEach((fn) => { try { fn(core); } catch (e) { console.error('Modul-Fehler', e); } });
