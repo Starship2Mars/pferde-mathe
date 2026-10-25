@@ -58,7 +58,7 @@ const shots = process.env.SHOTS || '/tmp/shots';
     ok(s.rosettes.length === 1 && s.rosettes[0].horse === 'pony', 'Nach 3 Runden: Rosette gewonnen');
     await p.click('#prizeOk'); await sleep(300);
     // Turnier
-    await p.click('#tourStart'); await p.waitForSelector('#tourGo'); await sleep(300);
+    await p.waitForSelector('#tourStart', { state: 'visible', timeout: 15000 }); await sleep(600); await p.click('#tourStart', { timeout: 30000 }); await p.waitForSelector('#tourGo'); await sleep(300);
     let q = 0;
     for (let k = 0; k < 80 && !(await p.$('#prize')); k++) {
       if (await p.$('#tourGo')) { await p.click('#tourGo'); await sleep(300); }

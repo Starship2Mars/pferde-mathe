@@ -46,9 +46,9 @@ const START = { v: 1, setupSeen: true, riderAsked: true, shoes: 60, carrots: 4, 
       await p.click('#shopClose'); await sleep(500);
       ok(await p.$eval('.item[data-id="luna"] svg', (e) => e.innerHTML.includes('#b9e2a0')), 'Pferdedecke in neuer Farbe');
       // Interaktionen
-      await p.click('.item[data-id="wolke"]'); await sleep(300);
+      await p.click('.item[data-id="wolke"]', { timeout: 90000 }); await sleep(300); // Pferde laufen herum: bis zur Ruhepause warten (unter Last dauert das länger)
       ok(/Schneeflocke/.test(await p.textContent('#farmSay')), 'Pferd antippen → reagiert mit Namen');
-      await p.click('#barn'); await sleep(200);
+      await p.click('#barn', { timeout: 90000 }); await sleep(200);
       ok(await p.$('#barn.open') !== null, 'Scheunentor öffnet sich');
       const fed0 = (await p.evaluate(() => window.__pm.state)).fed || 0;
       const c = async (sel) => { const r = await (await p.$(sel)).boundingBox(); return [r.x + r.width / 2, r.y + r.height / 2]; };
