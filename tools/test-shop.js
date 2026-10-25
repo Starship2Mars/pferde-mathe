@@ -117,7 +117,7 @@ const small = async (p, sel) => p.$$eval(sel, (els) => els.filter((e) => e.offse
     const cnt = (s) => Object.values(s.stickers).reduce((a, b) => a + b, 0);
     ok(cnt(stA) - cnt(stB) === 3 && stB.carrots - stA.carrots === 4, 'Sticker-Tüte: 3 Sticker, 4 Karotten bezahlt');
     await shot(p, `pack-${tag}`);
-    await p.click('#packAlbum'); await p.waitForSelector('#album'); await sleep(400);
+    await p.click('#packAlbum'); await p.waitForSelector('#album .alb-slot'); await sleep(1100);
     ok((await p.$$('[data-page]')).length === 6, 'Album: 6 Seiten');
     await shot(p, `album-${tag}`);
     await p.click('#albumClose'); await sleep(300);
