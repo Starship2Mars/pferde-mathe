@@ -1279,6 +1279,55 @@ button.hf-cell:active{transform:scale(.92)}
 
 @media (max-aspect-ratio:1/1){.care-main{grid-template-columns:1fr}}
 
+/* ===== Haus und Stall von innen: Übergang, Hinweise, Stall-Ansicht ===== */
+.iris{position:fixed;inset:0;z-index:9000;pointer-events:none;clip-path:circle(0 at var(--ix,50%) var(--iy,50%));transition:clip-path .5s cubic-bezier(.5,0,.8,.6)}
+.iris.on{clip-path:circle(160vmax at var(--ix,50%) var(--iy,50%))}
+.iris.off{opacity:0;transition:opacity .55s ease}
+.door-glow{opacity:.08;animation:doorGlow 2.8s ease-in-out infinite}
+@keyframes doorGlow{0%,100%{opacity:.05}50%{opacity:.5}}
+.door-pill{position:absolute;left:50%;top:57%;transform:translate(-50%,-50%);z-index:5;line-height:1.2;white-space:nowrap;font:800 max(13px,1.9vmin)/1.2 inherit;font-family:inherit;padding:.35em .8em;border-radius:99px;background:rgba(255,250,236,.96);color:#6b4a2a;box-shadow:0 3px 8px rgba(80,60,40,.25);pointer-events:auto}
+.door-pill.house{top:63%}
+.farm .barn.drop-hot{filter:drop-shadow(0 0 2.2vmin rgba(255,226,122,.98)) brightness(1.06)}
+.farm .item.to-stall{transition:left .75s ease-in,top .75s ease-in,opacity .75s ease-in,transform .75s ease-in;opacity:0;transform:translate(-50%,-100%) scale(.4);pointer-events:none}
+.farm .item.to-stall svg{animation:trotbob .3s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.door-glow{animation:none;opacity:.25}.iris{transition:none}}
+
+.stall-wrap{display:flex;flex-direction:column;gap:10px;padding:6px 18px 16px;min-height:100%;animation:fadeIn .45s ease}
+.stall-scene{position:relative;flex:1 1 auto;min-height:min(60dvh,520px);border-radius:30px;overflow:hidden auto;box-shadow:0 14px 34px rgba(80,60,40,.28),0 0 0 8px #e9cfa8,0 0 0 11px #c79f6c;background:#d9b98c;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;padding:3.5vmin 3vmin 3vmin;-webkit-overflow-scrolling:touch}
+.stall-wall{position:absolute;inset:0 0 22% 0;background:repeating-linear-gradient(90deg,#c48a55 0 46px,#b57d4b 46px 49px),linear-gradient(180deg,rgba(0,0,0,.18),transparent 40%);background-blend-mode:multiply;box-shadow:inset 0 -26px 40px rgba(60,30,10,.28);pointer-events:none}
+.stall-window{position:absolute;right:6%;top:6%;width:11vmin;height:9vmin;border-radius:10px;background:linear-gradient(180deg,#cfe8f7,#eaf6ff);box-shadow:0 0 0 5px #f6e6c8,inset 0 0 12px rgba(255,255,255,.7);pointer-events:none}
+.stall-window::before,.stall-window::after{content:'';position:absolute;background:#f6e6c8}
+.stall-window::before{left:50%;top:0;bottom:0;width:4px;margin-left:-2px}.stall-window::after{top:50%;left:0;right:0;height:4px;margin-top:-2px}
+.stall-lamp{position:absolute;left:8%;top:0;width:3px;height:9vmin;background:#6c4a30;pointer-events:none}
+.stall-lamp::after{content:'';position:absolute;left:-1.7vmin;top:100%;width:3.7vmin;height:4.4vmin;border-radius:40% 40% 30% 30%;background:radial-gradient(circle at 50% 45%,#fff3b0,#ffcf5c 60%,#e5a53a);box-shadow:0 0 5vmin 2.4vmin rgba(255,213,110,.55);animation:lampFlick 3.6s ease-in-out infinite}
+@keyframes lampFlick{0%,100%{opacity:1}45%{opacity:.86}60%{opacity:1}}
+.stall-straw{position:absolute;inset:auto 0 0 0;height:22%;background:repeating-linear-gradient(100deg,#f0cf6e 0 14px,#e2b957 14px 17px,#f6dc86 17px 30px);box-shadow:inset 0 14px 18px rgba(120,80,20,.25);pointer-events:none;z-index:0}
+.st-row{position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:2.4vmin}
+.st-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;width:clamp(140px,26vmin,250px);padding:8px 8px 10px;border-radius:22px;background:rgba(255,246,222,.55);box-shadow:inset 0 0 0 4px rgba(140,92,50,.45);transition:opacity .5s,transform .5s}
+.st-card.pet{width:clamp(110px,18vmin,170px)}
+.st-card.leaving{opacity:0;transform:translateX(30%) scale(.85)}
+.st-plate{padding:.2em .9em;border-radius:12px;background:#fff7e0;color:#5a3a1a;font-weight:800;font-size:max(15px,2.2vmin);box-shadow:0 2px 0 #b98c55,0 3px 6px rgba(60,30,10,.25)}
+.st-plate.small{font-size:max(13px,1.9vmin)}
+.st-pv{width:100%;line-height:0;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.st-pv svg{width:100%;height:auto;display:block;overflow:visible;transform-origin:50% 100%}
+.st-pv.munch .head{animation:munch .9s ease-in-out infinite}
+.st-pv.sleep svg{animation:stBreathe 4.2s ease-in-out infinite}
+.st-pv.pet svg{animation:stBreathe 3.4s ease-in-out infinite}
+.st-pv.yay svg{animation:yay .9s ease}
+@keyframes stBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.015,.975)}}
+.st-zzz{position:absolute;right:8%;top:22%;font-size:max(18px,3vmin);pointer-events:none;animation:zzzUp 3.2s ease-in-out infinite}
+@keyframes zzzUp{0%{opacity:0;transform:translate(0,8px) scale(.7)}30%{opacity:1}100%{opacity:0;transform:translate(10px,-22px) scale(1.15)}}
+.st-out{min-height:52px;min-width:140px;padding:6px 14px;border:0;border-radius:18px;background:#e8f6dc;color:#3f6b2a;font:inherit;font-weight:800;font-size:max(15px,2vmin);box-shadow:0 3px 0 #a9cf90,0 4px 10px rgba(60,80,40,.2);touch-action:manipulation}
+.st-out:active{transform:translateY(2px)}
+.st-empty{position:relative;z-index:2;align-self:center;margin:auto;max-width:34em;padding:18px 24px;border-radius:22px;background:rgba(255,248,230,.94);text-align:center;color:#5a3a1a;display:flex;flex-direction:column;gap:6px;font-size:max(16px,2.3vmin)}
+.st-say{text-align:center;min-height:1.5em;margin:0;font-weight:700;color:#6b4a2a;font-size:max(16px,2.2vmin)}
+.st-say.pop{animation:fadeIn .3s ease}
+.stall-dock{align-self:center;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+.stall-dock .bigbtn{min-width:150px;min-height:64px;font-size:1.1rem;padding:6px 16px}
+.st-count{font-weight:800;color:#6b4a2a;padding:0 6px}
+@media (orientation:portrait){.stall-scene{min-height:min(66dvh,760px)}.st-card{width:clamp(140px,34vmin,250px)}}
+@media (prefers-reduced-motion:reduce){.st-pv.munch .head,.st-pv.sleep svg,.st-pv.pet svg,.st-zzz,.stall-lamp::after{animation:none}}
+
 </style>
 </head>
 <body>
@@ -1614,6 +1663,7 @@ button.hf-cell:active{transform:scale(.92)}
   const AMB = {
     hof: (o) => o.mood === 'evening' ? [['cricket', 5, 12], ['owl', 14, 30], ['wind', 10, 22], ['whistle', 30, 60]] : [['chirp', 3, 8], ['cowbell', 11, 24], ['moo', 22, 45], ['wind', 9, 20], o.season === 'winter' ? ['sleigh', 60, 90] : ['buzz', 14, 30], ['clipclop', 40, 80], ['quack', 20, 40]],
     room: () => [['fire', 2, 4], ['clock', 6, 10], ['wind', 25, 45]],
+    stall: () => [['munch', 5, 10], ['snort', 9, 18], ['swish', 7, 14], ['neigh', 24, 46], ['clipclop', 16, 30]],
     w0: () => [['chirp', 2.5, 6], ['buzz', 10, 18], ['wind', 14, 26]],
     w1: () => [['cluck', 8, 16], ['chirp', 4, 9], ['baa', 22, 40], ['wind', 10, 20]],
     w2: () => [['wave', 4, 6], ['gull', 7, 16], ['splash', 18, 32], ['wind', 14, 26]],
@@ -1628,7 +1678,7 @@ button.hf-cell:active{transform:scale(.92)}
     // leises Hintergrundrauschen (Wind / Wellen / Bach) als Dauerton
     const bed = E.c.createBufferSource(); bed.buffer = E.noise(); bed.loop = true;
     const f = E.c.createBiquadFilter(), g = E.c.createGain(), l = E.c.createOscillator(), lg = E.c.createGain();
-    const profile = { w2: [500, 0.06, 0.12], w3: [2200, 0.03, 0.25], hof: [380, 0.018, 0.08], room: [200, 0.006, 0.05] }[key] || [420, 0.015, 0.07];
+    const profile = { w2: [500, 0.06, 0.12], w3: [2200, 0.03, 0.25], hof: [380, 0.018, 0.08], room: [200, 0.006, 0.05], stall: [240, 0.007, 0.06] }[key] || [420, 0.015, 0.07];
     f.type = key === 'w3' ? 'highpass' : 'bandpass'; f.frequency.value = profile[0]; f.Q.value = 0.5; g.gain.value = profile[1];
     l.frequency.value = profile[2]; lg.gain.value = profile[1] * 0.7; l.connect(lg); lg.connect(g.gain);
     bed.connect(f); f.connect(g); g.connect(E.ambBus); bed.start(); l.start();
@@ -1645,6 +1695,7 @@ button.hf-cell:active{transform:scale(.92)}
       case 'home': return { music: 'home', amb: null };
       case 'hof': return { music: o.mood === 'evening' ? 'hofNacht' : 'hof', amb: 'hof' };
       case 'room': return { music: 'stube', amb: 'room' };
+      case 'stall': return { music: 'stube', amb: 'stall' };
       case 'map': return { music: 'w' + (o.world || 0), amb: 'w' + (o.world || 0) };
       case 'game': return { music: o.world != null ? 'w' + o.world : 'lern', amb: null };
       case 'ride': return { music: 'ritt', amb: null };
@@ -2692,7 +2743,7 @@ FARMDEF.forEach(([id, name, price, art, s, o]) => {
 // Tiere
 const PETS = [['hase', 'Hase Hoppel', 40, A.hase, 8, 'squeak'], ['lamm', 'Lamm Wölkchen', 50, A.lamm, 10, 'baa'], ['esel', 'Esel Grauchen', 75, A.esel, 14, 'ihaa'], ['eichhoernchen', 'Eichhörnchen Nuss', 45, A.eichhoernchen, 7, 'squeak'], ['eule', 'Eule Uhu', 55, A.eule, 8, 'owl'], ['igel', 'Igel Stachel', 35, A.igel, 8, 'squeak']];
 PETS.forEach(([id, name, price, art, s, snd]) => {
-  ITEMS.push({ id, name, price, art: () => art(), s, x: 50, y: 92, nu: true, snd });
+  ITEMS.push({ id, name, price, art: () => art(), s, x: 50, y: 92, nu: true, snd, animal: true });
   add({ id, cat: 'tiere', kind: 'farm', name, price, art, sub: 'Tippe es an – es sagt Hallo!' });
 });
 ['kaetzchen', 'huehner', 'hund'].forEach((id) => { const it = ITEMS.find((i) => i.id === id); add({ id, cat: 'tiere', kind: 'farm', old: true, name: it.name, price: it.price, art: () => it.art(), sub: 'Schon im Stall-Laden 🛒' }); });
@@ -3105,7 +3156,7 @@ function openCare(startTool, startHorse) {
 // =====================================================================
 const ROOM_SND = { sofa: 'plop', lampe: 'chime', uhr: 'clock', plueschpferd: 'squeak', pflanze: 'swish', sattelstaender: 'plop', pokalvitrine: 'sparkle', bild: 'sparkle', fensterbild: 'chirp', sitzsack: 'plop', teppich: 'swish', tisch: 'cube', regal: 'page', schreibtisch: 'page' };
 const KAMIN = PA.svg('0 0 120 100', `<rect x="6" y="14" width="108" height="86" rx="6" fill="#c9a98a"/><rect x="2" y="8" width="116" height="14" rx="5" fill="#a9825f"/><path d="M28 100 V52 Q60 26 92 52 V100Z" fill="#3a2a26"/><g class="flame"><path d="M60 96 C44 88 48 70 60 58 C58 72 72 74 70 88 C68 94 64 96 60 96Z" fill="#ff9a3c"/><path d="M60 96 C52 92 54 80 60 72 C60 82 68 84 66 92Z" fill="#ffd966"/></g><rect x="40" y="30" width="40" height="12" rx="3" fill="#8a6a50" opacity=".5"/>`);
-function showRoom() {
+function showRoom(o) {
   const s = st(); s.room = s.room || { pos: {} }; s.room.pos = s.room.pos || {};
   core.currentScreen = 'room'; Sound.setScene('room');
   const main = core.shell('Reiterstübchen', false);
@@ -3163,7 +3214,7 @@ function showRoom() {
     h('button', { class: 'bigbtn primary', id: 'roomShop', onclick: () => { Sound.tap(); openShop('stuebchen'); } }, '🛍️ Möbel holen'),
     h('span', { class: 'room-count', id: 'roomCount' }, `${mine.length} von ${total} Sachen`),
     h('button', { class: 'bigbtn', id: 'roomRos', onclick: () => { Sound.tap(); core.openRosettes(); } }, '🏅 Rosetten'),
-    h('button', { class: 'bigbtn', id: 'roomFarm', onclick: () => { Sound.tap(); core.showStable(); } }, '🏡 Zum Hof'));
+    h('button', { class: 'bigbtn', id: 'roomFarm', onclick: () => { Sound.tap(); Sound.door(); const b = $('#roomFarm'); const r = b ? b.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight, width: 0, height: 0 }; core.irisTo ? core.irisTo(r.left + r.width / 2, r.top + r.height / 2, '#cfe8b0', () => core.showStable({ from: 'house' })) : core.showStable({ from: 'house' }); } }, '🏡 Zum Hof'));
   main.append(h('div', { class: 'room-wrap' }, scene, mine.length ? h('p', { class: 'room-tip' }, 'Tipp: Schiebe die Möbel mit dem Finger an einen neuen Platz.') : null, dock));
 }
 
@@ -3471,7 +3522,7 @@ const APP_VERSION = '3.0.0';
 const GAME_IDS = ['paare', 'haeuser', 'rechnen', 'familie', 'strahl', 'zehner', 'h100', 'ze', 's100', 'nb', 'vgl', 'ord', 'pm100'];
 function defaultState() {
   return {
-    v: 1, childName: '', bday: null, setupSeen: false, horseNames: {}, blanket: '', brushed: 0, barnOpen: false, adv: { done: {}, last: null }, shoes: 0, carrots: 0, totalShoes: 0, owned: [], pos: {}, sound: true, volume: 0.5, audio: { music: true, sfx: true, amb: true, mvol: 0.5 }, rev: 3, stickers: {}, room: { pos: {} }, care: {}, minis: {}, wardrobe: {},
+    v: 1, childName: '', bday: null, setupSeen: false, horseNames: {}, blanket: '', brushed: 0, barnOpen: false, adv: { done: {}, last: null }, shoes: 0, carrots: 0, totalShoes: 0, owned: [], pos: {}, sound: true, volume: 0.5, audio: { music: true, sfx: true, amb: true, mvol: 0.5 }, rev: 3, stickers: {}, room: { pos: {} }, care: {}, minis: {}, wardrobe: {}, stall: [], houseSeen: false, stallSeen: false,
     skills: Object.fromEntries(GAME_IDS.map((id) => [id, { level: 1, rounds: 0, recent: [] }])),
     stats: {}, trouble: [], fed: 0, bones: 2, grain: 2, treats: 2, created: Date.now()
   };
@@ -3491,6 +3542,7 @@ function load() {
       if (!nested.room.pos || typeof nested.room.pos !== 'object') nested.room.pos = {};
       const out = Object.assign(d, s, nested, { skills, adv: Object.assign({ done: {}, last: null }, s.adv || {}) });
       if (!Array.isArray(out.owned)) out.owned = [];
+      out.stall = Array.isArray(out.stall) ? out.stall.filter((x, i, a) => typeof x === 'string' && a.indexOf(x) === i) : []; // alte Spielstände: leerer Stall
       out.rev = 3;
       return out;
     }
@@ -4609,6 +4661,7 @@ function barnSVG(evening, vane, season) {
   <rect x="92" y="200" width="136" height="106" fill="${evening ? '#d9a06a' : '#8a5a36'}"/>
   <ellipse cx="160" cy="300" rx="58" ry="20" fill="#f2d16b"/><path d="M110 296 l8 -12 l6 12 l8 -14 l6 14 l8 -10 l6 10 l8 -13 l6 13 l8 -11 l6 11 l8 -12 l6 12" stroke="#e1bd52" stroke-width="3" fill="none"/>
   ${evening ? '<circle cx="160" cy="226" r="9" fill="#ffd27a"/><circle cx="160" cy="226" r="22" fill="#ffd27a" opacity=".3" class="glow-win"/>' : ''}
+  <ellipse class="door-glow" cx="160" cy="256" rx="82" ry="62" fill="#ffe9a0"/>
   <g class="door dl"><rect x="92" y="200" width="68" height="106" fill="#d29a64"/><path d="M96 204 L156 302 M156 204 L96 302" stroke="#f6e6c8" stroke-width="8"/><rect x="92" y="200" width="68" height="106" fill="none" stroke="#f6e6c8" stroke-width="6"/></g>
   <g class="door dr"><rect x="160" y="200" width="68" height="106" fill="#d29a64"/><path d="M164 204 L224 302 M224 204 L164 302" stroke="#f6e6c8" stroke-width="8"/><rect x="160" y="200" width="68" height="106" fill="none" stroke="#f6e6c8" stroke-width="6"/></g>
   <circle cx="160" cy="104" r="15" fill="#f2c14e"/><path d="M153 96 C150 108 154 113 160 113 C166 113 170 108 167 96" stroke="#c9962a" stroke-width="3.5" fill="none"/>
@@ -4708,7 +4761,7 @@ function farmhouseSVG(evening, season, fest) {
     <g class="fbox">${geraniums(36, 146, 100, 7)}${geraniums(150, 146, 100, 7)}${geraniums(264, 146, 100, 7)}</g>
     <rect x="44" y="179" width="312" height="117" fill="#fbf7ee"/><rect x="44" y="179" width="312" height="10" fill="#ece3d3"/>
     ${lowWin(70, 0)}${lowWin(132, 1)}${lowWin(258, 2)}${lowWin(318, 3)}
-    <path d="M184 296 V222 a16 16 0 0 1 32 0 V296 Z" fill="#8a5a36"/><path d="M200 206 V296" stroke="#6c4528" stroke-width="2"/><circle cx="194" cy="262" r="2.4" fill="#e5b84a"/>
+    <ellipse class="door-glow" cx="200" cy="250" rx="40" ry="64" fill="#ffe9a0"/><g class="hdoor"><rect x="150" y="196" width="100" height="104" fill="transparent"/><path d="M184 296 V222 a16 16 0 0 1 32 0 V296 Z" fill="#8a5a36"/></g><path d="M200 206 V296" stroke="#6c4528" stroke-width="2"/><circle cx="194" cy="262" r="2.4" fill="#e5b84a"/>
     <path d="M200 194 c-3 -6 -12 -3 -8 4 l8 7 l8 -7 c4 -7 -5 -10 -8 -4z" fill="#f48fb1"/>
     <rect x="176" y="292" width="48" height="8" rx="2" fill="#c9bfb4"/><rect x="36" y="294" width="328" height="6" rx="3" fill="#d9cfc4"/>
     ${snow ? '<path d="M30 150 h340 v-4 q-170 -8 -340 0 z" fill="#fff"/>' : ''}
@@ -4825,8 +4878,9 @@ function farmValid(it, p) {
 }
 function farmFreeSpot(selfId) {
   // belegte Plätze: alle aufgestellten Sachen/Pferde (gespeicherte Position oder Startplatz)
+  const inside = stallIds();
   const ids = ['luna'].concat((S.owned || []).filter((id) => { const it = farmDef(id); return it && !it.onLuna && !it.onBarn && !it.fly && !it.sky && !it.flat; }));
-  const taken = ids.filter((k) => k !== selfId).map((k) => { const q = S.pos && S.pos[k]; const d = farmDef(k); return q && Number.isFinite(+q.x) && Number.isFinite(+q.y) ? q : { x: d.x, y: d.y }; });
+  const taken = ids.filter((k) => k !== selfId && !inside.includes(k)).map((k) => { const q = S.pos && S.pos[k]; const d = farmDef(k); return q && Number.isFinite(+q.x) && Number.isFinite(+q.y) ? q : { x: d.x, y: d.y }; });
   let best = FARM_FREE[0], bestD = -1;
   for (const [x, y] of FARM_FREE) {
     const d = taken.reduce((m, q) => Math.min(m, Math.hypot(q.x - x, (q.y - y) * 1.6)), 999);
@@ -4844,6 +4898,28 @@ function farmSafePos(id, x, y) {
   if (farmHiddenZone(it, p.x, p.y)) return farmFreeSpot(id);
   return p;
 }
+// ---- Stall: Pferde und Tiere, die drinnen wohnen (S.stall = Liste von IDs) ----
+const ANIMAL_IDS = ['kaetzchen', 'huehner', 'hund', 'ziege'];
+function stallable(it) { return !!it && !it.sky && !it.flat && !it.rider && !!(it.horse || it.animal || ANIMAL_IDS.includes(it.id)); }
+function stallIds() { // nur gültige, vorhandene Bewohner; unbekannte Einträge bleiben in S.stall unberührt
+  return (Array.isArray(S.stall) ? S.stall : []).filter((id, i, a) => a.indexOf(id) === i && (id === 'luna' || has(id)) && stallable(farmDef(id)));
+}
+function inStall(id) { return stallIds().includes(id); }
+function stallPut(id) { if (!Array.isArray(S.stall)) S.stall = []; if (!S.stall.includes(id)) S.stall.push(id); save(); }
+const DOOR_SPOTS = [[30, 76], [22, 79], [37, 80], [14, 82], [28, 86], [41, 86], [20, 90], [34, 93]];
+function stallTake(id) { // raus aus dem Stall: Platz nahe am Scheunentor, möglichst frei
+  S.stall = (Array.isArray(S.stall) ? S.stall : []).filter((x) => x !== id);
+  const inside = stallIds();
+  const ids = ['luna'].concat((S.owned || []).filter((k) => { const d = farmDef(k); return d && !d.onLuna && !d.onBarn && !d.fly && !d.sky && !d.flat; })).filter((k) => k !== id && !inside.includes(k));
+  const taken = ids.map((k) => { const q = S.pos && S.pos[k]; const d = farmDef(k); return q && Number.isFinite(+q.x) && Number.isFinite(+q.y) ? q : { x: d.x, y: d.y }; });
+  let best = DOOR_SPOTS[0], bestD = -1;
+  for (const sp of DOOR_SPOTS) { const d = taken.reduce((m, q) => Math.min(m, Math.hypot(q.x - sp[0], (q.y - sp[1]) * 1.6)), 999); if (d >= 10) { best = sp; bestD = d; break; } if (d > bestD) { bestD = d; best = sp; } }
+  if (!S.pos || typeof S.pos !== 'object') S.pos = {};
+  S.pos[id] = { x: best[0], y: best[1] }; save();
+  return S.pos[id];
+}
+let stallOut = [];
+let stallBusy = false;
 function repairFarm() { // läuft bei jedem Start und beim Öffnen des Pferdehofs
   if (!S.pos || typeof S.pos !== 'object' || Array.isArray(S.pos)) { S.pos = {}; }
   let changed = false;
@@ -5250,8 +5326,75 @@ function showRide(horseId, mode) {
   rideRaf = requestAnimationFrame(frame);
 }
 
-function showStable() {
-  currentScreen = 'stable';
+// Kreis-Übergang: ein Kreis wächst von der Tür aus, dahinter wird der neue Raum aufgebaut
+function irisTo(x, y, color, cb) {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { cb(); return; }
+  const v = h('div', { class: 'iris' });
+  v.style.background = color; v.style.setProperty('--ix', Math.round(x) + 'px'); v.style.setProperty('--iy', Math.round(y) + 'px');
+  document.body.append(v); void v.offsetWidth; v.classList.add('on');
+  setTimeout(() => { try { cb(); } finally { v.classList.add('off'); setTimeout(() => v.remove(), 560); } }, 500);
+}
+
+// Stall von innen: Boxen mit Stroh, Namensschilder, Pferde und Tiere können herausgeholt werden
+function showStall() {
+  currentScreen = 'stall'; stallBusy = false; Sound.setScene('stall');
+  if (!S.stallSeen) { S.stallSeen = true; save(); }
+  const main = shell('Stall', false);
+  const nameOf = (id) => { const it = farmDef(id); return it.horse ? horseName(id) : itemName(it); };
+  const say = h('p', { class: 'st-say', id: 'stSay' }, '');
+  const tell = (t) => { say.textContent = t; say.classList.remove('pop'); void say.offsetWidth; say.classList.add('pop'); };
+  const scene = h('div', { class: 'stall-scene', id: 'stallScene' });
+  const dock = h('div', { class: 'stall-dock' });
+  const wrap = h('div', { class: 'stall-wrap', id: 'stallView' }, scene, say, dock);
+  main.append(wrap);
+  function draw() {
+    const inside = stallIds(), horses = inside.filter((id) => farmDef(id).horse), pets = inside.filter((id) => !farmDef(id).horse);
+    scene.innerHTML = '';
+    scene.append(h('div', { class: 'stall-wall' }), h('div', { class: 'stall-lamp', 'aria-hidden': 'true' }), h('div', { class: 'stall-window', 'aria-hidden': 'true' }));
+    const card = (id, i, isHorse) => {
+      const it = farmDef(id), nm = nameOf(id);
+      const art = isHorse ? horseSVG(Object.assign({}, HORSES[it.horse], horseOpts(id), { delay: 0 })) : it.art();
+      const pv = h('div', { class: 'st-pv ' + (isHorse ? (i % 2 ? 'sleep' : 'munch') : 'pet'), role: 'button', tabindex: 0, 'aria-label': nm, html: art });
+      const tap = () => {
+        pv.classList.remove('yay'); void pv.offsetWidth; pv.classList.add('yay');
+        if (isHorse) { (i % 2 ? Sound.snort : Sound.munch)(); tell(i % 2 ? `${nm} schläft ganz tief. Pssst! 💤` : `${nm} knabbert gemütlich Heu. 🌾`); if (!(i % 2) && Math.random() < 0.4) Sound.neigh(); }
+        else { (Sound[it.snd] || Sound.plop)(); tell(`${nm} kuschelt sich ins Stroh. 💕`); }
+        burst(pv, ['💕', '✨']);
+      };
+      pv.addEventListener('click', tap); pv.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); } });
+      const out = h('button', { class: 'st-out', 'data-out': id, 'aria-label': nm + ' herausholen', onclick: () => takeOut(id, card0) }, '🌿 Rausholen');
+      const card0 = h('div', { class: 'st-card ' + (isHorse ? 'horse' : 'pet'), 'data-box': id },
+        isHorse ? h('div', { class: 'st-plate' }, nm) : null, pv, isHorse && i % 2 ? h('span', { class: 'st-zzz', 'aria-hidden': 'true' }, '💤') : null,
+        isHorse ? null : h('div', { class: 'st-plate small' }, nm), out);
+      return card0;
+    };
+    if (inside.length) scene.append(h('div', { class: 'st-row' }, horses.map((id, i) => card(id, i, true)).concat(pets.map((id, i) => card(id, i, false)))));
+    if (!inside.length) scene.append(h('div', { class: 'st-empty', id: 'stallEmpty' }, h('b', null, 'Der Stall ist noch leer.'), h('span', null, 'Zieh auf dem Hof ein Pferd oder Tier auf die Scheune, oder tippe es an und wähle „In den Stall“. Dann darf es hier schlafen.')));
+    scene.append(h('div', { class: 'stall-straw', 'aria-hidden': 'true' }));
+    dock.innerHTML = '';
+    dock.append(h('span', { class: 'st-count', id: 'stallCount' }, `🐴 ${inside.length} im Stall`),
+      inside.length > 1 ? h('button', { class: 'bigbtn', id: 'stallAll', onclick: () => { Sound.tap(); [...inside].forEach((id) => { stallTake(id); stallOut.push(id); }); Sound.clipclop(); tell('Alle dürfen hinaus auf die Wiese! 🌿'); draw(); } }, '🌿 Alle rauslassen') : null,
+      h('button', { class: 'bigbtn primary', id: 'stallBack', onclick: () => leave() }, '🏡 Zum Hof'));
+  }
+  function takeOut(id, el) {
+    const nm = nameOf(id); stallTake(id); stallOut.push(id);
+    Sound.door(); (farmDef(id).horse ? Sound.clipclop : Sound.plop)();
+    el.classList.add('leaving'); tell(`${nm} wartet jetzt draußen auf dem Hof. 🌿`);
+    setTimeout(draw, 520);
+  }
+  function leave() {
+    if (stallBusy) return; stallBusy = true; Sound.door();
+    irisTo(window.innerWidth / 2, window.innerHeight * 0.7, '#cfe8b0', () => showStable({ from: 'stall' }));
+  }
+  draw();
+  const n = stallIds().length;
+  tell(n ? 'Hier drinnen ist es warm und gemütlich. Tippe ein Tier an – oder hole es wieder heraus. 🌾' : 'Der Stall wartet auf seine ersten Bewohner. 🌾');
+}
+
+function showStable(opts) {
+  opts = opts && typeof opts === 'object' && !opts.target ? opts : {};
+  currentScreen = 'stable'; stallBusy = false;
+  if (opts.from !== 'stall') stallOut = [];
   repairFarm();
   clearInterval(ambientTimer);
   const mood = farmMood(), season = seasonNow(), fest = festNow(), P = PAL[season];
@@ -5293,11 +5436,21 @@ function showStable() {
 
   // Feste Kulisse: Scheune, Baum, Teich mit Enten, Zaun, Gras, Blumen, Schmetterling
   const barn = at(add(h('div', { class: 'scen barn' + (S.barnOpen ? ' open' : ''), id: 'barn', html: barnSVG(mood === 'evening', has('wetterfahne'), season) })), 20, 64, 38);
+  const stallPill = () => { $$('.door-pill', barn).forEach((x) => x.remove()); const n = stallIds().length; if (n || !S.stallSeen) barn.append(h('span', { class: 'door-pill', id: 'stallPill' }, n ? `🐴 ${n} im Stall` : '🚪 Stall')); };
+  stallPill();
   barn.addEventListener('click', (e) => {
     if (e.target.closest('.fbox')) { Sound.sparkle(); fsay(pick(['Die roten Geranien duften so gut! 🌺', 'Blumenkästen wie in Bayern – wunderschön! 🌺'])); return; }
-    barn.classList.toggle('open'); S.barnOpen = barn.classList.contains('open'); save(); Sound.door();
-    if (S.barnOpen) setTimeout(() => { const n = callHorsesOut(true); fsay(n ? 'Alle Pferde kommen aus der Scheune! 🐴💕' : 'Die Scheune ist offen. Alle Pferde sind draußen auf der Koppel! 🐴'); }, 500);
+    enterStall();
   });
+  // Eintritt mit Türgeräusch und Kreis-Übergang
+  function enterStall() {
+    if (stallBusy) return; stallBusy = true;
+    barn.classList.add('open'); Sound.door();
+    const r = barn.getBoundingClientRect();
+    setTimeout(() => irisTo(r.left + r.width / 2, r.top + r.height * 0.8, '#f2dca0', () => showStall()), 450);
+  }
+  if (opts.from === 'stall') { S.barnOpen = false; barn.classList.add('open'); setTimeout(() => { barn.classList.remove('open'); Sound.door(); }, 900); }
+  else if (S.barnOpen) { S.barnOpen = false; barn.classList.remove('open'); save(); }
   at(add(h('div', { class: 'scen tree', html: treeSVG(season) })), 92, 64, 28);
   const maibaum = at(add(h('div', { class: 'scen maibaum', html: maibaumSVG() })), 41, 50.5, 3.8, 7);
   maibaum.addEventListener('click', () => { Sound.sparkle(); fsay('Der weiß-blaue Maibaum – das ist typisch bayerisch! 💙🤍'); });
@@ -5306,8 +5459,16 @@ function showStable() {
     const w = e.target.closest('.hwin'), fb = e.target.closest('.fbox');
     if (w) { w.classList.toggle('lit'); Sound.pop(); fsay(pick(['Die Bäuerin winkt aus dem Fenster! 👋', 'Hier riecht es nach frischem Apfelstrudel! 🥧', 'Im Fenster sitzt eine Katze und blinzelt. 🐈'])); }
     else if (fb) { Sound.sparkle(); fsay(pick(['Die roten Geranien blühen so schön! 🌺', 'Auf dem Balkon summen die Bienen in den Blumen. 🐝'])); }
-    else { Sound.tap(); fsay('Das ist das Bauernhaus mit dem Holzbalkon. 🏡'); }
+    else enterHouse();
   });
+  function enterHouse() {
+    if (stallBusy) return; stallBusy = true; Sound.door();
+    S.houseSeen = true; save();
+    const dr = $('.hdoor', house) || house, r = dr.getBoundingClientRect();
+    fsay('Die Tür geht auf – willkommen im Reiterstübchen! 🛋️');
+    setTimeout(() => irisTo(r.left + r.width / 2, r.top + r.height * 0.6, '#fbe3bd', () => { if (core.shop && core.shop.showRoom) core.shop.showRoom({ from: 'hof' }); else showStable(); }), 350);
+  }
+  if (!S.houseSeen) house.append(h('span', { class: 'door-pill house', id: 'housePill' }, '🚪 Stübchen'));
   const wood = at(add(h('div', { class: 'scen woodpile', html: woodpileSVG(season) })), 58.5, 57, 7.5);
   wood.addEventListener('click', () => { Sound.hop(); fsay('Brennholz für den Winter – schön ordentlich gestapelt! 🪵'); });
   [[47, 54.5, 9, '#8a5a3c', false], [53.5, 51.5, 7, '#4a3a32', true]].forEach(([x, y, sc, spot, flip], i) => {
@@ -5399,6 +5560,7 @@ function showStable() {
     let n = 0;
     $$('.item.horse-item', farm).forEach((el) => {
       const id = el.dataset.id, p = S.pos[id] || itemOf(id);
+      if (el.classList.contains('walkout')) return;
       if (farmHiddenZone(itemOf(id), p.x, p.y) || !isVisible(el)) { walkTo(el, id, farmFreeSpot(id)); n++; }
       else if (all && p.y < 70 && p.x < 46) { walkTo(el, id, farmFreeSpot(id)); n++; }
     });
@@ -5419,15 +5581,36 @@ function showStable() {
   }
   function renderScene(newId) {
     $$('.item', farm).forEach((x) => x.remove());
-    ITEMS.forEach((it) => { if (!it.onLuna && !it.onBarn && !it.fly && has(it.id)) placeItem(it, it.id === newId); });
-    placeItem(itemOf('luna'), false);
+    const inside = stallIds();
+    ITEMS.forEach((it) => { if (!it.onLuna && !it.onBarn && !it.fly && has(it.id) && !inside.includes(it.id)) placeItem(it, it.id === newId); });
+    if (!inside.includes('luna')) placeItem(itemOf('luna'), false);
     if (riderState().set) placeItem(RIDER_ITEM, false);
     renderRosBadge();
     flies.slice(1).forEach((f) => f.remove()); flies.length = 1;
     if (has('schmetterlinge')) ['#f7a8c4', '#b5dcff', '#d6c2f2'].forEach((c, i) => addFly(c, i + 1));
     if (newId === 'wetterfahne') { barn.innerHTML = barnSVG(mood === 'evening', true, seasonNow()); }
+    stallPill();
     renderTray();
   }
+  function overBarn(x, y) { const r = barn.getBoundingClientRect(); return x > r.left + r.width * 0.12 && x < r.right - r.width * 0.12 && y > r.top + r.height * 0.3 && y < r.bottom + 6; }
+  // Pferd oder Tier geht ins Stall-Tor und bleibt drinnen, bis es wieder herausgeholt wird
+  function putInStall(el, id) {
+    const it = itemOf(id); if (!el || !stallable(it) || stallBusy) return;
+    $$('.dress-btn', farm).forEach((b) => b.remove());
+    const br = barn.getBoundingClientRect(), fr = farm.getBoundingClientRect();
+    const tx = (br.left + br.width / 2 - fr.left) / fr.width * 100, ty = (br.top + br.height * 0.95 - fr.top) / fr.height * 100;
+    stallPut(id); // sofort gespeichert
+    barn.classList.add('open'); Sound.door();
+    el.classList.remove('settle', 'dragging'); el.classList.add('to-stall');
+    requestAnimationFrame(() => { el.style.left = tx + '%'; el.style.top = ty + '%'; el.style.zIndex = 4000; });
+    const nm = it.horse ? horseName(id) : itemName(it);
+    setTimeout(() => {
+      el.remove(); barn.classList.remove('open'); Sound.door(); stallPill();
+      if (it.horse) Sound.snort(); else (Sound[it.snd] || Sound.plop)();
+      if (currentScreen === 'stable') fsay(`${nm} ist jetzt im Stall und ruht sich aus. 🌾 Tipp auf die Scheune, dann kannst du ${it.horse ? 'sie' : 'es'} besuchen.`);
+    }, 800);
+  }
+  function stallBtn(id) { return h('button', { 'data-stall': id, 'aria-label': 'In den Stall', onclick: (e) => { e.stopPropagation(); Sound.tap(); const el = $(`.item[data-id="${id}"]`, farm); putInStall(el, id); } }, '🏠 In den Stall'); }
   function makeDraggable(el, it) {
     let st = null;
     el.addEventListener('pointerdown', (e) => {
@@ -5442,6 +5625,7 @@ function showStable() {
       const dx = e.clientX - st.cx, dy = e.clientY - st.cy;
       if (!st.moved && Math.hypot(dx, dy) < 10) return;
       if (!st.moved) { st.moved = true; el.classList.add('dragging'); }
+      if (stallable(it)) barn.classList.toggle('drop-hot', overBarn(e.clientX, e.clientY));
       const [ymin, ymax] = it.sky ? [18, 52] : [54, 100];
       const x = Math.max(3, Math.min(97, st.x + (dx / st.w) * 100));
       const y = Math.max(ymin, Math.min(ymax, st.y + (dy / st.hh) * 100));
@@ -5450,6 +5634,8 @@ function showStable() {
     });
     const end = () => {
       if (!st) return;
+      barn.classList.remove('drop-hot');
+      if (st.moved && st.nx != null && stallable(it) && st.lx != null && overBarn(st.lx, st.ly)) { putInStall(el, it.id); st = null; return; }
       if (st.moved && st.nx != null) {
         // sanftes Einrasten auf ein 2%-Raster
         const x = Math.round(st.nx / 2) * 2, y = Math.round(st.ny / 2) * 2;
@@ -5465,8 +5651,8 @@ function showStable() {
       } else tapItem(el, it);
       st = null;
     };
-    el.addEventListener('pointerup', end);
-    el.addEventListener('pointercancel', () => { if (st && st.moved) end(); st = null; el.classList.remove('dragging'); });
+    el.addEventListener('pointerup', (e) => { if (st) { st.lx = e.clientX; st.ly = e.clientY; } end(); });
+    el.addEventListener('pointercancel', () => { if (st && st.moved) end(); st = null; el.classList.remove('dragging'); barn.classList.remove('drop-hot'); });
   }
   function react(el, cls) { el.classList.remove('yay', 'munch', 'bounce'); void el.offsetWidth; el.classList.add(cls); }
   function renderRosBadge() {
@@ -5506,7 +5692,7 @@ function showStable() {
     } else {
       react(el, 'bounce'); (Sound[it.snd] || Sound.plop)();
       fsay(pick([`Schön: ${itemName(it)}!`, `${itemName(it)} – gefällt mir!`]));
-      if (it.id === 'hund' && !playing) playBtn(el);
+      if (stallable(it)) animalBtn(el, it);
     }
   }
   // Wer bekommt das neue Teil?
@@ -5565,8 +5751,8 @@ function showStable() {
     const b = h('div', { class: 'dress-btn multi' },
       h('button', { 'data-dress': id, 'aria-label': 'Anziehen', onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); openWardrobe(id); } }, '🎀 Anziehen'),
       ADULT.includes(id) ? h('button', { 'data-ridehorse': id, onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); const go = () => showRide(id, 'frei'); if (!riderState().set) openRiderSetup(go, true); else go(); } }, '🏇 Reiten')
-        : h('small', { class: 'foalnote' }, 'Noch zu klein zum Reiten 💕'));
-    b.style.left = Math.min(fr.width - 90, Math.max(70, r.left - fr.left + r.width / 2)) + 'px'; b.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
+        : h('small', { class: 'foalnote' }, 'Noch zu klein zum Reiten 💕'), stallBtn(id));
+    b.style.left = Math.min(fr.width - 210, Math.max(210, r.left - fr.left + r.width / 2)) + 'px'; b.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
     b.addEventListener('pointerdown', (e) => e.stopPropagation());
     farm.append(b); setTimeout(() => b.remove(), readMs('', 5000));
   }
@@ -5693,13 +5879,15 @@ function showStable() {
     const r = el.getBoundingClientRect();
     for (let i = 0; i < 3; i++) { const f = add(h('span', { class: 'feather' }, '🪶')); f.style.left = (r.left + r.width * Math.random()) + 'px'; f.style.top = (r.top + r.height * 0.4) + 'px'; f.style.setProperty('--dx', rand(-40, 40) + 'px'); setTimeout(() => f.remove(), 1600); }
   }
-  function playBtn(el) {
+  function animalBtn(el, it) {
     $$('.dress-btn', farm).forEach((b) => b.remove());
     const r = el.getBoundingClientRect(), fr = farm.getBoundingClientRect();
-    const b = h('button', { class: 'dress-btn', id: 'dogPlay', 'aria-label': 'Spielen', onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); dogPlay(); } }, has('huehner') ? '🐾 Fang!' : '🐾 Lauf!');
-    b.style.left = Math.min(fr.width - 90, Math.max(70, r.left - fr.left + r.width / 2)) + 'px'; b.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
+    const b = h('div', { class: 'dress-btn multi' },
+      it.id === 'hund' && !playing ? h('button', { id: 'dogPlay', 'aria-label': 'Spielen', onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); dogPlay(); } }, has('huehner') ? '🐾 Fang!' : '🐾 Lauf!') : null,
+      stallBtn(it.id));
+    b.style.left = Math.min(fr.width - 150, Math.max(150, r.left - fr.left + r.width / 2)) + 'px'; b.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
     b.addEventListener('pointerdown', (e) => e.stopPropagation());
-    farm.append(b); setTimeout(() => b.remove(), readMs('', 5000));
+    farm.append(b); setTimeout(() => b.remove(), readMs('', 6000));
   }
 
   // Laden (Schublade)
@@ -5761,6 +5949,13 @@ function showStable() {
     fsay(`Juhu! ${itemName(it)} ist jetzt auf unserem Hof! 🎉`);
   }
   renderScene();
+  if (opts.from === 'stall' && stallOut.length) {
+    const q = stallOut.slice(); stallOut = [];
+    q.forEach((id, i) => { const el = $(`.item[data-id="${id}"]`, farm), p = S.pos[id]; if (!el || !p) return;
+      el.style.transition = 'none'; el.style.left = '20%'; el.style.top = '66%'; el.style.zIndex = 4000; void el.offsetWidth; el.style.transition = '';
+      setTimeout(() => { walkTo(el, id, p); if (i === 0) Sound.clipclop(); }, 500 + i * 250); });
+    setTimeout(() => { if (currentScreen === 'stable') fsay(q.length === 1 ? 'Da kommt es heraus! Willkommen draußen auf dem Hof. 🌿' : 'Alle kommen aus dem Stall getrabt! 🐴💕'); }, 700);
+  }
   // Sicherheitsnetz: falls ein Pferd trotzdem verdeckt ist, kommt es von selbst heraus
   setTimeout(() => { if (currentScreen === 'stable' && callHorsesOut(false)) fsay(`${LN()} ist wieder da! 🐴💕`); }, 700);
   if (!riderState().set && !S.riderAsked && !window.__noRiderPrompt) { S.riderAsked = true; save(); setTimeout(() => { if (currentScreen === 'stable') openRiderSetup((f) => { renderScene(); if (f) riderHello(); }, true); }, 1600); }
@@ -6439,8 +6634,8 @@ function showParent() {
       h('button', { class: 'smallbtn danger', id: 'resetYes', onclick: () => { const keep = { childName: S.childName, bday: S.bday, setupSeen: true, sound: S.sound, volume: S.volume, audio: S.audio }; S = Object.assign(defaultState(), keep); save(); showHome(); } }, 'Ja, alles zurücksetzen'),
       h('button', { class: 'smallbtn', onclick: () => { confirmBox.style.display = 'none'; } }, 'Abbrechen')));
   wrap.append(h('div', { class: 'panel' }, h('h3', null, 'Einstellungen'), vol, readRow,
-    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Pferdehof aufräumen', h('small', null, 'Stellt alle Pferde und Sachen wieder an ihren Startplatz. Gekauftes, Hufeisen und Fortschritt bleiben.')),
-      h('button', { class: 'smallbtn', id: 'tidyFarm', onclick: (e) => { S.pos = {}; save(); Sound.sparkle(); e.target.textContent = 'Aufgeräumt ✓'; } }, '🧹 Pferdehof aufräumen')),
+    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Pferdehof aufräumen', h('small', null, 'Stellt alle Pferde und Sachen wieder an ihren Startplatz und lässt alle Tiere aus dem Stall. Gekauftes, Hufeisen und Fortschritt bleiben.')),
+      h('button', { class: 'smallbtn', id: 'tidyFarm', onclick: (e) => { S.pos = {}; S.stall = []; save(); Sound.sparkle(); e.target.textContent = 'Aufgeräumt ✓'; } }, '🧹 Pferdehof aufräumen')),
     h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Zurücksetzen', h('small', null, 'Setzt alles auf den Anfang.')),
       h('button', { class: 'smallbtn danger', id: 'resetBtn', onclick: () => { confirmBox.style.display = 'block'; } }, 'Alles zurücksetzen')), confirmBox,
     h('div', { class: 'note', style: { textAlign: 'left', marginTop: '8px' } }, 'Alle Daten bleiben nur auf diesem Gerät (localStorage). Keine Werbung, kein Tracking, keine Internetverbindung nötig.')));
@@ -6451,11 +6646,11 @@ function showParent() {
 ensureGear();
 repairFarm();
 const core = { $, $$, h, rand, pick, shuffle, range, sleep, MINUS, Sound, svgw, shade, ART, TREASURE, MAPART, WORLDS, WORLD_ART, GAMES, GAME_IDS, GAME_TYPES, TYPE_LABELS, BAG_USE, BAG_EXTRA, ITEMS, HORSES, HORSE_ORDER, DEFAULT_HNAMES, ADULT, CLOTHES, WCATS, SHOE, SHOE_EMPTY, ROUND, PRAISE,
-  get S() { return S; }, save, burst, confetti, numPad, softNo, glowBtn, clearMarks, miniTen, say, shell, sheet, kidName, withName, LN, horseName, horseSVG, lunaSVG, has, updateCounters, showHome, showStable, showMap, startGame, stationLevel, gearOf, horseOpts, ownedHorses, itemName, riderSVG, riderLook, flowerSVG, rideHorseSVG, adultHorses, hooks: {}, app, seasonNow, festNow, farmFreeSpot, advDone, inventory, openRosettes, addRosette, rosetteSVG, riderState, hasCloth, cloth, riderName, openCloset, sheet, GEAR, giveGear, ensureGear, pondSVG, HAY, FEST_SAY,
+  get S() { return S; }, save, burst, confetti, numPad, softNo, glowBtn, clearMarks, miniTen, say, shell, sheet, kidName, withName, LN, horseName, horseSVG, lunaSVG, has, updateCounters, showHome, showStable, showStall, irisTo, showMap, startGame, stationLevel, gearOf, horseOpts, ownedHorses, itemName, riderSVG, riderLook, flowerSVG, rideHorseSVG, adultHorses, hooks: {}, app, seasonNow, festNow, farmFreeSpot, advDone, inventory, openRosettes, addRosette, rosetteSVG, riderState, hasCloth, cloth, riderName, openCloset, sheet, GEAR, giveGear, ensureGear, pondSVG, HAY, FEST_SAY,
   get currentScreen() { return currentScreen; }, set currentScreen(v) { currentScreen = v; } };
 window.__pmCore = core;
 (window.PM_MODS || []).forEach((fn) => { try { fn(core); } catch (e) { console.error('Modul-Fehler', e); } });
-window.__pm = { get state() { return S; }, core, repairFarm, startGame, showStable, showHome, showParent, showMap, openStation, showWorldDone, showStationReward, openBag, showTravel, WORLDS, advSetWorld, stationLevel, save, version: APP_VERSION };
+window.__pm = { get state() { return S; }, core, repairFarm, startGame, showStable, showStall, showHome, showParent, showMap, openStation, showWorldDone, showStationReward, openBag, showTravel, WORLDS, advSetWorld, stationLevel, save, version: APP_VERSION };
 showHome();
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !window.__PM_SINGLE__) {
   // Neue Version installiert → neu laden, aber nie mitten in einer Aufgabe (sonst beim nächsten Besuch der Startseite)

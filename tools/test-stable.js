@@ -50,6 +50,7 @@ const START = { v: 1, setupSeen: true, riderAsked: true, shoes: 60, carrots: 4, 
       ok(/Schneeflocke/.test(await p.textContent('#farmSay')), 'Pferd antippen → reagiert mit Namen');
       await p.click('#barn', { timeout: 90000 }); await sleep(200);
       ok(await p.$('#barn.open') !== null, 'Scheunentor öffnet sich');
+      await p.waitForSelector('#stallView', { timeout: 10000 }); await sleep(400); await p.click('#stallBack'); await p.waitForSelector('#scene .item[data-id="pony"]', { timeout: 10000 }); await sleep(1200); // Scheune antippen führt in den Stall und zurück
       const fed0 = (await p.evaluate(() => window.__pm.state)).fed || 0;
       const c = async (sel) => { const r = await (await p.$(sel)).boundingBox(); return [r.x + r.width / 2, r.y + r.height / 2]; };
       let [x0, y0] = await c('#toolCarrot'); let [x1, y1] = await c('.item[data-id="pony"]');
@@ -69,9 +70,9 @@ const START = { v: 1, setupSeen: true, riderAsked: true, shoes: 60, carrots: 4, 
       await p.reload(); await p.waitForSelector('.tile'); await p.click('.tile[data-game="stall"]'); await p.waitForSelector('.farm'); await sleep(300);
       const s2 = await p.evaluate(() => window.__pm.state);
       const heuLeft = await p.$eval('.item[data-id="heu"]', (e) => e.style.left);
-      ok(s2.owned.length === 7 && s2.horseNames.wolke === 'Schneeflocke' && s2.gear.luna.blanket === '#b9e2a0' && s2.barnOpen === true && heuLeft === pos.x + '%' && s2.fed === fed0 + 1,
-        'Nach Reload: Sachen, Namen, Deckenfarbe, Tor, Positionen, Füttern erhalten');
-      ok(await p.$('#barn.open') !== null && await p.$('.item[data-id="regenbogen"]') !== null, 'Hof nach Reload korrekt aufgebaut');
+      ok(s2.owned.length === 7 && s2.horseNames.wolke === 'Schneeflocke' && s2.gear.luna.blanket === '#b9e2a0' && s2.barnOpen === false && heuLeft === pos.x + '%' && s2.fed === fed0 + 1,
+        'Nach Reload: Sachen, Namen, Deckenfarbe, Tor zu (Stall betreten schließt es wieder), Positionen, Füttern erhalten');
+      ok(await p.$('#barn') !== null && await p.$('#barn.open') === null && await p.$('.item[data-id="regenbogen"]') !== null, 'Hof nach Reload korrekt aufgebaut');
       if (mood === 'evening') ok((await p.$$('.farm .star')).length > 0, 'Abendstimmung: Sterne funkeln');
       await p.click('#homeBtn'); await p.waitForSelector('.tile');
       ok(errors.length === 0, 'Keine JS-Fehler ' + errors.join(' | '));

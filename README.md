@@ -60,9 +60,15 @@ Pferde blinzeln, wedeln mit dem Schweif, nicken – und freuen sich beim Antippe
 ziehen zum Füttern und Putzen. Mit Hufeisen Sachen holen (Heu, Wassertrog, Blumen, Pferdedecke in Farben, Pony,
 Fohlen, Schimmel, Rappe, Reitplatz mit Hindernissen, Wetterfahne, Kätzchen im Heu, Regenbogen …) und per
 Drag & Drop platzieren. Pferde können eigene Namen bekommen (nur lokal).
-Pferde und Sachen lassen sich nicht hinter die Scheune (oder anders unsichtbar) stellen: Wer auf die Scheune gezogen wird,
-trabt fröhlich wieder heraus. Beim Öffnen der Scheune kommen alle Pferde heraus. Ungültige oder verdeckte gespeicherte
+Pferde und Sachen lassen sich nicht hinter die Scheune (oder anders unsichtbar) stellen. Ungültige oder verdeckte gespeicherte
 Positionen werden beim Start automatisch auf einen freien Platz auf der Koppel verschoben (nur die Position; sonst bleibt alles).
+
+### Bauernhaus & Stall von innen 🏠🐴 (neu in Version 4)
+- **Bauernhaus antippen** → Reiterstübchen von innen (dieselbe Ansicht wie „Stübchen“ im Hofladen: gekaufte Möbel sind da und lassen sich verschieben). Der Weg zurück: „Zum Hof“ (oder 🏠 oben links). Weicher Kreis-Übergang, Türgeräusch und ruhige Stübchen-Stimmung. Auf dem Hof zeigen ein Tür-Glühen und ein kleines „🚪 Stübchen“-Schild, dass das Haus antippbar ist (das Schild verschwindet, sobald es einmal benutzt wurde).
+- **Stall (Scheune) antippen** → Stall von innen mit Stroh und Boxen: Alle Pferde und Tiere, die „im Stall“ sind, stehen dort (Pferde mit Namensschild, kauend oder schlafend, Tiere ruhig atmend; leise Stallgeräusche: Wiehern, Kauen). Mit „Rausholen“ geht jedes Tier wieder hinaus und steht dann beim Scheunentor; „Alle rauslassen“ holt alle. Antippen eines Tieres im Stall ist ein kleiner Streichler.
+- **Auf dem Hof**: Ein Pferd oder Tier auf die Scheune ziehen, oder antippen und „In den Stall“ wählen. Es bleibt drin, bis es herausgeholt wird.
+- **Fehler behoben („rennen sofort wieder raus“)**: Die Scheune zählte als „unsichtbarer“ Platz; beim Loslassen schob die Hof-Reparatur das Tier auf einen freien Platz und es trabte wieder heraus. Jetzt wird es stattdessen im Spielstand als „im Stall“ gespeichert (`stall`-Liste) und gar nicht mehr auf dem Hof gezeichnet.
+- **Speicherung/Migration**: Neues, ergänzendes Feld `stall` (Liste von Tier-IDs) plus `houseSeen`/`stallSeen`. Alte Spielstände ohne diese Felder laden unverändert (Stall leer = alle draußen). Nur gekaufte Tiere werden angezeigt; Unbekanntes wird ignoriert, aber nicht gelöscht. „Pferdehof aufräumen“ im Elternbereich lässt außerdem alle aus dem Stall und setzt die Positionen zurück (Gekauftes bleibt).
 
 ## Reiterin, Kleiderschrank & Turnier 🏇
 - Eigene Reiterin-Figur (Hautton, Haarfarbe, Frisur beim ersten Mal wählbar; Name kommt aus dem Elternbereich, sonst „Reiterin").
@@ -112,7 +118,7 @@ Falsche Antwort: nur ein sehr leiser neutraler Ton. Auf dem iPad startet der Ton
 
 ## Elternbereich
 „Für Eltern“ → Knopf 3 Sekunden halten. Fortschritt je Spiel und Aufgabentyp, knifflige Aufgaben, Stufen anpassen,
-Ton, Zurücksetzen, **Abenteuer-Fortschritt je Welt** mit „Hierhin springen“ / „Von vorn“, **Pferdehof aufräumen** (nur Positionen), Überblick über **Hofladen, Album und Mini-Spiele** (was gekauft wurde, ausgegebene Hufeisen, Sticker, Pflegerunden) sowie Stufen und Aufgabentypen der neuen bis-100-Spiele. Optional: **Name des Kindes** und **Geburtstag (Tag/Monat)** – nur lokal gespeichert;
+Ton, Zurücksetzen, **Abenteuer-Fortschritt je Welt** mit „Hierhin springen“ / „Von vorn“, **Pferdehof aufräumen** (Positionen zurücksetzen, alle aus dem Stall lassen; Gekauftes bleibt), Überblick über **Hofladen, Album und Mini-Spiele** (was gekauft wurde, ausgegebene Hufeisen, Sticker, Pflegerunden) sowie Stufen und Aufgabentypen der neuen bis-100-Spiele. Optional: **Name des Kindes** und **Geburtstag (Tag/Monat)** – nur lokal gespeichert;
 ohne Angaben spricht die App neutral („du“) und zeigt keinen Geburtstags-Countdown.
 
 ## Aufs iPad
@@ -126,10 +132,11 @@ python3 -m http.server 8000             # http://127.0.0.1:8000/
 URL=http://127.0.0.1:8000/index.html node tools/test.js webkit        # E2E-Test (playwright)
 URL=http://127.0.0.1:8000/index.html node tools/test-stable.js        # Pferdehof in 4 iPad-Größen
 URL=http://127.0.0.1:8000/index.html node tools/test-adventure.js     # Abenteuer in 4 iPad-Größen, offline, Migration
-URL=http://127.0.0.1:8000/index.html node tools/test-farmfix.js       # Reparatur „Pferd hinter der Scheune“, Spielstand bleibt
+URL=http://127.0.0.1:8000/index.html node tools/test-farmfix.js       # Reparatur „Pferd hinter der Scheune“, Stall statt Hinauslaufen, Spielstand bleibt
 URL=http://127.0.0.1:8000/index.html node tools/test-bis100.js webkit # 7 Spiele bis 100 in 4 iPad-Größen
 URL=http://127.0.0.1:8000/index.html node tools/test-world6.js        # Welt 6: Station, Tor, Geschenk, Einhorn-Freischaltung
 URL=http://127.0.0.1:8000/index.html node tools/test-shop.js webkit   # Hofladen, Pflege, Stübchen, Album, Mini-Spiele, Migration, Offline
+URL=http://127.0.0.1:8000/index.html node tools/test-haus-stall.js webkit # Haus/Stall von innen, bleibt im Stall (60 s), Neuladen, Migration
 URL=http://127.0.0.1:8000/index.html node tools/test-audio.js         # Klang-Engine (ohne Hörprobe)
 python3 tools/build-single.py           # erzeugt pferde-mathe.html (alles in einer Datei)
 ```

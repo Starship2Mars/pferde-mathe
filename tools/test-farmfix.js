@@ -36,16 +36,19 @@ const strip = (s) => { const c = JSON.parse(JSON.stringify(s)); delete c.pos; re
       return [e.dataset.id, n, r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight]; }));
     ok(vis.length === 5, 'Alle 5 Pferde sind auf dem Hof: ' + vis.map((v) => v[0]).join(', '));
     ok(vis.every((v) => v[1] >= 1 && v[2]), 'Alle Pferde sichtbar und antippbar: ' + JSON.stringify(vis));
-    // erneut auf die Scheune ziehen → trabt heraus
+    // auf die Scheune ziehen → Pferd kommt in den Stall (früher: trabte sofort wieder heraus) und bleibt dort
     const lb = await (await p.$('.item[data-id="luna"]')).boundingBox(); const bb = await (await p.$('#barn')).boundingBox();
     await p.mouse.move(lb.x + lb.width / 2, lb.y + lb.height * 0.6); await p.mouse.down();
-    await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height * 0.5, { steps: 15 }); await p.mouse.up(); await sleep(2000);
+    await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height * 0.5, { steps: 15 }); await p.mouse.up(); await sleep(2500);
+    const inS = await p.evaluate(() => JSON.parse(localStorage.getItem('pferde-mathe-v1')).stall);
+    ok(inS.includes('luna') && await p.$('.item[data-id="luna"]') === null, 'Pferd auf die Scheune gezogen → bleibt im Stall (nicht mehr auf dem Hof)');
+    ok(/Stall/.test(await p.textContent('#farmSay')), 'Freundlicher Satz: "' + (await p.textContent('#farmSay')).slice(0, 60) + '…"');
+    // Scheune antippen → Stall von innen, Pferd herausholen → wieder sichtbar auf dem Hof
+    await p.click('#barn', { position: { x: bb.width / 2, y: bb.height * 0.75 } }); await p.waitForSelector('#stallView', { timeout: 8000 }); await sleep(600);
+    ok(await p.$('.st-card[data-box="luna"]') !== null, 'Scheune antippen: Stall von innen zeigt Luna');
+    await p.click('[data-out="luna"]'); await sleep(700); await p.click('#stallBack'); await p.waitForSelector('#scene .item[data-id="luna"]', { timeout: 8000 }); await sleep(2800);
     const lv = await p.evaluate(() => { const e = document.querySelector('.item[data-id="luna"]'); const r = e.getBoundingClientRect(); const h = document.elementFromPoint(r.left + r.width / 2, r.top + r.height * 0.55); return !!(h && e.contains(h)); });
-    ok(lv, 'Pferd auf die Scheune gezogen → trabt wieder heraus und bleibt sichtbar');
-    ok(/Scheune/.test(await p.textContent('#farmSay')), 'Freundlicher Satz: "' + (await p.textContent('#farmSay')).slice(0, 60) + '…"');
-    // Scheune öffnen → „Alle Pferde rauslassen“
-    await p.click('#barn', { position: { x: bb.width / 2, y: bb.height * 0.75 } }); await sleep(1200);
-    ok(/Pferde/.test(await p.textContent('#farmSay')), 'Scheune öffnen: Pferde werden gerufen');
+    ok(lv, 'Luna wieder herausgeholt: draußen, sichtbar und antippbar');
     await p.reload(); await p.waitForSelector('#advTile');
     const re = await p.evaluate(() => JSON.parse(localStorage.getItem('pferde-mathe-v1')));
     ok(re.shoes === 37 && re.carrots === 11 && re.owned.length === 11 && re.horseNames.luna === 'Sternchen' && Object.keys(re.adv.done).length === 8 && re.skills.rechnen.level === 5, 'Nach Neuladen: Hufeisen 37, Karotten 11, 11 Sachen, Namen, 8 Sterne, Stufen erhalten');
