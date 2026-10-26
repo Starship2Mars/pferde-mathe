@@ -36,7 +36,7 @@ const START = { v: 1, setupSeen: true, riderAsked: true, shoes: 60, carrots: 4, 
       }
       const st = await p.evaluate(() => window.__pm.state);
       ok(st.owned.length === 7 && st.shoes === 60 - (3 + 6 + 12 + 10 + 8 + 10 + 6), 'Sieben Sachen gekauft: ' + st.owned.join(','));
-      ok(await p.$('.barn .vane') !== null, 'Wetterfahne auf der Scheune');
+      if (await p.$('.farm.photo')) ok(await p.$('.farm.photo .scen.barn') !== null, 'Foto-Hof: Scheunen-Tippfläche vorhanden (Wetterfahne ist im Foto)'); else ok(await p.$('.barn .vane') !== null, 'Wetterfahne auf der Scheune');
       const items = await p.$$eval('.farm .item', (els) => els.map((e) => { const r = e.getBoundingClientRect(); return { id: e.dataset.id, cx: r.x + r.width / 2, cy: r.y + r.height / 2 }; }));
       ok(items.length === 6 && items.every((i) => i.cx > 0 && i.cx < innerWidthSafe(w) && i.cy > 0 && i.cy < hh), 'Alle Sachen im Bild: ' + items.map((i) => i.id).join(','));
       // Decke färben, Namen geben

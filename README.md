@@ -143,3 +143,16 @@ python3 tools/build-single.py           # erzeugt pferde-mathe.html (alles in ei
 
 Dateien: `app.js` (Kern), `audio.js` (Klang), `art.js` (Illustrationen), `bis100.js` (7 Spiele + Welt 6), `shop.js` (Hofladen, Pflege, Stübchen, Album), `minigames.js` (3 Mini-Spiele),
 `style.css` / `polish.css` / `shop.css`. Module hängen sich über `window.PM_MODS` an den Kern; ohne Build-Schritt. `sw.js` listet alle Dateien (Cache-Version bei jeder Änderung anheben).
+
+## Echt-Optik (Schritt 1: Pferdehof)
+
+Der Pferdehof, der Stall und das Reiterstübchen sehen jetzt fotorealistisch aus statt gezeichnet.
+
+- **Hintergründe** (`img/bg/`): Hof quer und hoch, Stall innen, Stübchen innen (WebP, höchstens 1152 px breit).
+  Scheune und Bauernhaus sind Teil des Fotos; darüber liegen unsichtbare Tippflächen (`echt.js`, Tabelle `ZONES`), die per `layoutPhoto()` zum Bild passen.
+  Ändert man das Hintergrundbild, müssen die Anteile in `ZONES` neu gemessen werden.
+- **Tiere** (`img/tiere/`): freigestellte Foto-Sprites (WebP mit Transparenz) für alle Pferde und Tiere. Sattel, Schleife, Decke und Krone werden als SVG über den Sprite gelegt (`<name>-m.webp` ist die Silhouette dafür). Laufrichtung = CSS-Spiegelung, Schatten und Bewegung = CSS.
+- **Neue Tiere erzeugen:** `tools/make-sprite.py` (Bild vor grünem Hintergrund -> Sprite; braucht Python mit PIL, numpy, scipy).
+- **Zurück zum Zeichentrick-Look:** `?cartoon` an die Adresse hängen (z. B. `index.html?cartoon`).
+- **Noch Zeichentrick:** Deko auf dem Hof (Heu, Blumen, Trog, Reitplatz, Saison-Deko), Möbel im Stübchen, Karte, Ausritt und Minispiele. Jahreszeiten/Abend ändern das Foto nur über Farbfilter.
+- Der Service Worker legt alle Bilder in den Cache (`pferde-mathe-v12-echt-optik`), die App läuft weiter offline. `pferde-mathe.html` (Einzeldatei, `python3 tools/build-single.py`) enthält die Bilder als data:-Adressen (ca. 2,7 MB).

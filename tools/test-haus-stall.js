@@ -77,7 +77,7 @@ async function dragTo(p, sel, target) {
     first = false;
 
     // ---- Stall innen
-    await p.click('#barn', { position: { x: 60, y: 90 } }); await p.waitForSelector('#stallView', { timeout: 8000 }); await sleep(900);
+    await p.click('#barn', { position: { x: 200, y: 150 } }); await p.waitForSelector('#stallView', { timeout: 8000 }); await sleep(900);
     ok(await p.$('.st-card[data-box="wolke"]') !== null && await p.$('.st-card[data-box="hund"]') !== null, 'Stall innen: Schimmel und Hund sind zu sehen');
     ok(/Schneeflocke/.test(await p.textContent('.st-card[data-box="wolke"] .st-plate')), 'Namensschild des Pferdes: Schneeflocke');
     ok(await p.$('.st-card .st-pv.munch, .st-card .st-pv.sleep') !== null, 'Pferd hat Ruhe-Animation (kauen oder schlafen)');
