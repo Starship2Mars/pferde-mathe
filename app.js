@@ -33,7 +33,7 @@ const APP_VERSION = '3.0.0';
 const GAME_IDS = ['paare', 'haeuser', 'rechnen', 'familie', 'strahl', 'zehner', 'h100', 'ze', 's100', 'nb', 'vgl', 'ord', 'pm100'];
 function defaultState() {
   return {
-    v: 1, childName: '', bday: null, setupSeen: false, horseNames: {}, blanket: '', brushed: 0, barnOpen: false, adv: { done: {}, last: null }, shoes: 0, carrots: 0, totalShoes: 0, owned: [], pos: {}, sound: true, volume: 0.5, audio: { music: true, sfx: true, amb: true, mvol: 0.5 }, rev: 3, stickers: {}, room: { pos: {} }, care: {}, minis: {}, wardrobe: {},
+    v: 1, childName: '', bday: null, setupSeen: false, horseNames: {}, blanket: '', brushed: 0, barnOpen: false, adv: { done: {}, last: null }, shoes: 0, carrots: 0, totalShoes: 0, owned: [], pos: {}, sound: true, volume: 0.5, audio: { music: true, sfx: true, amb: true, mvol: 0.5 }, rev: 3, stickers: {}, room: { pos: {} }, care: {}, minis: {}, wardrobe: {}, stall: [], houseSeen: false, stallSeen: false,
     skills: Object.fromEntries(GAME_IDS.map((id) => [id, { level: 1, rounds: 0, recent: [] }])),
     stats: {}, trouble: [], fed: 0, bones: 2, grain: 2, treats: 2, created: Date.now()
   };
@@ -53,6 +53,7 @@ function load() {
       if (!nested.room.pos || typeof nested.room.pos !== 'object') nested.room.pos = {};
       const out = Object.assign(d, s, nested, { skills, adv: Object.assign({ done: {}, last: null }, s.adv || {}) });
       if (!Array.isArray(out.owned)) out.owned = [];
+      out.stall = Array.isArray(out.stall) ? out.stall.filter((x, i, a) => typeof x === 'string' && a.indexOf(x) === i) : []; // alte Spielstände: leerer Stall
       out.rev = 3;
       return out;
     }
@@ -1171,6 +1172,7 @@ function barnSVG(evening, vane, season) {
   <rect x="92" y="200" width="136" height="106" fill="${evening ? '#d9a06a' : '#8a5a36'}"/>
   <ellipse cx="160" cy="300" rx="58" ry="20" fill="#f2d16b"/><path d="M110 296 l8 -12 l6 12 l8 -14 l6 14 l8 -10 l6 10 l8 -13 l6 13 l8 -11 l6 11 l8 -12 l6 12" stroke="#e1bd52" stroke-width="3" fill="none"/>
   ${evening ? '<circle cx="160" cy="226" r="9" fill="#ffd27a"/><circle cx="160" cy="226" r="22" fill="#ffd27a" opacity=".3" class="glow-win"/>' : ''}
+  <ellipse class="door-glow" cx="160" cy="256" rx="82" ry="62" fill="#ffe9a0"/>
   <g class="door dl"><rect x="92" y="200" width="68" height="106" fill="#d29a64"/><path d="M96 204 L156 302 M156 204 L96 302" stroke="#f6e6c8" stroke-width="8"/><rect x="92" y="200" width="68" height="106" fill="none" stroke="#f6e6c8" stroke-width="6"/></g>
   <g class="door dr"><rect x="160" y="200" width="68" height="106" fill="#d29a64"/><path d="M164 204 L224 302 M224 204 L164 302" stroke="#f6e6c8" stroke-width="8"/><rect x="160" y="200" width="68" height="106" fill="none" stroke="#f6e6c8" stroke-width="6"/></g>
   <circle cx="160" cy="104" r="15" fill="#f2c14e"/><path d="M153 96 C150 108 154 113 160 113 C166 113 170 108 167 96" stroke="#c9962a" stroke-width="3.5" fill="none"/>
@@ -1270,7 +1272,7 @@ function farmhouseSVG(evening, season, fest) {
     <g class="fbox">${geraniums(36, 146, 100, 7)}${geraniums(150, 146, 100, 7)}${geraniums(264, 146, 100, 7)}</g>
     <rect x="44" y="179" width="312" height="117" fill="#fbf7ee"/><rect x="44" y="179" width="312" height="10" fill="#ece3d3"/>
     ${lowWin(70, 0)}${lowWin(132, 1)}${lowWin(258, 2)}${lowWin(318, 3)}
-    <path d="M184 296 V222 a16 16 0 0 1 32 0 V296 Z" fill="#8a5a36"/><path d="M200 206 V296" stroke="#6c4528" stroke-width="2"/><circle cx="194" cy="262" r="2.4" fill="#e5b84a"/>
+    <ellipse class="door-glow" cx="200" cy="250" rx="40" ry="64" fill="#ffe9a0"/><g class="hdoor"><rect x="150" y="196" width="100" height="104" fill="transparent"/><path d="M184 296 V222 a16 16 0 0 1 32 0 V296 Z" fill="#8a5a36"/></g><path d="M200 206 V296" stroke="#6c4528" stroke-width="2"/><circle cx="194" cy="262" r="2.4" fill="#e5b84a"/>
     <path d="M200 194 c-3 -6 -12 -3 -8 4 l8 7 l8 -7 c4 -7 -5 -10 -8 -4z" fill="#f48fb1"/>
     <rect x="176" y="292" width="48" height="8" rx="2" fill="#c9bfb4"/><rect x="36" y="294" width="328" height="6" rx="3" fill="#d9cfc4"/>
     ${snow ? '<path d="M30 150 h340 v-4 q-170 -8 -340 0 z" fill="#fff"/>' : ''}
@@ -1387,8 +1389,9 @@ function farmValid(it, p) {
 }
 function farmFreeSpot(selfId) {
   // belegte Plätze: alle aufgestellten Sachen/Pferde (gespeicherte Position oder Startplatz)
+  const inside = stallIds();
   const ids = ['luna'].concat((S.owned || []).filter((id) => { const it = farmDef(id); return it && !it.onLuna && !it.onBarn && !it.fly && !it.sky && !it.flat; }));
-  const taken = ids.filter((k) => k !== selfId).map((k) => { const q = S.pos && S.pos[k]; const d = farmDef(k); return q && Number.isFinite(+q.x) && Number.isFinite(+q.y) ? q : { x: d.x, y: d.y }; });
+  const taken = ids.filter((k) => k !== selfId && !inside.includes(k)).map((k) => { const q = S.pos && S.pos[k]; const d = farmDef(k); return q && Number.isFinite(+q.x) && Number.isFinite(+q.y) ? q : { x: d.x, y: d.y }; });
   let best = FARM_FREE[0], bestD = -1;
   for (const [x, y] of FARM_FREE) {
     const d = taken.reduce((m, q) => Math.min(m, Math.hypot(q.x - x, (q.y - y) * 1.6)), 999);
@@ -1406,6 +1409,28 @@ function farmSafePos(id, x, y) {
   if (farmHiddenZone(it, p.x, p.y)) return farmFreeSpot(id);
   return p;
 }
+// ---- Stall: Pferde und Tiere, die drinnen wohnen (S.stall = Liste von IDs) ----
+const ANIMAL_IDS = ['kaetzchen', 'huehner', 'hund', 'ziege'];
+function stallable(it) { return !!it && !it.sky && !it.flat && !it.rider && !!(it.horse || it.animal || ANIMAL_IDS.includes(it.id)); }
+function stallIds() { // nur gültige, vorhandene Bewohner; unbekannte Einträge bleiben in S.stall unberührt
+  return (Array.isArray(S.stall) ? S.stall : []).filter((id, i, a) => a.indexOf(id) === i && (id === 'luna' || has(id)) && stallable(farmDef(id)));
+}
+function inStall(id) { return stallIds().includes(id); }
+function stallPut(id) { if (!Array.isArray(S.stall)) S.stall = []; if (!S.stall.includes(id)) S.stall.push(id); save(); }
+const DOOR_SPOTS = [[30, 76], [22, 79], [37, 80], [14, 82], [28, 86], [41, 86], [20, 90], [34, 93]];
+function stallTake(id) { // raus aus dem Stall: Platz nahe am Scheunentor, möglichst frei
+  S.stall = (Array.isArray(S.stall) ? S.stall : []).filter((x) => x !== id);
+  const inside = stallIds();
+  const ids = ['luna'].concat((S.owned || []).filter((k) => { const d = farmDef(k); return d && !d.onLuna && !d.onBarn && !d.fly && !d.sky && !d.flat; })).filter((k) => k !== id && !inside.includes(k));
+  const taken = ids.map((k) => { const q = S.pos && S.pos[k]; const d = farmDef(k); return q && Number.isFinite(+q.x) && Number.isFinite(+q.y) ? q : { x: d.x, y: d.y }; });
+  let best = DOOR_SPOTS[0], bestD = -1;
+  for (const sp of DOOR_SPOTS) { const d = taken.reduce((m, q) => Math.min(m, Math.hypot(q.x - sp[0], (q.y - sp[1]) * 1.6)), 999); if (d >= 10) { best = sp; bestD = d; break; } if (d > bestD) { bestD = d; best = sp; } }
+  if (!S.pos || typeof S.pos !== 'object') S.pos = {};
+  S.pos[id] = { x: best[0], y: best[1] }; save();
+  return S.pos[id];
+}
+let stallOut = [];
+let stallBusy = false;
 function repairFarm() { // läuft bei jedem Start und beim Öffnen des Pferdehofs
   if (!S.pos || typeof S.pos !== 'object' || Array.isArray(S.pos)) { S.pos = {}; }
   let changed = false;
@@ -1812,8 +1837,75 @@ function showRide(horseId, mode) {
   rideRaf = requestAnimationFrame(frame);
 }
 
-function showStable() {
-  currentScreen = 'stable';
+// Kreis-Übergang: ein Kreis wächst von der Tür aus, dahinter wird der neue Raum aufgebaut
+function irisTo(x, y, color, cb) {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { cb(); return; }
+  const v = h('div', { class: 'iris' });
+  v.style.background = color; v.style.setProperty('--ix', Math.round(x) + 'px'); v.style.setProperty('--iy', Math.round(y) + 'px');
+  document.body.append(v); void v.offsetWidth; v.classList.add('on');
+  setTimeout(() => { try { cb(); } finally { v.classList.add('off'); setTimeout(() => v.remove(), 560); } }, 500);
+}
+
+// Stall von innen: Boxen mit Stroh, Namensschilder, Pferde und Tiere können herausgeholt werden
+function showStall() {
+  currentScreen = 'stall'; stallBusy = false; Sound.setScene('stall');
+  if (!S.stallSeen) { S.stallSeen = true; save(); }
+  const main = shell('Stall', false);
+  const nameOf = (id) => { const it = farmDef(id); return it.horse ? horseName(id) : itemName(it); };
+  const say = h('p', { class: 'st-say', id: 'stSay' }, '');
+  const tell = (t) => { say.textContent = t; say.classList.remove('pop'); void say.offsetWidth; say.classList.add('pop'); };
+  const scene = h('div', { class: 'stall-scene', id: 'stallScene' });
+  const dock = h('div', { class: 'stall-dock' });
+  const wrap = h('div', { class: 'stall-wrap', id: 'stallView' }, scene, say, dock);
+  main.append(wrap);
+  function draw() {
+    const inside = stallIds(), horses = inside.filter((id) => farmDef(id).horse), pets = inside.filter((id) => !farmDef(id).horse);
+    scene.innerHTML = '';
+    scene.append(h('div', { class: 'stall-wall' }), h('div', { class: 'stall-lamp', 'aria-hidden': 'true' }), h('div', { class: 'stall-window', 'aria-hidden': 'true' }));
+    const card = (id, i, isHorse) => {
+      const it = farmDef(id), nm = nameOf(id);
+      const art = isHorse ? horseSVG(Object.assign({}, HORSES[it.horse], horseOpts(id), { delay: 0 })) : it.art();
+      const pv = h('div', { class: 'st-pv ' + (isHorse ? (i % 2 ? 'sleep' : 'munch') : 'pet'), role: 'button', tabindex: 0, 'aria-label': nm, html: art });
+      const tap = () => {
+        pv.classList.remove('yay'); void pv.offsetWidth; pv.classList.add('yay');
+        if (isHorse) { (i % 2 ? Sound.snort : Sound.munch)(); tell(i % 2 ? `${nm} schläft ganz tief. Pssst! 💤` : `${nm} knabbert gemütlich Heu. 🌾`); if (!(i % 2) && Math.random() < 0.4) Sound.neigh(); }
+        else { (Sound[it.snd] || Sound.plop)(); tell(`${nm} kuschelt sich ins Stroh. 💕`); }
+        burst(pv, ['💕', '✨']);
+      };
+      pv.addEventListener('click', tap); pv.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); } });
+      const out = h('button', { class: 'st-out', 'data-out': id, 'aria-label': nm + ' herausholen', onclick: () => takeOut(id, card0) }, '🌿 Rausholen');
+      const card0 = h('div', { class: 'st-card ' + (isHorse ? 'horse' : 'pet'), 'data-box': id },
+        isHorse ? h('div', { class: 'st-plate' }, nm) : null, pv, isHorse && i % 2 ? h('span', { class: 'st-zzz', 'aria-hidden': 'true' }, '💤') : null,
+        isHorse ? null : h('div', { class: 'st-plate small' }, nm), out);
+      return card0;
+    };
+    if (inside.length) scene.append(h('div', { class: 'st-row' }, horses.map((id, i) => card(id, i, true)).concat(pets.map((id, i) => card(id, i, false)))));
+    if (!inside.length) scene.append(h('div', { class: 'st-empty', id: 'stallEmpty' }, h('b', null, 'Der Stall ist noch leer.'), h('span', null, 'Zieh auf dem Hof ein Pferd oder Tier auf die Scheune, oder tippe es an und wähle „In den Stall“. Dann darf es hier schlafen.')));
+    scene.append(h('div', { class: 'stall-straw', 'aria-hidden': 'true' }));
+    dock.innerHTML = '';
+    dock.append(h('span', { class: 'st-count', id: 'stallCount' }, `🐴 ${inside.length} im Stall`),
+      inside.length > 1 ? h('button', { class: 'bigbtn', id: 'stallAll', onclick: () => { Sound.tap(); [...inside].forEach((id) => { stallTake(id); stallOut.push(id); }); Sound.clipclop(); tell('Alle dürfen hinaus auf die Wiese! 🌿'); draw(); } }, '🌿 Alle rauslassen') : null,
+      h('button', { class: 'bigbtn primary', id: 'stallBack', onclick: () => leave() }, '🏡 Zum Hof'));
+  }
+  function takeOut(id, el) {
+    const nm = nameOf(id); stallTake(id); stallOut.push(id);
+    Sound.door(); (farmDef(id).horse ? Sound.clipclop : Sound.plop)();
+    el.classList.add('leaving'); tell(`${nm} wartet jetzt draußen auf dem Hof. 🌿`);
+    setTimeout(draw, 520);
+  }
+  function leave() {
+    if (stallBusy) return; stallBusy = true; Sound.door();
+    irisTo(window.innerWidth / 2, window.innerHeight * 0.7, '#cfe8b0', () => showStable({ from: 'stall' }));
+  }
+  draw();
+  const n = stallIds().length;
+  tell(n ? 'Hier drinnen ist es warm und gemütlich. Tippe ein Tier an – oder hole es wieder heraus. 🌾' : 'Der Stall wartet auf seine ersten Bewohner. 🌾');
+}
+
+function showStable(opts) {
+  opts = opts && typeof opts === 'object' && !opts.target ? opts : {};
+  currentScreen = 'stable'; stallBusy = false;
+  if (opts.from !== 'stall') stallOut = [];
   repairFarm();
   clearInterval(ambientTimer);
   const mood = farmMood(), season = seasonNow(), fest = festNow(), P = PAL[season];
@@ -1855,11 +1947,21 @@ function showStable() {
 
   // Feste Kulisse: Scheune, Baum, Teich mit Enten, Zaun, Gras, Blumen, Schmetterling
   const barn = at(add(h('div', { class: 'scen barn' + (S.barnOpen ? ' open' : ''), id: 'barn', html: barnSVG(mood === 'evening', has('wetterfahne'), season) })), 20, 64, 38);
+  const stallPill = () => { $$('.door-pill', barn).forEach((x) => x.remove()); const n = stallIds().length; if (n || !S.stallSeen) barn.append(h('span', { class: 'door-pill', id: 'stallPill' }, n ? `🐴 ${n} im Stall` : '🚪 Stall')); };
+  stallPill();
   barn.addEventListener('click', (e) => {
     if (e.target.closest('.fbox')) { Sound.sparkle(); fsay(pick(['Die roten Geranien duften so gut! 🌺', 'Blumenkästen wie in Bayern – wunderschön! 🌺'])); return; }
-    barn.classList.toggle('open'); S.barnOpen = barn.classList.contains('open'); save(); Sound.door();
-    if (S.barnOpen) setTimeout(() => { const n = callHorsesOut(true); fsay(n ? 'Alle Pferde kommen aus der Scheune! 🐴💕' : 'Die Scheune ist offen. Alle Pferde sind draußen auf der Koppel! 🐴'); }, 500);
+    enterStall();
   });
+  // Eintritt mit Türgeräusch und Kreis-Übergang
+  function enterStall() {
+    if (stallBusy) return; stallBusy = true;
+    barn.classList.add('open'); Sound.door();
+    const r = barn.getBoundingClientRect();
+    setTimeout(() => irisTo(r.left + r.width / 2, r.top + r.height * 0.8, '#f2dca0', () => showStall()), 450);
+  }
+  if (opts.from === 'stall') { S.barnOpen = false; barn.classList.add('open'); setTimeout(() => { barn.classList.remove('open'); Sound.door(); }, 900); }
+  else if (S.barnOpen) { S.barnOpen = false; barn.classList.remove('open'); save(); }
   at(add(h('div', { class: 'scen tree', html: treeSVG(season) })), 92, 64, 28);
   const maibaum = at(add(h('div', { class: 'scen maibaum', html: maibaumSVG() })), 41, 50.5, 3.8, 7);
   maibaum.addEventListener('click', () => { Sound.sparkle(); fsay('Der weiß-blaue Maibaum – das ist typisch bayerisch! 💙🤍'); });
@@ -1868,8 +1970,16 @@ function showStable() {
     const w = e.target.closest('.hwin'), fb = e.target.closest('.fbox');
     if (w) { w.classList.toggle('lit'); Sound.pop(); fsay(pick(['Die Bäuerin winkt aus dem Fenster! 👋', 'Hier riecht es nach frischem Apfelstrudel! 🥧', 'Im Fenster sitzt eine Katze und blinzelt. 🐈'])); }
     else if (fb) { Sound.sparkle(); fsay(pick(['Die roten Geranien blühen so schön! 🌺', 'Auf dem Balkon summen die Bienen in den Blumen. 🐝'])); }
-    else { Sound.tap(); fsay('Das ist das Bauernhaus mit dem Holzbalkon. 🏡'); }
+    else enterHouse();
   });
+  function enterHouse() {
+    if (stallBusy) return; stallBusy = true; Sound.door();
+    S.houseSeen = true; save();
+    const dr = $('.hdoor', house) || house, r = dr.getBoundingClientRect();
+    fsay('Die Tür geht auf – willkommen im Reiterstübchen! 🛋️');
+    setTimeout(() => irisTo(r.left + r.width / 2, r.top + r.height * 0.6, '#fbe3bd', () => { if (core.shop && core.shop.showRoom) core.shop.showRoom({ from: 'hof' }); else showStable(); }), 350);
+  }
+  if (!S.houseSeen) house.append(h('span', { class: 'door-pill house', id: 'housePill' }, '🚪 Stübchen'));
   const wood = at(add(h('div', { class: 'scen woodpile', html: woodpileSVG(season) })), 58.5, 57, 7.5);
   wood.addEventListener('click', () => { Sound.hop(); fsay('Brennholz für den Winter – schön ordentlich gestapelt! 🪵'); });
   [[47, 54.5, 9, '#8a5a3c', false], [53.5, 51.5, 7, '#4a3a32', true]].forEach(([x, y, sc, spot, flip], i) => {
@@ -1961,6 +2071,7 @@ function showStable() {
     let n = 0;
     $$('.item.horse-item', farm).forEach((el) => {
       const id = el.dataset.id, p = S.pos[id] || itemOf(id);
+      if (el.classList.contains('walkout')) return;
       if (farmHiddenZone(itemOf(id), p.x, p.y) || !isVisible(el)) { walkTo(el, id, farmFreeSpot(id)); n++; }
       else if (all && p.y < 70 && p.x < 46) { walkTo(el, id, farmFreeSpot(id)); n++; }
     });
@@ -1981,15 +2092,36 @@ function showStable() {
   }
   function renderScene(newId) {
     $$('.item', farm).forEach((x) => x.remove());
-    ITEMS.forEach((it) => { if (!it.onLuna && !it.onBarn && !it.fly && has(it.id)) placeItem(it, it.id === newId); });
-    placeItem(itemOf('luna'), false);
+    const inside = stallIds();
+    ITEMS.forEach((it) => { if (!it.onLuna && !it.onBarn && !it.fly && has(it.id) && !inside.includes(it.id)) placeItem(it, it.id === newId); });
+    if (!inside.includes('luna')) placeItem(itemOf('luna'), false);
     if (riderState().set) placeItem(RIDER_ITEM, false);
     renderRosBadge();
     flies.slice(1).forEach((f) => f.remove()); flies.length = 1;
     if (has('schmetterlinge')) ['#f7a8c4', '#b5dcff', '#d6c2f2'].forEach((c, i) => addFly(c, i + 1));
     if (newId === 'wetterfahne') { barn.innerHTML = barnSVG(mood === 'evening', true, seasonNow()); }
+    stallPill();
     renderTray();
   }
+  function overBarn(x, y) { const r = barn.getBoundingClientRect(); return x > r.left + r.width * 0.12 && x < r.right - r.width * 0.12 && y > r.top + r.height * 0.3 && y < r.bottom + 6; }
+  // Pferd oder Tier geht ins Stall-Tor und bleibt drinnen, bis es wieder herausgeholt wird
+  function putInStall(el, id) {
+    const it = itemOf(id); if (!el || !stallable(it) || stallBusy) return;
+    $$('.dress-btn', farm).forEach((b) => b.remove());
+    const br = barn.getBoundingClientRect(), fr = farm.getBoundingClientRect();
+    const tx = (br.left + br.width / 2 - fr.left) / fr.width * 100, ty = (br.top + br.height * 0.95 - fr.top) / fr.height * 100;
+    stallPut(id); // sofort gespeichert
+    barn.classList.add('open'); Sound.door();
+    el.classList.remove('settle', 'dragging'); el.classList.add('to-stall');
+    requestAnimationFrame(() => { el.style.left = tx + '%'; el.style.top = ty + '%'; el.style.zIndex = 4000; });
+    const nm = it.horse ? horseName(id) : itemName(it);
+    setTimeout(() => {
+      el.remove(); barn.classList.remove('open'); Sound.door(); stallPill();
+      if (it.horse) Sound.snort(); else (Sound[it.snd] || Sound.plop)();
+      if (currentScreen === 'stable') fsay(`${nm} ist jetzt im Stall und ruht sich aus. 🌾 Tipp auf die Scheune, dann kannst du ${it.horse ? 'sie' : 'es'} besuchen.`);
+    }, 800);
+  }
+  function stallBtn(id) { return h('button', { 'data-stall': id, 'aria-label': 'In den Stall', onclick: (e) => { e.stopPropagation(); Sound.tap(); const el = $(`.item[data-id="${id}"]`, farm); putInStall(el, id); } }, '🏠 In den Stall'); }
   function makeDraggable(el, it) {
     let st = null;
     el.addEventListener('pointerdown', (e) => {
@@ -2004,6 +2136,7 @@ function showStable() {
       const dx = e.clientX - st.cx, dy = e.clientY - st.cy;
       if (!st.moved && Math.hypot(dx, dy) < 10) return;
       if (!st.moved) { st.moved = true; el.classList.add('dragging'); }
+      if (stallable(it)) barn.classList.toggle('drop-hot', overBarn(e.clientX, e.clientY));
       const [ymin, ymax] = it.sky ? [18, 52] : [54, 100];
       const x = Math.max(3, Math.min(97, st.x + (dx / st.w) * 100));
       const y = Math.max(ymin, Math.min(ymax, st.y + (dy / st.hh) * 100));
@@ -2012,6 +2145,8 @@ function showStable() {
     });
     const end = () => {
       if (!st) return;
+      barn.classList.remove('drop-hot');
+      if (st.moved && st.nx != null && stallable(it) && st.lx != null && overBarn(st.lx, st.ly)) { putInStall(el, it.id); st = null; return; }
       if (st.moved && st.nx != null) {
         // sanftes Einrasten auf ein 2%-Raster
         const x = Math.round(st.nx / 2) * 2, y = Math.round(st.ny / 2) * 2;
@@ -2027,8 +2162,8 @@ function showStable() {
       } else tapItem(el, it);
       st = null;
     };
-    el.addEventListener('pointerup', end);
-    el.addEventListener('pointercancel', () => { if (st && st.moved) end(); st = null; el.classList.remove('dragging'); });
+    el.addEventListener('pointerup', (e) => { if (st) { st.lx = e.clientX; st.ly = e.clientY; } end(); });
+    el.addEventListener('pointercancel', () => { if (st && st.moved) end(); st = null; el.classList.remove('dragging'); barn.classList.remove('drop-hot'); });
   }
   function react(el, cls) { el.classList.remove('yay', 'munch', 'bounce'); void el.offsetWidth; el.classList.add(cls); }
   function renderRosBadge() {
@@ -2068,7 +2203,7 @@ function showStable() {
     } else {
       react(el, 'bounce'); (Sound[it.snd] || Sound.plop)();
       fsay(pick([`Schön: ${itemName(it)}!`, `${itemName(it)} – gefällt mir!`]));
-      if (it.id === 'hund' && !playing) playBtn(el);
+      if (stallable(it)) animalBtn(el, it);
     }
   }
   // Wer bekommt das neue Teil?
@@ -2127,8 +2262,8 @@ function showStable() {
     const b = h('div', { class: 'dress-btn multi' },
       h('button', { 'data-dress': id, 'aria-label': 'Anziehen', onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); openWardrobe(id); } }, '🎀 Anziehen'),
       ADULT.includes(id) ? h('button', { 'data-ridehorse': id, onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); const go = () => showRide(id, 'frei'); if (!riderState().set) openRiderSetup(go, true); else go(); } }, '🏇 Reiten')
-        : h('small', { class: 'foalnote' }, 'Noch zu klein zum Reiten 💕'));
-    b.style.left = Math.min(fr.width - 90, Math.max(70, r.left - fr.left + r.width / 2)) + 'px'; b.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
+        : h('small', { class: 'foalnote' }, 'Noch zu klein zum Reiten 💕'), stallBtn(id));
+    b.style.left = Math.min(fr.width - 210, Math.max(210, r.left - fr.left + r.width / 2)) + 'px'; b.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
     b.addEventListener('pointerdown', (e) => e.stopPropagation());
     farm.append(b); setTimeout(() => b.remove(), readMs('', 5000));
   }
@@ -2255,13 +2390,15 @@ function showStable() {
     const r = el.getBoundingClientRect();
     for (let i = 0; i < 3; i++) { const f = add(h('span', { class: 'feather' }, '🪶')); f.style.left = (r.left + r.width * Math.random()) + 'px'; f.style.top = (r.top + r.height * 0.4) + 'px'; f.style.setProperty('--dx', rand(-40, 40) + 'px'); setTimeout(() => f.remove(), 1600); }
   }
-  function playBtn(el) {
+  function animalBtn(el, it) {
     $$('.dress-btn', farm).forEach((b) => b.remove());
     const r = el.getBoundingClientRect(), fr = farm.getBoundingClientRect();
-    const b = h('button', { class: 'dress-btn', id: 'dogPlay', 'aria-label': 'Spielen', onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); dogPlay(); } }, has('huehner') ? '🐾 Fang!' : '🐾 Lauf!');
-    b.style.left = Math.min(fr.width - 90, Math.max(70, r.left - fr.left + r.width / 2)) + 'px'; b.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
+    const b = h('div', { class: 'dress-btn multi' },
+      it.id === 'hund' && !playing ? h('button', { id: 'dogPlay', 'aria-label': 'Spielen', onclick: (e) => { e.stopPropagation(); Sound.tap(); b.remove(); dogPlay(); } }, has('huehner') ? '🐾 Fang!' : '🐾 Lauf!') : null,
+      stallBtn(it.id));
+    b.style.left = Math.min(fr.width - 150, Math.max(150, r.left - fr.left + r.width / 2)) + 'px'; b.style.top = Math.max(70, r.top - fr.top - 6) + 'px';
     b.addEventListener('pointerdown', (e) => e.stopPropagation());
-    farm.append(b); setTimeout(() => b.remove(), readMs('', 5000));
+    farm.append(b); setTimeout(() => b.remove(), readMs('', 6000));
   }
 
   // Laden (Schublade)
@@ -2323,6 +2460,13 @@ function showStable() {
     fsay(`Juhu! ${itemName(it)} ist jetzt auf unserem Hof! 🎉`);
   }
   renderScene();
+  if (opts.from === 'stall' && stallOut.length) {
+    const q = stallOut.slice(); stallOut = [];
+    q.forEach((id, i) => { const el = $(`.item[data-id="${id}"]`, farm), p = S.pos[id]; if (!el || !p) return;
+      el.style.transition = 'none'; el.style.left = '20%'; el.style.top = '66%'; el.style.zIndex = 4000; void el.offsetWidth; el.style.transition = '';
+      setTimeout(() => { walkTo(el, id, p); if (i === 0) Sound.clipclop(); }, 500 + i * 250); });
+    setTimeout(() => { if (currentScreen === 'stable') fsay(q.length === 1 ? 'Da kommt es heraus! Willkommen draußen auf dem Hof. 🌿' : 'Alle kommen aus dem Stall getrabt! 🐴💕'); }, 700);
+  }
   // Sicherheitsnetz: falls ein Pferd trotzdem verdeckt ist, kommt es von selbst heraus
   setTimeout(() => { if (currentScreen === 'stable' && callHorsesOut(false)) fsay(`${LN()} ist wieder da! 🐴💕`); }, 700);
   if (!riderState().set && !S.riderAsked && !window.__noRiderPrompt) { S.riderAsked = true; save(); setTimeout(() => { if (currentScreen === 'stable') openRiderSetup((f) => { renderScene(); if (f) riderHello(); }, true); }, 1600); }
@@ -3001,8 +3145,8 @@ function showParent() {
       h('button', { class: 'smallbtn danger', id: 'resetYes', onclick: () => { const keep = { childName: S.childName, bday: S.bday, setupSeen: true, sound: S.sound, volume: S.volume, audio: S.audio }; S = Object.assign(defaultState(), keep); save(); showHome(); } }, 'Ja, alles zurücksetzen'),
       h('button', { class: 'smallbtn', onclick: () => { confirmBox.style.display = 'none'; } }, 'Abbrechen')));
   wrap.append(h('div', { class: 'panel' }, h('h3', null, 'Einstellungen'), vol, readRow,
-    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Pferdehof aufräumen', h('small', null, 'Stellt alle Pferde und Sachen wieder an ihren Startplatz. Gekauftes, Hufeisen und Fortschritt bleiben.')),
-      h('button', { class: 'smallbtn', id: 'tidyFarm', onclick: (e) => { S.pos = {}; save(); Sound.sparkle(); e.target.textContent = 'Aufgeräumt ✓'; } }, '🧹 Pferdehof aufräumen')),
+    h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Pferdehof aufräumen', h('small', null, 'Stellt alle Pferde und Sachen wieder an ihren Startplatz und lässt alle Tiere aus dem Stall. Gekauftes, Hufeisen und Fortschritt bleiben.')),
+      h('button', { class: 'smallbtn', id: 'tidyFarm', onclick: (e) => { S.pos = {}; S.stall = []; save(); Sound.sparkle(); e.target.textContent = 'Aufgeräumt ✓'; } }, '🧹 Pferdehof aufräumen')),
     h('div', { class: 'prow' }, h('div', { class: 'pn' }, 'Zurücksetzen', h('small', null, 'Setzt alles auf den Anfang.')),
       h('button', { class: 'smallbtn danger', id: 'resetBtn', onclick: () => { confirmBox.style.display = 'block'; } }, 'Alles zurücksetzen')), confirmBox,
     h('div', { class: 'note', style: { textAlign: 'left', marginTop: '8px' } }, 'Alle Daten bleiben nur auf diesem Gerät (localStorage). Keine Werbung, kein Tracking, keine Internetverbindung nötig.')));
@@ -3013,11 +3157,11 @@ function showParent() {
 ensureGear();
 repairFarm();
 const core = { $, $$, h, rand, pick, shuffle, range, sleep, MINUS, Sound, svgw, shade, ART, TREASURE, MAPART, WORLDS, WORLD_ART, GAMES, GAME_IDS, GAME_TYPES, TYPE_LABELS, BAG_USE, BAG_EXTRA, ITEMS, HORSES, HORSE_ORDER, DEFAULT_HNAMES, ADULT, CLOTHES, WCATS, SHOE, SHOE_EMPTY, ROUND, PRAISE,
-  get S() { return S; }, save, burst, confetti, numPad, softNo, glowBtn, clearMarks, miniTen, say, shell, sheet, kidName, withName, LN, horseName, horseSVG, lunaSVG, has, updateCounters, showHome, showStable, showMap, startGame, stationLevel, gearOf, horseOpts, ownedHorses, itemName, riderSVG, riderLook, flowerSVG, rideHorseSVG, adultHorses, hooks: {}, app, seasonNow, festNow, farmFreeSpot, advDone, inventory, openRosettes, addRosette, rosetteSVG, riderState, hasCloth, cloth, riderName, openCloset, sheet, GEAR, giveGear, ensureGear, pondSVG, HAY, FEST_SAY,
+  get S() { return S; }, save, burst, confetti, numPad, softNo, glowBtn, clearMarks, miniTen, say, shell, sheet, kidName, withName, LN, horseName, horseSVG, lunaSVG, has, updateCounters, showHome, showStable, showStall, irisTo, showMap, startGame, stationLevel, gearOf, horseOpts, ownedHorses, itemName, riderSVG, riderLook, flowerSVG, rideHorseSVG, adultHorses, hooks: {}, app, seasonNow, festNow, farmFreeSpot, advDone, inventory, openRosettes, addRosette, rosetteSVG, riderState, hasCloth, cloth, riderName, openCloset, sheet, GEAR, giveGear, ensureGear, pondSVG, HAY, FEST_SAY,
   get currentScreen() { return currentScreen; }, set currentScreen(v) { currentScreen = v; } };
 window.__pmCore = core;
 (window.PM_MODS || []).forEach((fn) => { try { fn(core); } catch (e) { console.error('Modul-Fehler', e); } });
-window.__pm = { get state() { return S; }, core, repairFarm, startGame, showStable, showHome, showParent, showMap, openStation, showWorldDone, showStationReward, openBag, showTravel, WORLDS, advSetWorld, stationLevel, save, version: APP_VERSION };
+window.__pm = { get state() { return S; }, core, repairFarm, startGame, showStable, showStall, showHome, showParent, showMap, openStation, showWorldDone, showStationReward, openBag, showTravel, WORLDS, advSetWorld, stationLevel, save, version: APP_VERSION };
 showHome();
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !window.__PM_SINGLE__) {
   // Neue Version installiert → neu laden, aber nie mitten in einer Aufgabe (sonst beim nächsten Besuch der Startseite)

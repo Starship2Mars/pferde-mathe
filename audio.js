@@ -326,6 +326,7 @@
   const AMB = {
     hof: (o) => o.mood === 'evening' ? [['cricket', 5, 12], ['owl', 14, 30], ['wind', 10, 22], ['whistle', 30, 60]] : [['chirp', 3, 8], ['cowbell', 11, 24], ['moo', 22, 45], ['wind', 9, 20], o.season === 'winter' ? ['sleigh', 60, 90] : ['buzz', 14, 30], ['clipclop', 40, 80], ['quack', 20, 40]],
     room: () => [['fire', 2, 4], ['clock', 6, 10], ['wind', 25, 45]],
+    stall: () => [['munch', 5, 10], ['snort', 9, 18], ['swish', 7, 14], ['neigh', 24, 46], ['clipclop', 16, 30]],
     w0: () => [['chirp', 2.5, 6], ['buzz', 10, 18], ['wind', 14, 26]],
     w1: () => [['cluck', 8, 16], ['chirp', 4, 9], ['baa', 22, 40], ['wind', 10, 20]],
     w2: () => [['wave', 4, 6], ['gull', 7, 16], ['splash', 18, 32], ['wind', 14, 26]],
@@ -340,7 +341,7 @@
     // leises Hintergrundrauschen (Wind / Wellen / Bach) als Dauerton
     const bed = E.c.createBufferSource(); bed.buffer = E.noise(); bed.loop = true;
     const f = E.c.createBiquadFilter(), g = E.c.createGain(), l = E.c.createOscillator(), lg = E.c.createGain();
-    const profile = { w2: [500, 0.06, 0.12], w3: [2200, 0.03, 0.25], hof: [380, 0.018, 0.08], room: [200, 0.006, 0.05] }[key] || [420, 0.015, 0.07];
+    const profile = { w2: [500, 0.06, 0.12], w3: [2200, 0.03, 0.25], hof: [380, 0.018, 0.08], room: [200, 0.006, 0.05], stall: [240, 0.007, 0.06] }[key] || [420, 0.015, 0.07];
     f.type = key === 'w3' ? 'highpass' : 'bandpass'; f.frequency.value = profile[0]; f.Q.value = 0.5; g.gain.value = profile[1];
     l.frequency.value = profile[2]; lg.gain.value = profile[1] * 0.7; l.connect(lg); lg.connect(g.gain);
     bed.connect(f); f.connect(g); g.connect(E.ambBus); bed.start(); l.start();
@@ -357,6 +358,7 @@
       case 'home': return { music: 'home', amb: null };
       case 'hof': return { music: o.mood === 'evening' ? 'hofNacht' : 'hof', amb: 'hof' };
       case 'room': return { music: 'stube', amb: 'room' };
+      case 'stall': return { music: 'stube', amb: 'stall' };
       case 'map': return { music: 'w' + (o.world || 0), amb: 'w' + (o.world || 0) };
       case 'game': return { music: o.world != null ? 'w' + o.world : 'lern', amb: null };
       case 'ride': return { music: 'ritt', amb: null };

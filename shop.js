@@ -75,7 +75,7 @@ FARMDEF.forEach(([id, name, price, art, s, o]) => {
 // Tiere
 const PETS = [['hase', 'Hase Hoppel', 40, A.hase, 8, 'squeak'], ['lamm', 'Lamm Wölkchen', 50, A.lamm, 10, 'baa'], ['esel', 'Esel Grauchen', 75, A.esel, 14, 'ihaa'], ['eichhoernchen', 'Eichhörnchen Nuss', 45, A.eichhoernchen, 7, 'squeak'], ['eule', 'Eule Uhu', 55, A.eule, 8, 'owl'], ['igel', 'Igel Stachel', 35, A.igel, 8, 'squeak']];
 PETS.forEach(([id, name, price, art, s, snd]) => {
-  ITEMS.push({ id, name, price, art: () => art(), s, x: 50, y: 92, nu: true, snd });
+  ITEMS.push({ id, name, price, art: () => art(), s, x: 50, y: 92, nu: true, snd, animal: true });
   add({ id, cat: 'tiere', kind: 'farm', name, price, art, sub: 'Tippe es an – es sagt Hallo!' });
 });
 ['kaetzchen', 'huehner', 'hund'].forEach((id) => { const it = ITEMS.find((i) => i.id === id); add({ id, cat: 'tiere', kind: 'farm', old: true, name: it.name, price: it.price, art: () => it.art(), sub: 'Schon im Stall-Laden 🛒' }); });
@@ -488,7 +488,7 @@ function openCare(startTool, startHorse) {
 // =====================================================================
 const ROOM_SND = { sofa: 'plop', lampe: 'chime', uhr: 'clock', plueschpferd: 'squeak', pflanze: 'swish', sattelstaender: 'plop', pokalvitrine: 'sparkle', bild: 'sparkle', fensterbild: 'chirp', sitzsack: 'plop', teppich: 'swish', tisch: 'cube', regal: 'page', schreibtisch: 'page' };
 const KAMIN = PA.svg('0 0 120 100', `<rect x="6" y="14" width="108" height="86" rx="6" fill="#c9a98a"/><rect x="2" y="8" width="116" height="14" rx="5" fill="#a9825f"/><path d="M28 100 V52 Q60 26 92 52 V100Z" fill="#3a2a26"/><g class="flame"><path d="M60 96 C44 88 48 70 60 58 C58 72 72 74 70 88 C68 94 64 96 60 96Z" fill="#ff9a3c"/><path d="M60 96 C52 92 54 80 60 72 C60 82 68 84 66 92Z" fill="#ffd966"/></g><rect x="40" y="30" width="40" height="12" rx="3" fill="#8a6a50" opacity=".5"/>`);
-function showRoom() {
+function showRoom(o) {
   const s = st(); s.room = s.room || { pos: {} }; s.room.pos = s.room.pos || {};
   core.currentScreen = 'room'; Sound.setScene('room');
   const main = core.shell('Reiterstübchen', false);
@@ -546,7 +546,7 @@ function showRoom() {
     h('button', { class: 'bigbtn primary', id: 'roomShop', onclick: () => { Sound.tap(); openShop('stuebchen'); } }, '🛍️ Möbel holen'),
     h('span', { class: 'room-count', id: 'roomCount' }, `${mine.length} von ${total} Sachen`),
     h('button', { class: 'bigbtn', id: 'roomRos', onclick: () => { Sound.tap(); core.openRosettes(); } }, '🏅 Rosetten'),
-    h('button', { class: 'bigbtn', id: 'roomFarm', onclick: () => { Sound.tap(); core.showStable(); } }, '🏡 Zum Hof'));
+    h('button', { class: 'bigbtn', id: 'roomFarm', onclick: () => { Sound.tap(); Sound.door(); const b = $('#roomFarm'); const r = b ? b.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight, width: 0, height: 0 }; core.irisTo ? core.irisTo(r.left + r.width / 2, r.top + r.height / 2, '#cfe8b0', () => core.showStable({ from: 'house' })) : core.showStable({ from: 'house' }); } }, '🏡 Zum Hof'));
   main.append(h('div', { class: 'room-wrap' }, scene, mine.length ? h('p', { class: 'room-tip' }, 'Tipp: Schiebe die Möbel mit dem Finger an einen neuen Platz.') : null, dock));
 }
 
