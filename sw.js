@@ -1,7 +1,8 @@
 /* Pferde-Mathe – Service Worker (nur lokaler Cache, keine Netzwerkaufrufe nach außen) */
-const CACHE = 'pferde-mathe-v11-haus-stall';
+const CACHE = 'pferde-mathe-v12-echt-optik';
 const ASSETS = [
-  './', './index.html', './style.css', './polish.css', './shop.css', './audio.js', './art.js', './bis100.js', './shop.js', './minigames.js', './app.js', './manifest.webmanifest',
+  './', './index.html', './style.css', './polish.css', './shop.css', './echt.css', './echt.js', './audio.js', './art.js', './bis100.js', './shop.js', './minigames.js', './app.js', './manifest.webmanifest',
+  './img/bg/hof-hoch.webp', './img/bg/hof-quer.webp', './img/bg/stall.webp', './img/bg/stuebchen.webp', './img/tiere/eichhoernchen.webp', './img/tiere/esel.webp', './img/tiere/eule.webp', './img/tiere/fohlen-m.webp', './img/tiere/fohlen.webp', './img/tiere/funke-m.webp', './img/tiere/funke.webp', './img/tiere/hase.webp', './img/tiere/huehner.webp', './img/tiere/hund.webp', './img/tiere/igel.webp', './img/tiere/kaetzchen.webp', './img/tiere/lamm.webp', './img/tiere/luna-m.webp', './img/tiere/luna.webp', './img/tiere/mohn-m.webp', './img/tiere/mohn.webp', './img/tiere/mondlicht-m.webp', './img/tiere/mondlicht.webp', './img/tiere/nacht-m.webp', './img/tiere/nacht.webp', './img/tiere/pony-m.webp', './img/tiere/pony.webp', './img/tiere/puenktchen-m.webp', './img/tiere/puenktchen.webp', './img/tiere/sonnenschein-m.webp', './img/tiere/sonnenschein.webp', './img/tiere/sternschnuppe-m.webp', './img/tiere/sternschnuppe.webp', './img/tiere/wolke-m.webp', './img/tiere/wolke.webp', './img/tiere/ziege.webp',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
 ];
 self.addEventListener('install', (e) => {

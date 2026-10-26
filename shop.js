@@ -22,7 +22,7 @@ const NEW_HORSES = [
   { id: 'sternschnuppe', nm: 'Sternschnuppe', kind: 'Einhorn', price: 180, look: { body: '#fdf6ff', mane: '#c79ff0', muzzle: '#f8e8fb', horn: true, wings: true }, s: 28, req: { text: 'Erst den Zauberwald schaffen 🌲', ok: () => hasId('zauberlaterne') } }
 ];
 NEW_HORSES.forEach((nh) => {
-  HORSES[nh.id] = nh.look; DEFAULT_HNAMES[nh.id] = nh.nm;
+  nh.look.id = nh.id; HORSES[nh.id] = nh.look; DEFAULT_HNAMES[nh.id] = nh.nm;
   if (!HORSE_ORDER.includes(nh.id)) HORSE_ORDER.push(nh.id);
   if (!nh.look.foal && !ADULT.includes(nh.id)) ADULT.push(nh.id);
 });
@@ -493,7 +493,7 @@ function showRoom(o) {
   core.currentScreen = 'room'; Sound.setScene('room');
   const main = core.shell('Reiterstübchen', false);
   const mine = CAT.filter((p) => p.kind === 'room' && hasId(p.id));
-  const scene = h('div', { class: 'room-scene', id: 'roomScene' }, h('div', { class: 'room-wall' }), h('div', { class: 'room-floor' }), h('div', { class: 'room-board' }),
+  const scene = h('div', { class: 'room-scene' + (window.PM_ECHT && window.PM_ECHT.on ? ' photo' : ''), id: 'roomScene' }, h('div', { class: 'room-wall' }), h('div', { class: 'room-floor' }), h('div', { class: 'room-board' }),
     h('div', { class: 'room-kamin', html: KAMIN, 'aria-hidden': 'true' }));
   const lampOn = () => !!s.room.lamp;
   const pos = (p) => { const q = s.room.pos[p.rid]; return q && Number.isFinite(+q.x) && Number.isFinite(+q.y) ? q : { x: p.x, y: p.y }; };

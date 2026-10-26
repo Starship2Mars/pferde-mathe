@@ -82,11 +82,17 @@ const HORSES = {
   fohlen: { body: '#e0ad73', mane: '#94603a', muzzle: '#f3d7b8', blaze: true, foal: true },
   pony: { body: '#fbf3e6', mane: '#7b5236', muzzle: '#f3e2cc', blaze: false, spots: '#b07a4f', pony: true }
 };
+Object.keys(HORSES).forEach((k) => { HORSES[k].id = k; });
+const ECHT_BARN = '<span class="bdoor"></span>';
+const ECHT_HOUSE = '<span class="door-glow"></span><span class="hdoor"></span>' + [0, 1, 2, 3, 4].map((i) => `<span class="hwin" data-w="${i}"></span>`).join('');
+const ECHT = window.PM_ECHT || { on: false, has: () => false };
+const photoScreen = () => ECHT.on && (currentScreen === 'stable' || currentScreen === 'stall');
 const BLANKET_COLORS = ['#9ad0ec', '#f7a8c4', '#b9e2a0', '#d6c2f2', '#ffd27a'];
 const DEFAULT_HNAMES = { luna: 'Luna', wolke: 'Wolke', nacht: 'Nacht', fohlen: 'Krümel', pony: 'Keks' };
 function horseName(id) { const n = (S.horseNames || {})[id]; return (n && String(n).trim()) || DEFAULT_HNAMES[id] || ''; }
 function LN() { return horseName('luna'); }
 function horseSVG(o) {
+  if (o && o.id && !o.rider && photoScreen() && ECHT.has(o.id)) return ECHT.sprite(o.id, { horse: true, blanket: o.blanket, saddle: o.saddle, pad: o.pad, bow: o.bow, crown: o.crown, glanz: (o.acc || []).includes('glanz') });
   o = Object.assign({}, HORSES.luna, o || {});
   const body = o.body, mane = o.mane, far = shade(body, 0.85), hoof = '#6a4a38';
   const ly = o.foal ? 104 : 110, lh = o.foal ? 52 : o.pony ? 36 : 44;
@@ -157,6 +163,11 @@ function horseOpts(id) {
   return { saddle: !!g.saddle && has('sattel'), bow: !!g.bow && has('schleife'), bridle: !!g.bridle && has('goldzaum'), crown: !!g.crown && has('krone'),
     blanket: g.blanket && g.ownB ? g.blanket : null, acc: (Array.isArray(g.acc) ? g.acc.filter((a) => has('acc_' + a)) : []).concat(((S.care || {})[id] || {}).day === new Date().toDateString() ? ['zopf', 'glanz'].filter((k) => ((S.care || {})[id] || {})[k]) : []), pad: g.pad && (S.clothes || []).some((c) => CLOTHES.find((x) => x.id === c && x.c === g.pad && x.cat === 'pad')) ? g.pad : null,
     rein: g.rein && (S.clothes || []).some((c) => CLOTHES.find((x) => x.id === c && x.c === g.rein && x.cat === 'zaum')) ? g.rein : null };
+}
+// Bild eines Hof-Gegenstands: im Hof und im Stall echte Tierfotos, sonst die Zeichnung
+function itemArt(it, opts) {
+  if (it.horse) return horseSVG(Object.assign({}, HORSES[it.horse], horseOpts(it.id), opts));
+  return (photoScreen() && ECHT.has(it.id) && ECHT.sprite(it.id)) || it.art();
 }
 function giveGear(itemId, horseId) { const k = GEAR[itemId]; if (!k) return; const g = gearOf(horseId || 'luna'); if (k === 'blanket') g.ownB = true; g[k] = k === 'blanket' ? (g.blanket || BLANKET_COLORS[ownedHorses().indexOf(horseId || 'luna') % BLANKET_COLORS.length] || BLANKET_COLORS[0]) : true; save(); }
 // Decken kann man für jedes Pferd einzeln kaufen
@@ -1376,15 +1387,16 @@ const FARM_HORSES = ['luna', 'pony', 'wolke', 'fohlen', 'nacht'];
 const FARM_FREE = [[51, 81], [62, 88], [40, 92], [72, 80], [56, 96], [46, 72], [30, 86], [66, 72], [80, 78], [24, 96]];
 const RIDER_ITEM = { id: 'reiterin', rider: true, s: 8, x: 76, y: 84, art: () => riderSVG(riderLook(false)) };
 function farmDef(id) { if (id === 'reiterin') return RIDER_ITEM; return id === 'luna' ? { id: 'luna', horse: 'luna', x: 51, y: 81 } : ITEMS.find((i) => i.id === id); }
+const FG = { ymin: 54, hy: 65 }; // untere/obere Grenze der Spielwiese (Echt-Optik passt sie ans Hintergrundbild an)
 function farmHiddenZone(it, x, y) {
   if (!it || it.sky || it.flat) return false;
-  if (x < 40 && y < 65) return true;            // hinter/in der Scheune (Scheune steht bei x 20 %, Fuß bei 64 %)
+  if (x < 40 && y < FG.hy) return true;            // hinter/in der Scheune (Scheune steht bei x 20 %, Fuß bei 64 %)
   if (it.horse && x > 84 && y < 64) return true; // hinter dem Baum
   return false;
 }
 function farmValid(it, p) {
   if (!p || typeof p !== 'object' || !Number.isFinite(+p.x) || !Number.isFinite(+p.y)) return false;
-  const [ymin, ymax] = it && it.sky ? [18, 52] : [54, 100];
+  const [ymin, ymax] = it && it.sky ? [18, 52] : [FG.ymin, 100];
   return p.x >= 3 && p.x <= 97 && p.y >= ymin && p.y <= ymax && !farmHiddenZone(it, +p.x, +p.y);
 }
 function farmFreeSpot(selfId) {
@@ -1403,7 +1415,7 @@ function farmFreeSpot(selfId) {
 function farmSafePos(id, x, y) {
   const it = farmDef(id); if (!it) return { x, y };
   const p = { x: Math.max(3, Math.min(97, +x)), y: +y };
-  const [ymin, ymax] = it.sky ? [18, 52] : [54, 100];
+  const [ymin, ymax] = it.sky ? [18, 52] : [FG.ymin, 100];
   if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) return farmFreeSpot(id);
   p.y = Math.max(ymin, Math.min(ymax, p.y));
   if (farmHiddenZone(it, p.x, p.y)) return farmFreeSpot(id);
@@ -1854,7 +1866,7 @@ function showStall() {
   const nameOf = (id) => { const it = farmDef(id); return it.horse ? horseName(id) : itemName(it); };
   const say = h('p', { class: 'st-say', id: 'stSay' }, '');
   const tell = (t) => { say.textContent = t; say.classList.remove('pop'); void say.offsetWidth; say.classList.add('pop'); };
-  const scene = h('div', { class: 'stall-scene', id: 'stallScene' });
+  const scene = h('div', { class: 'stall-scene' + (ECHT.on ? ' photo' : ''), id: 'stallScene' });
   const dock = h('div', { class: 'stall-dock' });
   const wrap = h('div', { class: 'stall-wrap', id: 'stallView' }, scene, say, dock);
   main.append(wrap);
@@ -1864,7 +1876,7 @@ function showStall() {
     scene.append(h('div', { class: 'stall-wall' }), h('div', { class: 'stall-lamp', 'aria-hidden': 'true' }), h('div', { class: 'stall-window', 'aria-hidden': 'true' }));
     const card = (id, i, isHorse) => {
       const it = farmDef(id), nm = nameOf(id);
-      const art = isHorse ? horseSVG(Object.assign({}, HORSES[it.horse], horseOpts(id), { delay: 0 })) : it.art();
+      const art = itemArt(it, { delay: 0 });
       const pv = h('div', { class: 'st-pv ' + (isHorse ? (i % 2 ? 'sleep' : 'munch') : 'pet'), role: 'button', tabindex: 0, 'aria-label': nm, html: art });
       const tap = () => {
         pv.classList.remove('yay'); void pv.offsetWidth; pv.classList.add('yay');
@@ -1911,13 +1923,15 @@ function showStable(opts) {
   const mood = farmMood(), season = seasonNow(), fest = festNow(), P = PAL[season];
   Sound.setScene('hof', { mood, season, fest });
   app.innerHTML = '';
-  const farm = h('div', { class: 'farm scene ' + mood + ' season-' + season + (fest ? ' fest-' + fest : ''), id: 'scene' });
+  const photo = ECHT.on;
+  const farm = h('div', { class: 'farm scene ' + (photo ? 'photo ' : '') + mood + ' season-' + season + (fest ? ' fest-' + fest : ''), id: 'scene' });
   farm.addEventListener('scroll', () => { if (farm.scrollLeft || farm.scrollTop) { farm.scrollLeft = 0; farm.scrollTop = 0; } }); // nie verrutschen (Safari scrollt sonst versteckte Ränder ins Bild)
   const main = h('main', { id: 'screen', class: 'farm-screen' }, farm);
   app.append(main);
   const add = (el) => { farm.append(el); return el; };
   const at = (el, x, y, s, z) => { el.style.left = x + '%'; el.style.top = y + '%'; if (s != null) el.style.setProperty('--s', s); el.style.zIndex = z != null ? z : Math.round(100 + y * 10); return el; };
 
+  if (photo) add(h('div', { class: 'phbg', id: 'phbg' }));
   // Himmel, Sonne, Sterne, Wolken, Vögel
   add(h('div', { class: 'sky' }));
   add(h('div', { class: 'sun px1' }, h('div', { class: 'sun-core' })));
@@ -1946,7 +1960,7 @@ function showStable(opts) {
   add(h('div', { class: 'tint' }));
 
   // Feste Kulisse: Scheune, Baum, Teich mit Enten, Zaun, Gras, Blumen, Schmetterling
-  const barn = at(add(h('div', { class: 'scen barn' + (S.barnOpen ? ' open' : ''), id: 'barn', html: barnSVG(mood === 'evening', has('wetterfahne'), season) })), 20, 64, 38);
+  const barn = at(add(h('div', { class: 'scen barn' + (S.barnOpen ? ' open' : ''), id: 'barn', html: photo ? ECHT_BARN : barnSVG(mood === 'evening', has('wetterfahne'), season) })), 20, 64, 38);
   const stallPill = () => { $$('.door-pill', barn).forEach((x) => x.remove()); const n = stallIds().length; if (n || !S.stallSeen) barn.append(h('span', { class: 'door-pill', id: 'stallPill' }, n ? `🐴 ${n} im Stall` : '🚪 Stall')); };
   stallPill();
   barn.addEventListener('click', (e) => {
@@ -1965,7 +1979,7 @@ function showStable(opts) {
   at(add(h('div', { class: 'scen tree', html: treeSVG(season) })), 92, 64, 28);
   const maibaum = at(add(h('div', { class: 'scen maibaum', html: maibaumSVG() })), 41, 50.5, 3.8, 7);
   maibaum.addEventListener('click', () => { Sound.sparkle(); fsay('Der weiß-blaue Maibaum – das ist typisch bayerisch! 💙🤍'); });
-  const house = at(add(h('div', { class: 'scen house', html: farmhouseSVG(mood === 'evening', season, fest) })), 73, 56, 32);
+  const house = at(add(h('div', { class: 'scen house', html: photo ? ECHT_HOUSE : farmhouseSVG(mood === 'evening', season, fest) })), 73, 56, 32);
   house.addEventListener('click', (e) => {
     const w = e.target.closest('.hwin'), fb = e.target.closest('.fbox');
     if (w) { w.classList.toggle('lit'); Sound.pop(); fsay(pick(['Die Bäuerin winkt aus dem Fenster! 👋', 'Hier riecht es nach frischem Apfelstrudel! 🥧', 'Im Fenster sitzt eine Katze und blinzelt. 🐈'])); }
@@ -2006,6 +2020,30 @@ function showStable(opts) {
   const flies = [];
   const addFly = (c, i) => { const b = add(h('div', { class: 'fly f' + (i % 4), html: ART.butterfly(c) })); b.style.animationDelay = (-i * 4.3) + 's'; b.style.zIndex = 3000; flies.push(b); return b; };
   addFly('#ffd27a', 0);
+  // Echt-Optik: Hintergrundbild passend zum Bildschirm, Scheune und Haus als unsichtbare Tippflächen darauf
+  const house$ = () => $('.house', farm);
+  function layoutPhoto() {
+    if (!farm.isConnected) { window.removeEventListener('resize', layoutPhoto); return; }
+    const W = farm.clientWidth, H = farm.clientHeight; if (!W || !H) return;
+    const z = ECHT.ZONES[W / H < 1 ? 1 : 0], bg = $('#phbg', farm);
+    const want = ECHT.url(z.img);
+    if (bg.dataset.src !== z.img) { bg.dataset.src = z.img; bg.style.backgroundImage = `url("${want}")`; }
+    const sc = Math.max(W / z.w, H / z.h), dw = z.w * sc, dh = z.h * sc, ox = (W - dw) / 2;
+    const px = (fx) => (ox + fx * dw) / W * 100, py = (fy) => fy * dh / H * 100;
+    const place = (el, r) => { el.style.left = px(r[0]) + '%'; el.style.top = py(r[1]) + '%'; el.style.width = (px(r[2]) - px(r[0])) + '%'; el.style.height = (py(r[3]) - py(r[1])) + '%'; };
+    const sub = (el, zone, r) => { const w = zone[2] - zone[0], hh = zone[3] - zone[1]; el.style.left = ((r[0] - zone[0]) / w * 100) + '%'; el.style.top = ((r[1] - zone[1]) / hh * 100) + '%'; el.style.width = ((r[2] - r[0]) / w * 100) + '%'; el.style.height = ((r[3] - r[1]) / hh * 100) + '%'; };
+    place(barn, z.barn); barn.style.zIndex = Math.round(100 + py(z.barn[3]) * 10);
+    sub($('.bdoor', barn), z.barn, z.door);
+    barn.style.setProperty('--px', ((((z.door[0] + z.door[2]) / 2) - z.barn[0]) / (z.barn[2] - z.barn[0]) * 100) + '%');
+    barn.style.setProperty('--py', (((z.door[1] - 0.025) - z.barn[1]) / (z.barn[3] - z.barn[1]) * 100) + '%');
+    const hs = house$(); place(hs, z.house); hs.style.zIndex = barn.style.zIndex;
+    sub($('.hdoor', hs), z.house, z.hdoor); sub($('.door-glow', hs), z.house, z.hdoor);
+    $$('.hwin', hs).forEach((w, i) => { const c = z.wins[i], r = 0.016; sub(w, z.house, [c[0] - r, c[1] - r * 1.4 * (z.w / z.h > 1 ? 1 : 0.75), c[0] + r, c[1] + r * 1.4 * (z.w / z.h > 1 ? 1 : 0.75)]); });
+    { const bb = py(z.barn[3]); FG.ymin = Math.round(Math.min(54, bb + 4)); FG.hy = Math.round(Math.min(65, bb + 8)); }
+    hs.style.setProperty('--hx', ((((z.hdoor[0] + z.hdoor[2]) / 2) - z.house[0]) / (z.house[2] - z.house[0]) * 100) + '%');
+    hs.style.setProperty('--hy', (((z.hdoor[1] - 0.03) - z.house[1]) / (z.house[3] - z.house[1]) * 100) + '%');
+  }
+  if (photo) { layoutPhoto(); requestAnimationFrame(layoutPhoto); window.addEventListener('resize', layoutPhoto); const ro = window.ResizeObserver ? new ResizeObserver(layoutPhoto) : null; if (ro) ro.observe(farm); }
 
   // Bedienelemente: kleiner Zurück-Knopf, Zähler, Laden, Werkzeuge, Sprechblase
   const ui = add(h('div', { class: 'farm-ui' }));
@@ -2052,6 +2090,7 @@ function showStable(opts) {
   // Pferd (oder Sache) sanft an einen sichtbaren Platz traben lassen
   function walkTo(el, id, p) {
     S.pos[id] = { x: p.x, y: p.y }; save();
+    const fx = parseFloat(el.style.left); if (Number.isFinite(fx) && Math.abs(p.x - fx) > 0.5) el.classList.toggle('faceL', p.x < fx);
     el.classList.remove('settle', 'dragging'); el.classList.add('walkout');
     const it = itemOf(id);
     requestAnimationFrame(() => { el.style.left = p.x + '%'; el.style.top = p.y + '%'; el.style.zIndex = zFor(it, p.y); });
@@ -2081,10 +2120,11 @@ function showStable(opts) {
   function zFor(it, y) { return it.sky ? 2 : it.flat ? Math.round(90 + y / 10) : Math.round(100 + y * 10); }
   function placeItem(it, isNew) {
     const p = S.pos[it.id] || { x: it.x, y: it.y };
-    const html = it.horse ? horseSVG(Object.assign({}, HORSES[it.horse], horseOpts(it.id))) : it.art();
-    const el = h('div', { class: 'item' + (it.horse ? ' horse-item' : '') + (isNew ? ' new' : ''), 'data-id': it.id, html });
+    const html = itemArt(it);
+    const ph = /class="ph[ "]/.test(html);
+    const el = h('div', { class: 'item' + (it.horse ? ' horse-item' : '') + (ph ? ' ph-ground' : '') + (isNew ? ' new' : ''), 'data-id': it.id, html });
     if (it.horse) el.append(h('span', { class: 'shine' }));
-    el.style.setProperty('--s', it.s);
+    el.style.setProperty('--s', ph && !it.horse && ECHT.K[it.id] ? ECHT.K[it.id] : it.s);
     el.style.left = p.x + '%'; el.style.top = p.y + '%'; el.style.zIndex = zFor(it, p.y);
     (it.sky ? skyLayer : farm).append(el);
     makeDraggable(el, it);
@@ -2099,7 +2139,7 @@ function showStable(opts) {
     renderRosBadge();
     flies.slice(1).forEach((f) => f.remove()); flies.length = 1;
     if (has('schmetterlinge')) ['#f7a8c4', '#b5dcff', '#d6c2f2'].forEach((c, i) => addFly(c, i + 1));
-    if (newId === 'wetterfahne') { barn.innerHTML = barnSVG(mood === 'evening', true, seasonNow()); }
+    if (newId === 'wetterfahne' && !photo) { barn.innerHTML = barnSVG(mood === 'evening', true, seasonNow()); }
     stallPill();
     renderTray();
   }
@@ -2137,9 +2177,10 @@ function showStable(opts) {
       if (!st.moved && Math.hypot(dx, dy) < 10) return;
       if (!st.moved) { st.moved = true; el.classList.add('dragging'); }
       if (stallable(it)) barn.classList.toggle('drop-hot', overBarn(e.clientX, e.clientY));
-      const [ymin, ymax] = it.sky ? [18, 52] : [54, 100];
+      const [ymin, ymax] = it.sky ? [18, 52] : [FG.ymin, 100];
       const x = Math.max(3, Math.min(97, st.x + (dx / st.w) * 100));
       const y = Math.max(ymin, Math.min(ymax, st.y + (dy / st.hh) * 100));
+      if (Math.abs(dx - (st.pdx || 0)) > 3) { el.classList.toggle('faceL', dx < (st.pdx || 0)); st.pdx = dx; }
       el.style.left = x + '%'; el.style.top = y + '%'; el.style.zIndex = it.sky ? 2 : 4000;
       st.nx = x; st.ny = y;
     });
@@ -2412,7 +2453,7 @@ function showStable(opts) {
     const list = h('div', { class: 'shoplist' });
     ITEMS.forEach((it) => {
       if (it.nu || (it.special && !has(it.id))) return;
-      const pvHtml = it.pv ? it.pv() : it.horse ? horseSVG(Object.assign({}, HORSES[it.horse], { delay: 0 })) : it.art();
+      const pvHtml = it.pv ? it.pv() : it.horse ? horseSVG(Object.assign({}, HORSES[it.horse], { delay: 0 })) : itemArt(it);
       let btn;
       const done = it.perHorse ? !horsesWithoutBlanket().length : has(it.id);
       if (done) btn = h('button', { class: 'have', disabled: true }, '✔ Alle haben eine');

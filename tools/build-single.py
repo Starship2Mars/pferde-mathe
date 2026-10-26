@@ -15,16 +15,22 @@ html = html.replace("default-src 'self'", "default-src 'self' data:")
 html = html.replace('<link rel="manifest" href="manifest.webmanifest">', f'<link rel="manifest" href="{man_uri}">')
 html = html.replace('<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">', f'<link rel="apple-touch-icon" href="{touch}">')
 html = html.replace('<link rel="icon" type="image/png" href="icons/icon-192.png">', f'<link rel="icon" type="image/png" href="{i192}">')
+# alle Bilder (Echt-Optik) als data:-Adressen; JS fragt sie über window.__PM_IMGS ab, CSS bekommt sie direkt
+imgs = {}
+for p in sorted((root / 'img').rglob('*.webp')):
+    imgs[p.relative_to(root / 'img').as_posix()] = 'data:image/webp;base64,' + base64.b64encode(p.read_bytes()).decode()
 # alle Stylesheets inline
 def css_sub(m):
-    return '<style>\n' + (root / m.group(1)).read_text(encoding='utf-8') + '\n</style>'
+    css = (root / m.group(1)).read_text(encoding='utf-8')
+    css = re.sub(r"url\((['\"]?)img/([^'\")]+)\1\)", lambda k: "url('" + imgs[k.group(2)] + "')", css)
+    return '<style>\n' + css + '\n</style>'
 html = re.sub(r'<link rel="stylesheet" href="([^"]+)">', css_sub, html)
 # alle Skripte inline (in der Reihenfolge der index.html)
 first = True
 def js_sub(m):
     global first
     js = (root / m.group(1)).read_text(encoding='utf-8').replace('</script', '<\\/script')
-    pre = '<script>window.__PM_SINGLE__ = true;</script>\n' if first else ''
+    pre = '<script>window.__PM_SINGLE__ = true; window.__PM_IMGS = ' + json.dumps(imgs, separators=(',', ':')) + ';</script>\n' if first else ''
     first = False
     return pre + '<script>\n' + js + '\n</script>'
 html = re.sub(r'<script src="([^"]+)"></script>', js_sub, html)

@@ -1,0 +1,62 @@
+/* Pferde-Mathe – Echt-Optik: Hof, Stall und Stübchen mit fotorealistischen Hintergründen */
+/* ---- Hof ---- */
+.farm.photo{background:#2f4a1f}
+.farm.photo .phbg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:50% 0;background-repeat:no-repeat;pointer-events:none}
+.farm.photo.evening .phbg{filter:brightness(.84) saturate(.95) hue-rotate(-6deg)}
+.farm.photo.season-winter .phbg{filter:saturate(.35) brightness(1.18) contrast(.92)}
+.farm.photo.season-winter.evening .phbg{filter:saturate(.35) brightness(.85) contrast(.95) hue-rotate(10deg)}
+.farm.photo.season-autumn .phbg{filter:sepia(.18) saturate(1.15) hue-rotate(-8deg)}
+.farm.photo.season-autumn.evening .phbg{filter:sepia(.18) saturate(1.05) hue-rotate(-8deg) brightness(.82)}
+.farm.photo.season-spring .phbg{filter:saturate(1.1) brightness(1.06)}
+/* gezeichnete Kulisse ausblenden (bleibt im Hintergrund erhalten, falls man ?cartoon braucht) */
+.farm.photo .sky,.farm.photo .sun,.farm.photo .star,.farm.photo .cloud,.farm.photo .bird,.farm.photo .mtn,.farm.photo .hills-far,.farm.photo .hills-mid,
+.farm.photo .chapel,.farm.photo .tractor,.farm.photo .meadow,.farm.photo .scen.tree,.farm.photo .maibaum,.farm.photo .woodpile,.farm.photo .cow,.farm.photo .bee,
+.farm.photo .fence,.farm.photo .pond,.farm.photo .tuft,.farm.photo .flw,.farm.photo .fly{display:none!important}
+.farm.photo.evening .tint{background:linear-gradient(180deg,rgba(60,40,110,.16) 0%,rgba(255,150,100,.06) 60%,rgba(255,140,90,.10) 100%)}
+/* Tippflächen auf Scheune und Haus */
+.farm.photo .scen.barn,.farm.photo .scen.house{transform:none;line-height:normal;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.farm.photo .scen.house .hdoor{position:absolute}
+.farm.photo .barn .bdoor{position:absolute;border-radius:6%;opacity:0;pointer-events:none;background:radial-gradient(ellipse at 50% 60%,rgba(255,214,120,.75),rgba(255,190,90,.25) 65%,transparent 80%);transition:opacity .5s ease}
+.farm.photo .barn.open .bdoor,.farm.photo .barn.drop-hot .bdoor{opacity:1}
+.farm.photo .barn.drop-hot{filter:none}
+.farm.photo .barn.drop-hot .bdoor{box-shadow:0 0 3vmin 1.6vmin rgba(255,226,122,.85)}
+.farm.photo .scen.house .door-glow{position:absolute;border-radius:50%;background:radial-gradient(ellipse,rgba(255,215,130,.95),rgba(255,190,90,.35) 60%,transparent 75%);mix-blend-mode:screen;pointer-events:none}
+.farm.photo .scen.house .hwin{position:absolute;border-radius:40%;cursor:pointer}
+.farm.photo .scen.house .hwin.lit{background:radial-gradient(ellipse,rgba(255,225,150,.95),rgba(255,200,100,.4) 65%,transparent 80%);mix-blend-mode:screen;box-shadow:0 0 1.6vmin .5vmin rgba(255,210,120,.7)}
+.farm.photo .barn .door-pill{left:var(--px,50%);top:var(--py,50%)}
+.farm.photo .house .door-pill.house{left:var(--hx,50%);top:var(--hy,50%)}
+/* Tiere und Pferde: weiche Bodenschatten und sanfte Bewegung */
+.farm.photo .item.ph-ground::before{content:'';position:absolute;left:6%;right:6%;bottom:-2.2%;height:8%;border-radius:50%;background:radial-gradient(ellipse at 50% 50%,rgba(15,28,8,.6) 0,rgba(15,28,8,.32) 45%,transparent 72%);filter:blur(1.5px);z-index:-1;pointer-events:none}
+.farm.photo .item.ph-ground.dragging::before{opacity:.45;transform:translateY(1.6vmin) scale(.9)}
+.farm.photo .item svg.ph{overflow:visible}
+.farm.photo .item svg.ph image{filter:drop-shadow(0 .2vmin .3vmin rgba(0,0,0,.25))}
+.farm.photo.evening .item svg.ph image{filter:brightness(.88) saturate(.95) drop-shadow(0 .2vmin .3vmin rgba(0,0,0,.3))}
+svg.ph .fl,svg.ph .idle{transform-box:fill-box;transform-origin:50% 100%}
+svg.ph .idle{animation:phIdle 6.5s ease-in-out infinite}
+.farm.photo .item:nth-child(3n) svg.ph .idle{animation-duration:7.5s;animation-delay:-2s}
+.farm.photo .item:nth-child(3n+1) svg.ph .idle{animation-duration:5.8s;animation-delay:-4s}
+@keyframes phIdle{0%,100%{transform:scale(1,1) rotate(0)}30%{transform:scale(1.004,1.011) rotate(-.35deg)}65%{transform:scale(.998,1.004) rotate(.3deg)}}
+.farm.photo .item.faceL svg.ph .fl{transform:scaleX(-1);transform-box:view-box;transform-origin:50% 50%}
+.farm.photo .item.chase.faceL svg{transform:none}
+.farm.photo .item.walkout svg.ph .idle,.farm.photo .item.chase svg.ph .idle{animation:phStep .32s ease-in-out infinite}
+@keyframes phStep{0%,100%{transform:scale(1,1) rotate(-.8deg)}50%{transform:scale(1.01,.99) rotate(.8deg)}}
+svg.ph .spk{animation:pm-spk 1.6s ease-in-out infinite}
+@keyframes pm-spk{0%,100%{opacity:.2}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){svg.ph .idle,.farm.photo .item.walkout svg.ph .idle{animation:none}}
+
+/* ---- Stall von innen ---- */
+.stall-scene.photo{background:#5a3b1c url('img/bg/stall.webp') center 35%/cover no-repeat}
+.stall-scene.photo .stall-wall,.stall-scene.photo .stall-window,.stall-scene.photo .stall-lamp,.stall-scene.photo .stall-straw{display:none}
+.stall-scene.photo .st-card{background:rgba(255,246,222,.0);box-shadow:none}
+.stall-scene.photo .st-card .st-pv{position:relative}
+.stall-scene.photo .st-card .st-pv::before{content:'';position:absolute;left:8%;right:8%;bottom:-2%;height:9%;border-radius:50%;background:radial-gradient(ellipse,rgba(40,24,6,.6),transparent 70%)}
+.st-pv svg.ph{max-height:34vmin;margin:0 auto}
+.stall-scene.photo .st-plate{background:rgba(255,247,224,.94)}
+.stall-scene.photo .st-card.horse:has(.st-pv.sleep) .st-pv svg.ph .fl{transform:translateY(1%) rotate(-1deg)}
+/* ---- Stübchen ---- */
+.room-scene.photo{background:#7a5a36 url('img/bg/stuebchen.webp') center/cover no-repeat}
+.room-scene.photo .room-wall,.room-scene.photo .room-floor,.room-scene.photo .room-board,.room-scene.photo .room-kamin{display:none}
+.stall-scene.photo .st-card{width:clamp(180px,34vmin,330px)}
+.stall-scene.photo .st-card.pet{width:clamp(130px,24vmin,230px)}
+@media (orientation:portrait){.stall-scene.photo .st-card{width:clamp(170px,40vmin,330px)}.stall-scene.photo .st-card.pet{width:clamp(130px,28vmin,230px)}}
+.stall-scene.photo{background-position:center 25%}
