@@ -500,7 +500,7 @@ function showRoom(o) {
   const place = (p) => {
     const q = pos(p);
     const el = h('div', { class: 'rm-item' + (p.wall ? ' wall' : '') + ' it-' + p.rid, 'data-room': p.rid, tabindex: 0, role: 'button', 'aria-label': p.name, style: { left: q.x + '%', top: q.y + '%', width: p.w + '%', zIndex: p.wall ? 2 : String(10 + Math.round(q.y)) } },
-      h('div', { class: 'rm-art', html: p.art() }));
+      h('div', { class: 'rm-art', html: (window.PM_ECHT && PM_ECHT.roomArt && PM_ECHT.roomArt(p.rid)) || p.art() }));
     if (p.rid === 'pokalvitrine') {
       const ros = s.rosettes ? s.rosettes.slice(-8) : [];
       el.append(h('div', { class: 'rm-ros' }, ros.map((r) => h('span', { html: r.kind === 'pokal' ? '🏆' : core.rosetteSVG(r.c, '★') }))));

@@ -60,3 +60,21 @@ svg.ph .spk{animation:pm-spk 1.6s ease-in-out infinite}
 .stall-scene.photo .st-card.pet{width:clamp(130px,24vmin,230px)}
 @media (orientation:portrait){.stall-scene.photo .st-card{width:clamp(170px,40vmin,330px)}.stall-scene.photo .st-card.pet{width:clamp(130px,28vmin,230px)}}
 .stall-scene.photo{background-position:center 25%}
+
+/* ---- Symbole als Fotos ---- */
+.pe{position:relative;display:inline-block;width:1.25em;height:1.25em;vertical-align:-.28em;pointer-events:none;line-height:1}
+.pe img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 1.5px 1.5px rgba(70,45,20,.38));-webkit-user-drag:none;user-select:none}
+.pe .ems{position:absolute;left:0;top:0;width:0;height:0;overflow:hidden;font-size:0;opacity:0}
+.pe.mut img{opacity:.55;filter:grayscale(.6) drop-shadow(0 1.5px 1.5px rgba(70,45,20,.3))}
+.pe.mut::after{content:'';position:absolute;left:-8%;top:46%;width:116%;height:.14em;background:#d9534f;border-radius:.1em;transform:rotate(-42deg);box-shadow:0 0 0 1px rgba(255,255,255,.8)}
+.farm-btn .pe,.iconbtn .pe{width:1.55em;height:1.55em;vertical-align:middle}
+.lad-tab .ti .pe{width:1.5em;height:1.5em}
+.lad-tab .ti .pe img[src*="tiere/"]{transform:scale(1.15)}
+.bagbtn .bagemo .pe{width:1.2em;height:1.2em}
+.counter .emo .pe{width:1.1em;height:1.1em;vertical-align:middle}
+h2 .pe,h3 .pe{width:1.2em;height:1.2em}
+.bigbtn .pe,.smallbtn .pe{width:1.3em;height:1.3em;vertical-align:-.3em}
+svg.pe-svg{filter:drop-shadow(0 1.5px 1.5px rgba(70,45,20,.38));overflow:visible}
+.tool svg.pe-svg{padding:2px}
+.pe-room{width:100%;height:auto;display:block;filter:drop-shadow(0 4px 4px rgba(40,25,10,.45))}
+svg.ph.phdeco{overflow:visible}

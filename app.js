@@ -167,7 +167,7 @@ function horseOpts(id) {
 // Bild eines Hof-Gegenstands: im Hof und im Stall echte Tierfotos, sonst die Zeichnung
 function itemArt(it, opts) {
   if (it.horse) return horseSVG(Object.assign({}, HORSES[it.horse], horseOpts(it.id), opts));
-  return (photoScreen() && ECHT.has(it.id) && ECHT.sprite(it.id)) || it.art();
+  return (photoScreen() && ((ECHT.has(it.id) && ECHT.sprite(it.id)) || (ECHT.decoArt && ECHT.decoArt(it.id)))) || it.art();
 }
 function giveGear(itemId, horseId) { const k = GEAR[itemId]; if (!k) return; const g = gearOf(horseId || 'luna'); if (k === 'blanket') g.ownB = true; g[k] = k === 'blanket' ? (g.blanket || BLANKET_COLORS[ownedHorses().indexOf(horseId || 'luna') % BLANKET_COLORS.length] || BLANKET_COLORS[0]) : true; save(); }
 // Decken kann man für jedes Pferd einzeln kaufen
@@ -176,7 +176,8 @@ const HORSE_ORDER = ['wolke', 'pony', 'fohlen', 'nacht'];
 function ownedHorses() { return ['luna'].concat(HORSE_ORDER.filter((id) => has(id))); }
 function lunaOpts() { return horseOpts('luna'); }
 function lunaSVG() { return horseSVG(lunaOpts()); }
-const SHOE = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 5 C1 22 7 37 20 37 C33 37 39 22 32 5 L25 5 C29 20 26 30 20 30 C14 30 11 20 15 5 Z" fill="#f2c14e" stroke="#c9962a" stroke-width="2" stroke-linejoin="round"/><circle cx="9.5" cy="15" r="1.4" fill="#a87b1c"/><circle cx="11" cy="24" r="1.4" fill="#a87b1c"/><circle cx="30.5" cy="15" r="1.4" fill="#a87b1c"/><circle cx="29" cy="24" r="1.4" fill="#a87b1c"/></svg>`;
+const _I = (n, f) => (window.PM_ECHT && window.PM_ECHT.svgIco ? window.PM_ECHT.svgIco(n, f) : f); // Foto-Symbol (Echt-Optik) oder Zeichnung
+const SHOE = _I('hufeisen', `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 5 C1 22 7 37 20 37 C33 37 39 22 32 5 L25 5 C29 20 26 30 20 30 C14 30 11 20 15 5 Z" fill="#f2c14e" stroke="#c9962a" stroke-width="2" stroke-linejoin="round"/><circle cx="9.5" cy="15" r="1.4" fill="#a87b1c"/><circle cx="11" cy="24" r="1.4" fill="#a87b1c"/><circle cx="30.5" cy="15" r="1.4" fill="#a87b1c"/><circle cx="29" cy="24" r="1.4" fill="#a87b1c"/></svg>`);
 const SHOE_EMPTY = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 5 C1 22 7 37 20 37 C33 37 39 22 32 5 L25 5 C29 20 26 30 20 30 C14 30 11 20 15 5 Z" fill="#f3ece3" stroke="#dccbb8" stroke-width="2" stroke-dasharray="3 3" stroke-linejoin="round"/></svg>`;
 const HAY = `<svg viewBox="0 0 100 70" aria-hidden="true"><rect x="4" y="8" width="92" height="58" rx="14" fill="#f2d16b" stroke="#d1a93c" stroke-width="3"/><path d="M14 20 h72 M10 34 h80 M14 48 h72" stroke="#d9b54d" stroke-width="3" stroke-dasharray="6 5"/><rect x="30" y="8" width="7" height="58" fill="#b5652f"/><rect x="63" y="8" width="7" height="58" fill="#b5652f"/><path d="M8 10 l-4 -6 M20 8 l-2 -7 M80 8 l3 -7 M92 10 l5 -5" stroke="#e1bd52" stroke-width="3"/></svg>`;
 
@@ -2051,13 +2052,13 @@ function showStable(opts) {
     h('button', { class: 'farm-btn back', id: 'homeBtn', 'aria-label': 'Zurück', onclick: () => { Sound.tap(); clearInterval(ambientTimer); (stableBack || showHome)(); } }, stableBack === showMap ? '🗺️' : '🏠'),
     h('div', { class: 'farm-hud' },
       h('div', { class: 'counter', id: 'shoeCount', html: SHOE + `<span>${S.shoes}</span>` }),
-      h('div', { class: 'counter', id: 'carrotCount' }, h('span', { class: 'emo', html: ART.carrot }), h('span', null, String(S.carrots))),
+      h('div', { class: 'counter', id: 'carrotCount' }, h('span', { class: 'emo', html: _I('karotte', ART.carrot) }), h('span', null, String(S.carrots))),
       bagButton(),
       h('button', { class: 'farm-btn', id: 'closetBtn', 'aria-label': 'Kleiderschrank', onclick: () => { Sound.tap(); if (riderState().set) openCloset(renderScene); else openRiderSetup((f) => { renderScene(); if (f) riderHello(); }, true); } }, '👚'),
       h('button', { class: 'farm-btn', id: 'shopBtn', 'aria-label': 'Stall-Laden', onclick: () => { Sound.tap(); openDrawer(); } }, '🛒')),
     h('div', { class: 'bubble farm-say', id: 'farmSay' }, ''));
-  const carrotTool = h('button', { class: 'tool', id: 'toolCarrot', 'aria-label': 'Karotte' }, h('span', { html: ART.carrot }), h('b', { class: 'badge' }, String(S.carrots)));
-  const brushTool = h('button', { class: 'tool', id: 'toolBrush', 'aria-label': 'Bürste' }, h('span', { html: ART.brush }));
+  const carrotTool = h('button', { class: 'tool', id: 'toolCarrot', 'aria-label': 'Karotte' }, h('span', { html: _I('karotte', ART.carrot) }), h('b', { class: 'badge' }, String(S.carrots)));
+  const brushTool = h('button', { class: 'tool', id: 'toolBrush', 'aria-label': 'Bürste' }, h('span', { html: _I('buerste', ART.brush) }));
   ui.append(h('div', { class: 'tray' }, carrotTool, brushTool));
   const tray = h('div', { class: 'tray2', id: 'foodTray' });
   ui.append(tray);
@@ -2066,7 +2067,7 @@ function showStable(opts) {
     FOODS.forEach((f) => {
       const show = has(f.animal);
       if (show && !foodTools[f.key]) {
-        const t = h('button', { class: 'tool food', id: 'tool-' + f.key, 'data-food': f.key, 'aria-label': f.name }, h('span', { html: ART[{ bones: 'bone', grain: 'grain', treats: 'treat' }[f.key]] }), h('b', { class: 'badge' }, String(S[f.key] || 0)));
+        const t = h('button', { class: 'tool food', id: 'tool-' + f.key, 'data-food': f.key, 'aria-label': f.name }, h('span', { html: _I({ bones: 'knochen', grain: 'napf', treats: 'fisch' }[f.key], ART[{ bones: 'bone', grain: 'grain', treats: 'treat' }[f.key]]) }), h('b', { class: 'badge' }, String(S[f.key] || 0)));
         foodTools[f.key] = t; tray.append(t); foodDrag(t, f);
       } else if (!show && foodTools[f.key]) { foodTools[f.key].remove(); delete foodTools[f.key]; }
       if (foodTools[f.key]) { $('.badge', foodTools[f.key]).textContent = S[f.key] || 0; foodTools[f.key].classList.toggle('empty', !(S[f.key] > 0)); }
@@ -2319,7 +2320,7 @@ function showStable(opts) {
       e.preventDefault(); e.stopPropagation();
       if (kind === 'carrot' && S.carrots <= 0) { Sound.tap(); fsay('Spiel eine Runde, dann bekommst du Karotten für die Pferde. 🥕'); return; }
       try { tool.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
-      const ghost = add(h('div', { class: 'ghost', html: kind === 'carrot' ? ART.carrot : ART.brush }));
+      const ghost = add(h('div', { class: 'ghost', html: kind === 'carrot' ? _I('karotte', ART.carrot) : _I('buerste', ART.brush) }));
       const mv = (ev) => { ghost.style.left = ev.clientX + 'px'; ghost.style.top = ev.clientY + 'px'; };
       mv(e);
       let strokes = 0, lastHorse = null, lastFx = 0, moved = false;

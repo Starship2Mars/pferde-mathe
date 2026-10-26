@@ -156,3 +156,9 @@ Der Pferdehof, der Stall und das Reiterstübchen sehen jetzt fotorealistisch aus
 - **Zurück zum Zeichentrick-Look:** `?cartoon` an die Adresse hängen (z. B. `index.html?cartoon`).
 - **Noch Zeichentrick:** Deko auf dem Hof (Heu, Blumen, Trog, Reitplatz, Saison-Deko), Möbel im Stübchen, Karte, Ausritt und Minispiele. Jahreszeiten/Abend ändern das Foto nur über Farbfilter.
 - Der Service Worker legt alle Bilder in den Cache (`pferde-mathe-v12-echt-optik`), die App läuft weiter offline. `pferde-mathe.html` (Einzeldatei, `python3 tools/build-single.py`) enthält die Bilder als data:-Adressen (ca. 2,7 MB).
+
+### Symbole als Fotos (Schritt A)
+- `img/ico/` enthält 30 freigestellte Foto-Symbole (WebP mit Alpha, 192 px; Hof-/Stübchen-Deko 320 px): Hufeisen, Karotte, Rucksack, Einkaufstasche, Kleiderschrank, Einkaufswagen, Haus, Scheune, Knochen, Napf, Fisch, Bürste, Werkzeugkiste (Menü), Rosette, Pokal, Karte, Musiknote, Lautsprecher, Seife, Reithelm, Herbstblatt, Sticker-Album, Spielecontroller, Heu, Blumenbeet, Trog, Sofa, Stehlampe u. a.
+- Wie sie eingesetzt werden: Zeichnungen für Hufeisen, Karotte, Bürste, Futter (Knochen/Napf/Fisch) werden direkt im Code durch `PM_ECHT.svgIco()` ersetzt. Alle anderen Symbol-Emojis auf Knöpfen, Überschriften, Reitern und Zählern tauscht `echt.js` automatisch gegen die Fotos (Emoji-Tabelle `EMO`; der Text bleibt für Tests/Vorlesen erhalten). Heu, Blumenbeet, Trog (Hof) sowie Sofa und Lampe (Stübchen) sind Foto-Sprites.
+- Neue Symbole: Blatt mit bis zu 6 Gegenständen auf grünem Grund erzeugen, dann `tools/make-icons.py blatt.jpg img/ico name1 … name6` ausführen, die Maße kommen in `ICO` in `echt.js`.
+- Noch Zeichentrick: Schätze im Rucksack, Schmuck/Decken/Sattel in Läden, übrige Möbel, Spiele-Grafiken, Karte und Ausritt.

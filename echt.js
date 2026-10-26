@@ -45,5 +45,61 @@
     if (o.blanket || o.saddle) defs = '<defs><mask id="' + uid + 'm" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '"><image href="' + url('tiere/' + id + '-m.webp') + '" width="' + W + '" height="' + H + '"/></mask><linearGradient id="' + uid + 'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></linearGradient></defs>';
     return '<svg class="ph' + (o.horse ? ' horse' : '') + '" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true">' + defs + '<g class="fl"><g class="idle"><image href="' + href + '" width="' + W + '" height="' + H + '"/>' + g + '</g></g></svg>';
   }
-  window.PM_ECHT = { on: on, has: has, sprite: sprite, url: url, K: K, ZONES: ZONES, MAN: MAN };
+
+  // ---- Symbole (Hufeisen, Karotte, Rucksack ...) als Fotos statt Zeichnungen ----
+  var ICO = {"album":[144,192],"beet":[320,248],"blatt":[192,175],"buerste":[192,133],"fisch":[192,67],"haus":[192,161],"helm":[182,192],"heu":[320,232],"hufeisen":[177,192],"karotte":[174,192],"karte":[192,148],"knochen":[192,101],"lampe":[110,320],"lautsprecher":[188,192],"medaille":[97,192],"napf":[192,141],"note":[114,192],"pad":[192,136],"pokal":[191,192],"rosette":[118,192],"rucksack":[192,190],"scheune":[192,166],"seife":[192,151],"shirt":[192,166],"sofa":[320,178],"sonnenblume":[133,192],"tasche":[176,192],"trog":[320,186],"wagen":[192,190],"werkzeug":[308,237]};
+  var EMO = { '🏠': 'haus', '🏡': 'scheune', '👚': 'shirt', '🛒': 'wagen', '🛍': 'tasche', '🧰': 'werkzeug', '🏅': 'rosette', '🗺': 'karte', '🎵': 'note', '🔊': 'lautsprecher', '🔇': 'lautsprecher', '🏆': 'pokal', '🎒': 'rucksack', '🥕': 'karotte', '🧼': 'seife', '👧': 'helm', '🛋': 'sofa', '🍂': 'blatt', '📒': 'album', '🎮': 'pad', '🐴': 'tiere/luna', '🐰': 'tiere/hase' };
+  var EMO_RE = new RegExp('(' + Object.keys(EMO).join('|') + ')\uFE0F?', 'g');
+  // Deko auf dem Hof / im Stübchen: Spiel-Kennung -> Symbolbild
+  var DECO = { heu: 'heu', blumen: 'beet', trog: 'trog' };
+  var ROOMICO = { sofa: 'sofa', lampe: 'lampe' };
+  function icoUrl(n) { return n.indexOf('tiere/') === 0 ? url(n + '.webp') : url('ico/' + n + '.webp'); }
+  // Symbol als <svg> mit Foto (passt in alle vorhandenen svg-Größenregeln); sonst die Zeichnung (fallback)
+  function svgIco(name, fallback) {
+    var s = ICO[name]; if (!on || !s) return fallback;
+    return '<svg class="pe-svg" viewBox="0 0 ' + s[0] + ' ' + s[1] + '" aria-hidden="true"><image href="' + icoUrl(name) + '" width="' + s[0] + '" height="' + s[1] + '"/></svg>';
+  }
+  function decoArt(id) { var n = DECO[id]; return on && n && ICO[n] ? svgIco(n).replace('class="pe-svg"', 'class="ph phdeco"') : null; }
+  function roomArt(rid) { var n = ROOMICO[rid]; return on && n ? svgIco(n).replace('class="pe-svg"', 'class="pe-room"') : null; }
+  var SKIP = 'button,h2,h3,.emo,.bagemo,.ti,.plus,.lc-left,.lad-note,.counter,.lad-head,.bigbtn,.smallbtn,.farm-btn,.iconbtn';
+  function eligible(t) {
+    var p = t.parentNode; if (!p || p.nodeType !== 1 || p.classList.contains('ems')) return false;
+    if (p.closest && (p.closest('.bubble,[id$=Say],.toast,.pe') || !p.closest(SKIP))) return false;
+    return true;
+  }
+  function swap(t) {
+    var txt = t.nodeValue; EMO_RE.lastIndex = 0; if (!EMO_RE.test(txt)) return; EMO_RE.lastIndex = 0;
+    var frag = document.createDocumentFragment(), last = 0, m;
+    while ((m = EMO_RE.exec(txt))) {
+      if (m.index > last) frag.appendChild(document.createTextNode(txt.slice(last, m.index)));
+      var e = m[1], n = EMO[e], sp = document.createElement('span');
+      sp.className = 'pe' + (e === '🔇' ? ' mut' : ''); sp.setAttribute('data-e', e);
+      var im = document.createElement('img'); im.src = icoUrl(n); im.alt = ''; im.draggable = false; sp.appendChild(im);
+      var em = document.createElement('span'); em.className = 'ems'; em.textContent = m[0]; sp.appendChild(em);
+      frag.appendChild(sp); last = m.index + m[0].length;
+    }
+    if (last < txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
+    t.parentNode.replaceChild(frag, t);
+  }
+  function scan(root) {
+    if (!root) return;
+    if (root.nodeType === 3) { if (eligible(root)) swap(root); return; }
+    if (root.nodeType !== 1) return;
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), list = [], n;
+    while ((n = w.nextNode())) if (n.nodeValue.length < 200 && eligible(n)) list.push(n);
+    list.forEach(swap);
+  }
+  if (on) {
+    var start = function () {
+      scan(document.body);
+      new MutationObserver(function (ms) {
+        ms.forEach(function (m) {
+          if (m.type === 'characterData') { scan(m.target); return; }
+          m.addedNodes.forEach(function (n) { scan(n); });
+        });
+      }).observe(document.body, { childList: true, subtree: true, characterData: true });
+    };
+    if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+  }
+  window.PM_ECHT = { on: on, has: has, sprite: sprite, url: url, K: K, ZONES: ZONES, MAN: MAN, svgIco: svgIco, decoArt: decoArt, roomArt: roomArt, ICO: ICO };
 })();
