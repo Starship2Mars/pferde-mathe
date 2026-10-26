@@ -92,7 +92,7 @@ async function playGame(p, id, fn, ...args) {
     ok(pre === post && JSON.parse(post).o.length >= 3, 'Persistenz nach Reload: ' + post);
     await p.click('.tile[data-game="stall"]'); await p.waitForSelector('.farm');
     ok((await p.$$('.scene .item')).length >= 4, 'Stall nach Reload: Gegenstände sichtbar');
-    ok(await p.evaluate(() => !!document.querySelector('.item[data-id="luna"] svg path[fill="#8b5a2b"]')), 'Luna trägt den gekauften Sattel');
+    ok(await p.evaluate(() => !!document.querySelector('.item[data-id="luna"] svg path[fill="#8b5a2b"], .item[data-id="luna"] svg.ph path[fill="#7a4a24"]')), 'Luna trägt den gekauften Sattel');
 
     // Elternbereich
     await p.click('#homeBtn'); await p.click('#parentLink');
