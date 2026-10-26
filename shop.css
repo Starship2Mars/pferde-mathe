@@ -249,3 +249,52 @@
 .hof-shop{background:linear-gradient(170deg,#ffe9f1,#ffd3e3)}.hof-room{background:linear-gradient(170deg,#efe6ff,#ddd0fb)}.hof-care{background:linear-gradient(170deg,#e0f4ff,#c8e8fb)}.hof-mini{background:linear-gradient(170deg,#e4f8e0,#cdeec8)}.hof-album{background:linear-gradient(170deg,#fff2cc,#ffe29a)}
 
 @media (max-aspect-ratio:1/1){.care-main{grid-template-columns:1fr}}
+
+/* ===== Haus und Stall von innen: Übergang, Hinweise, Stall-Ansicht ===== */
+.iris{position:fixed;inset:0;z-index:9000;pointer-events:none;clip-path:circle(0 at var(--ix,50%) var(--iy,50%));transition:clip-path .5s cubic-bezier(.5,0,.8,.6)}
+.iris.on{clip-path:circle(160vmax at var(--ix,50%) var(--iy,50%))}
+.iris.off{opacity:0;transition:opacity .55s ease}
+.door-glow{opacity:.08;animation:doorGlow 2.8s ease-in-out infinite}
+@keyframes doorGlow{0%,100%{opacity:.05}50%{opacity:.5}}
+.door-pill{position:absolute;left:50%;top:57%;transform:translate(-50%,-50%);z-index:5;line-height:1.2;white-space:nowrap;font:800 max(13px,1.9vmin)/1.2 inherit;font-family:inherit;padding:.35em .8em;border-radius:99px;background:rgba(255,250,236,.96);color:#6b4a2a;box-shadow:0 3px 8px rgba(80,60,40,.25);pointer-events:auto}
+.door-pill.house{top:63%}
+.farm .barn.drop-hot{filter:drop-shadow(0 0 2.2vmin rgba(255,226,122,.98)) brightness(1.06)}
+.farm .item.to-stall{transition:left .75s ease-in,top .75s ease-in,opacity .75s ease-in,transform .75s ease-in;opacity:0;transform:translate(-50%,-100%) scale(.4);pointer-events:none}
+.farm .item.to-stall svg{animation:trotbob .3s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.door-glow{animation:none;opacity:.25}.iris{transition:none}}
+
+.stall-wrap{display:flex;flex-direction:column;gap:10px;padding:6px 18px 16px;min-height:100%;animation:fadeIn .45s ease}
+.stall-scene{position:relative;flex:1 1 auto;min-height:min(60dvh,520px);border-radius:30px;overflow:hidden auto;box-shadow:0 14px 34px rgba(80,60,40,.28),0 0 0 8px #e9cfa8,0 0 0 11px #c79f6c;background:#d9b98c;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;padding:3.5vmin 3vmin 3vmin;-webkit-overflow-scrolling:touch}
+.stall-wall{position:absolute;inset:0 0 22% 0;background:repeating-linear-gradient(90deg,#c48a55 0 46px,#b57d4b 46px 49px),linear-gradient(180deg,rgba(0,0,0,.18),transparent 40%);background-blend-mode:multiply;box-shadow:inset 0 -26px 40px rgba(60,30,10,.28);pointer-events:none}
+.stall-window{position:absolute;right:6%;top:6%;width:11vmin;height:9vmin;border-radius:10px;background:linear-gradient(180deg,#cfe8f7,#eaf6ff);box-shadow:0 0 0 5px #f6e6c8,inset 0 0 12px rgba(255,255,255,.7);pointer-events:none}
+.stall-window::before,.stall-window::after{content:'';position:absolute;background:#f6e6c8}
+.stall-window::before{left:50%;top:0;bottom:0;width:4px;margin-left:-2px}.stall-window::after{top:50%;left:0;right:0;height:4px;margin-top:-2px}
+.stall-lamp{position:absolute;left:8%;top:0;width:3px;height:9vmin;background:#6c4a30;pointer-events:none}
+.stall-lamp::after{content:'';position:absolute;left:-1.7vmin;top:100%;width:3.7vmin;height:4.4vmin;border-radius:40% 40% 30% 30%;background:radial-gradient(circle at 50% 45%,#fff3b0,#ffcf5c 60%,#e5a53a);box-shadow:0 0 5vmin 2.4vmin rgba(255,213,110,.55);animation:lampFlick 3.6s ease-in-out infinite}
+@keyframes lampFlick{0%,100%{opacity:1}45%{opacity:.86}60%{opacity:1}}
+.stall-straw{position:absolute;inset:auto 0 0 0;height:22%;background:repeating-linear-gradient(100deg,#f0cf6e 0 14px,#e2b957 14px 17px,#f6dc86 17px 30px);box-shadow:inset 0 14px 18px rgba(120,80,20,.25);pointer-events:none;z-index:0}
+.st-row{position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:2.4vmin}
+.st-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;width:clamp(140px,26vmin,250px);padding:8px 8px 10px;border-radius:22px;background:rgba(255,246,222,.55);box-shadow:inset 0 0 0 4px rgba(140,92,50,.45);transition:opacity .5s,transform .5s}
+.st-card.pet{width:clamp(110px,18vmin,170px)}
+.st-card.leaving{opacity:0;transform:translateX(30%) scale(.85)}
+.st-plate{padding:.2em .9em;border-radius:12px;background:#fff7e0;color:#5a3a1a;font-weight:800;font-size:max(15px,2.2vmin);box-shadow:0 2px 0 #b98c55,0 3px 6px rgba(60,30,10,.25)}
+.st-plate.small{font-size:max(13px,1.9vmin)}
+.st-pv{width:100%;line-height:0;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.st-pv svg{width:100%;height:auto;display:block;overflow:visible;transform-origin:50% 100%}
+.st-pv.munch .head{animation:munch .9s ease-in-out infinite}
+.st-pv.sleep svg{animation:stBreathe 4.2s ease-in-out infinite}
+.st-pv.pet svg{animation:stBreathe 3.4s ease-in-out infinite}
+.st-pv.yay svg{animation:yay .9s ease}
+@keyframes stBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.015,.975)}}
+.st-zzz{position:absolute;right:8%;top:22%;font-size:max(18px,3vmin);pointer-events:none;animation:zzzUp 3.2s ease-in-out infinite}
+@keyframes zzzUp{0%{opacity:0;transform:translate(0,8px) scale(.7)}30%{opacity:1}100%{opacity:0;transform:translate(10px,-22px) scale(1.15)}}
+.st-out{min-height:52px;min-width:140px;padding:6px 14px;border:0;border-radius:18px;background:#e8f6dc;color:#3f6b2a;font:inherit;font-weight:800;font-size:max(15px,2vmin);box-shadow:0 3px 0 #a9cf90,0 4px 10px rgba(60,80,40,.2);touch-action:manipulation}
+.st-out:active{transform:translateY(2px)}
+.st-empty{position:relative;z-index:2;align-self:center;margin:auto;max-width:34em;padding:18px 24px;border-radius:22px;background:rgba(255,248,230,.94);text-align:center;color:#5a3a1a;display:flex;flex-direction:column;gap:6px;font-size:max(16px,2.3vmin)}
+.st-say{text-align:center;min-height:1.5em;margin:0;font-weight:700;color:#6b4a2a;font-size:max(16px,2.2vmin)}
+.st-say.pop{animation:fadeIn .3s ease}
+.stall-dock{align-self:center;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+.stall-dock .bigbtn{min-width:150px;min-height:64px;font-size:1.1rem;padding:6px 16px}
+.st-count{font-weight:800;color:#6b4a2a;padding:0 6px}
+@media (orientation:portrait){.stall-scene{min-height:min(66dvh,760px)}.st-card{width:clamp(140px,34vmin,250px)}}
+@media (prefers-reduced-motion:reduce){.st-pv.munch .head,.st-pv.sleep svg,.st-pv.pet svg,.st-zzz,.stall-lamp::after{animation:none}}
